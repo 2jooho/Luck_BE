@@ -1,0 +1,5 @@
+rootProject.name = 'luckProject'
+include 'luck_api'
+include 'luck_batch'
+include 'luck_core'
+

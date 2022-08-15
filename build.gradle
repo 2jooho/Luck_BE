@@ -30,6 +30,8 @@ subprojects {
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
             exclude group: 'junit', module: 'junit'
         }
+        runtimeOnly 'mysql:mysql-connector-java'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     }
 
     test {

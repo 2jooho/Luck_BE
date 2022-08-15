@@ -1,4 +1,4 @@
-package com.luckCoach.core;
+package com.luckC.core;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

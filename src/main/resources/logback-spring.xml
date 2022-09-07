@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user -->
+<!-- -->
+<!-- For professional support please see -->
+<!-- http://www.qos.ch/shop/products/professionalSupport -->
+
+<!-- scanPeriod 속성을 명시하지 않는 경우 디폴트 값은 1분이 적용된다. -->
+<!-- scanPeriod에 적용할 수 있는 단위는 milliseconds, seconds, minutes, hours가 있고 단위를
+	생략하는 경우 경우 디폴트 단위는 milliseconds가 적용이 된다. -->
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <property name="LOG_FILE_NAME" value="/luck/jeus8/logs/luckApi"/>
+
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %-5level [%thread] [%file:%line] %replace(%msg){'\r|\n', ' '}%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="API" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE_NAME}/if/api_%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %-5level [%thread] [%file:%line] %replace(%msg){'\r|\n', ' '}%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE_NAME}/error/api_error_%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>%d %-5level [%thread] %caller{1} %replace(%msg){'\r|\n', ' '}%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="RESULT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE_NAME}/result/result_%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE_NAME}/sql/sql_%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %-5level [%thread] %replace(%msg){'\r|\n', ' '}%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="INFO">
+        <appender-ref ref="console"/>
+    </root>
+
+    <logger name="INFO" level="INFO" additivity="false">
+        <appender-ref ref="API" />
+        <appender-ref ref="ERROR" />
+    </logger>
+
+    <logger name="RESULT" level="INFO" additivity="false">
+        <appender-ref ref="RESULT" />
+    </logger>
+
+    <logger name="sql.co.kr.starbucks" level="DEBUG" additivity="false">
+        <appender-ref ref="SQL" />
+    </logger>
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE_NAME}/sql/sql2_%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %-5level [%thread] %replace(%msg){'\r|\n', ' '}%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="jdbc" level="OFF"/>
+    <logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" />
+    <logger name="jdbc.sqltiming" level="INFO"/>
+    <logger name="jdbc.audit" level="OFF"/>
+    <logger name="jdbc.resultset" level="OFF"/>
+    <logger name="jdbc.resultsettable" level="INFO"/>
+    <logger name="jdbc.connection" level="OFF"/>
+
+    <logger name="sql.co.kr.starbucks" level="DEBUG" additivity="false">
+        <appender-ref ref="SQL" />
+    </logger>
+
+    <root name="sql.co.kr.starbucks" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

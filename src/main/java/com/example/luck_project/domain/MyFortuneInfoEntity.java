@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 유저 사주 정보 엔티티
@@ -38,4 +35,7 @@ public class MyFortuneInfoEntity {
     @Column(name = "day_luck_kr")
     private String dayLuckKr;
 
+    //양방향용
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "myFortuneInfoEntity")
+    UserEntity userEntity;
 }

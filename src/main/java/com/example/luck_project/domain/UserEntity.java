@@ -3,10 +3,7 @@ package com.example.luck_project.domain;
 import com.fasterxml.jackson.annotation.JsonTypeId;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Getter
 @ToString
@@ -19,6 +16,7 @@ public class UserEntity {
      * 사용자 아이디
      */
     @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private String userId;
 
@@ -39,5 +37,9 @@ public class UserEntity {
      */
     @Column(name = "birth_date_time")
     private String birthDateTime;
+
+    @JoinColumn(name = "userId")
+    @OneToOne(fetch = FetchType.LAZY)
+    private MyFortuneInfoEntity myFortuneInfoEntity;
 
 }

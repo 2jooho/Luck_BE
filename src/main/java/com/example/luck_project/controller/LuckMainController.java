@@ -30,7 +30,7 @@ public class LuckMainController {
     private MainService mainService;
 
     @PostMapping("/main.do")
-    @ExceptionHandler
+    @ExceptionHandler(CustomException.class)
     public ResponseEntity<MainRes> luckMain(@Validated @RequestBody MainReq mainReq){
         String userId = mainReq.getUserId();
 
@@ -38,5 +38,31 @@ public class LuckMainController {
 
         return new ResponseEntity<>(mainRes, HttpStatus.OK);
     }
+
+
+//        public void addStoreEvent(@Valid @RequestBody StoreEvent storeEvent, HttpServletResponse response, HttpServletRequest request) {
+//            ResponseUtility responseUtil = new ResponseUtility(request, response, storeEvent);
+//
+//            String storeCd = "";
+//
+//            try {
+//                storeCd = storeEvent.getStoreCd();
+//
+//                // 서비스 호출
+//                service.saveStore(storeEvent);
+//
+//                responseUtil.setHeader(ResultCode.SUCCESS); // 성공 처리 헤더 저장
+//            } catch(ApiException apiEx) {
+//                logger.info("[{}] {}", storeCd, apiEx.getErrMsg());
+//
+//                responseUtil.setHeaderAndStatus(apiEx.getResultCode(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            } catch (Exception ex) {
+//                logger.error("[{}] {}", storeCd, ex);
+//
+//                responseUtil.setHeaderAndStatus(ResultCode.SERVER_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            }
+//        }
+//    }
+
 
 }

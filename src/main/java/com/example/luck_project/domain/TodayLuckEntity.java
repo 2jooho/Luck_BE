@@ -8,21 +8,21 @@ import lombok.ToString;
 import javax.persistence.*;
 
 /**
- * 유저 사주 정보 엔티티
+ *
  */
 @Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Entity
-@Table(name = "MyFortune_info_entity")
-public class MyFortuneInfoEntity {
-
+@Table(name = "today_luck_info")
+public class TodayLuckEntity {
     /**
      * 사용자 아이디
      */
     @Id
-    @Column(name = "user_Id")
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private String userId;
 
     /**
@@ -37,7 +37,16 @@ public class MyFortuneInfoEntity {
     @Column(name = "day_luck_kr")
     private String dayLuckKr;
 
-    //양방향용
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "myFortuneInfoEntity")
-    UserEntity userEntity;
+    /**
+     * 운 레벨
+     */
+    @Column(name = "luck_level")
+    private String luckLv;
+
+    /**
+     * 운세 정보
+     */
+    @Column(name = "luck_text")
+    private String luckText;
+
 }

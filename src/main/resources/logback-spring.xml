@@ -12,7 +12,7 @@
 	생략하는 경우 경우 디폴트 단위는 milliseconds가 적용이 된다. -->
 <configuration scan="true" scanPeriod="60 seconds">
 
-    <property name="LOG_FILE_NAME" value="/luck/jeus8/logs/luckApi"/>
+    <property name="LOG_FILE_NAME" value="/sck/jeus8/logs/ktapi"/>
 
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -50,7 +50,7 @@
             <maxHistory>180</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%d %msg %n</pattern>
+            <pattern>%d %replace(%msg){'\r|\n', ' '}%n</pattern>
         </encoder>
     </appender>
 
@@ -78,36 +78,8 @@
         <appender-ref ref="RESULT" />
     </logger>
 
-    <logger name="sql.co.kr.starbucks" level="DEBUG" additivity="false">
+    <logger name="sql.co.kr.starbucks" level="ERROR" additivity="false">
         <appender-ref ref="SQL" />
     </logger>
-
-
-    <appender name="STDOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE_NAME}/sql/sql2_%d{yyyyMMdd}.log</fileNamePattern>
-            <maxHistory>180</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d %-5level [%thread] %replace(%msg){'\r|\n', ' '}%n</pattern>
-        </encoder>
-    </appender>
-
-
-    <logger name="jdbc" level="OFF"/>
-    <logger name="jdbc.sqlonly" level="INFO" appender-ref="console-infolog" />
-    <logger name="jdbc.sqltiming" level="INFO"/>
-    <logger name="jdbc.audit" level="OFF"/>
-    <logger name="jdbc.resultset" level="OFF"/>
-    <logger name="jdbc.resultsettable" level="INFO"/>
-    <logger name="jdbc.connection" level="OFF"/>
-
-    <logger name="sql.co.kr.starbucks" level="DEBUG" additivity="false">
-        <appender-ref ref="SQL" />
-    </logger>
-
-    <root name="sql.co.kr.starbucks" level="INFO">
-        <appender-ref ref="STDOUT" />
-    </root>
 
 </configuration>

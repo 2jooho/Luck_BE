@@ -3,6 +3,7 @@ package com.example.luck_project.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 @Table(name = "MyFortune_info_entity")
 public class MyFortuneInfoEntity {

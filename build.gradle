@@ -12,6 +12,10 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	all {
+		//logback과의 충돌 방지
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
 }
 
 repositories {
@@ -43,6 +47,8 @@ dependencies {
 
 	// lang3
 	implementation 'org.apache.commons:commons-lang3:3.9'
+	// log4j2
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 }
 
 tasks.named('test') {

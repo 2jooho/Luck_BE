@@ -1,29 +1,22 @@
 package com.example.luck_project.controller;
 
-import com.example.luck_project.domain.UserEntity;
+import com.example.luck_project.domain.TodayLuckEntity;
 import com.example.luck_project.dto.MainReq;
 import com.example.luck_project.dto.MainRes;
-import com.example.luck_project.dto.TodayLuckInfoDto;
 import com.example.luck_project.exception.CustomException;
-import com.example.luck_project.repository.TodayLuckInfoRepository;
 import com.example.luck_project.service.MainService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/luck")
 @RequiredArgsConstructor
-@Slf4j
+@Log4j2
 public class LuckMainController {
 
     @Autowired
@@ -31,10 +24,10 @@ public class LuckMainController {
 
     @PostMapping("/main.do")
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<MainRes> luckMain(@Validated @RequestBody MainReq mainReq){
+    public ResponseEntity<TodayLuckEntity> luckMain(@Validated @RequestBody MainReq mainReq){
         String userId = mainReq.getUserId();
-
-         MainRes mainRes = mainService.main(userId);
+        log.info("[{}] 메인 조회 컨트롤러", userId);
+        TodayLuckEntity mainRes = mainService.main(userId);
 
         return new ResponseEntity<>(mainRes, HttpStatus.OK);
     }

@@ -1,7 +1,14 @@
+//querydsl 설정
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
 plugins {
 	id 'org.springframework.boot' version '2.7.3'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
 	id 'java'
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10' //querydsl 설정
 }
 
 group = 'com.example'
@@ -25,26 +32,22 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+	//h2
+//	runtimeOnly 'com.h2database:h2'
 	//mysql
 	runtimeOnly 'mysql:mysql-connector-java'
 
-	// querydsl
-//        implementation 'com.querydsl:querydsl-jpa'
-//        annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
-//        annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-//        annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-
+	//querydsl 설정
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 	// validation 체크용
 	implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.6'
-
 	// Jasypt
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
-
 	// lang3
 	implementation 'org.apache.commons:commons-lang3:3.9'
 	// log4j2
@@ -54,3 +57,27 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+//querydsl 설정 시작
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+	main.java.srcDir querydslDir
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+//querydsl 설정 종료

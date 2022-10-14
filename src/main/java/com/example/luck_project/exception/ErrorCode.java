@@ -1,19 +1,23 @@
 package com.example.luck_project.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum ErrorCode {
-    PASSWORD_NOT_MATCH("비밀번호 불일치"),
-    ALREADY_EXISTS_USER("이미 있는 계정"),
-    USER_NOT_FOUND("존재하지 않는 계정"),
-    VALIDATION_FAIL("값이 유효하지 않음"),
-    BAD_REQUEST("잘못된 접근"),
-    EVENT_CREATE_OVERLAPPED_PERIOD("이벤트 기간 중복");
+    PASSWORD_NOT_MATCH(101,"비밀번호 불일치"),
+    ALREADY_EXISTS_USER(102, "이미 있는 계정"),
+    USER_NOT_FOUND(103, "존재하지 않는 계정"),
+    VALIDATION_FAIL(104, "값이 유효하지 않음"),
+    BAD_REQUEST(105, "잘못된 접근"),
+    EVENT_CREATE_OVERLAPPED_PERIOD(106, "이벤트 기간 중복"),
 
+    PURE_LUCK_INFO_FAIL(107, "비장술 운세 정보 미존재"),
+
+    BASIC_CATE_INFO_FAIL(108, "기본 카테고리 정보 미존재");
+
+    private final int status;
     private final String message;
 
-    ErrorCode(String message) {
-        this.message = message;
-    }
 }

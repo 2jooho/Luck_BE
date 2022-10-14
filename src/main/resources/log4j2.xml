@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info" monitorInterval="30">
     <Properties>
-        <Property name="LOG_FILE_NAME">/sck/ktgemapi/logs</Property>
+        <Property name="LOG_FILE_NAME">D:/IdeaProjects/log</Property>
     </Properties>
 
     <Appenders>
@@ -68,11 +68,5 @@
             <AppenderRef ref="RESULT" />
         </Logger>
 
-        <Logger name="co.kr.starbucks.hpauth.mapper" level="info" additivity="false">
-            <AppenderRef ref="SQL" />
-        </Logger>
-        <Logger name="co.kr.starbucks.ktgem.mapper" level="info" additivity="false">
-            <AppenderRef ref="SQL" />
-        </Logger>
     </Loggers>
 </Configuration>

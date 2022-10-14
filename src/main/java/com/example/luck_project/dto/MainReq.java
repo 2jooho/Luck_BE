@@ -1,11 +1,12 @@
 package com.example.luck_project.dto;
 
 import lombok.*;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@ToString
+@Valid
 public class MainReq {
     /**
      * 사용자 아이디(필수)

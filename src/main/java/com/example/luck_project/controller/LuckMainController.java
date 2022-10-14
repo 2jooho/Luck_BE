@@ -1,8 +1,9 @@
 package com.example.luck_project.controller;
 
-import com.example.luck_project.domain.TodayLuckEntity;
+import com.example.luck_project.domain.UserEntity;
 import com.example.luck_project.dto.MainReq;
 import com.example.luck_project.dto.MainRes;
+import com.example.luck_project.dto.UserInfoDto;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.service.MainService;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/luck")
-@RequiredArgsConstructor
 @Log4j2
 public class LuckMainController {
 
@@ -23,11 +25,11 @@ public class LuckMainController {
     private MainService mainService;
 
     @PostMapping("/main.do")
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<TodayLuckEntity> luckMain(@Validated @RequestBody MainReq mainReq){
-        String userId = mainReq.getUserId();
+    public ResponseEntity<MainRes> luckMain(@Validated @RequestBody MainReq mainReq){
+        String userId = mainReq.getUserId().toUpperCase();
+
         log.info("[{}] 메인 조회 컨트롤러", userId);
-        TodayLuckEntity mainRes = mainService.main(userId);
+        MainRes mainRes = mainService.main(userId);
 
         return new ResponseEntity<>(mainRes, HttpStatus.OK);
     }

@@ -41,6 +41,10 @@ public class UserEntity {
     @Column(name = "BIRTH_TIME")
     private String birthTime;
 
+    /** 관심 카테고리 코드 리스트 (구분자 ',' 나열) */
+    @Column(name = "CATE_CODE_LIST")
+    private String cateCodeList;
+
 //    @JoinColumn(name = "USER_ID")
 //    @OneToOne(fetch = FetchType.LAZY)
 //    private UserLuckInfoEntity userLuckInfoEntity;

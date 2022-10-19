@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@PropertySource(value = "classpath:application.properties", encoding="UTF-8")
+@PropertySource(value = "classpath:properties/dev.properties", encoding="UTF-8")
 public class PropertyUtil {
     @Autowired
     private transient Environment environment;

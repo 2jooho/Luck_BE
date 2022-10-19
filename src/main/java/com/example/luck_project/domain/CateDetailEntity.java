@@ -12,43 +12,41 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "lck_user_info")
-public class UserEntity {
+@Table(name = "lck_cate_detl")
+public class CateDetailEntity {
 
-    /** 아이디 */
+    /** 카테고리 코드 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ID")
-    private String userId;
+    @Column(name = "CATE_CD")
+    private String cateCd;
 
-    /** 이름 */
-    @Column(name = "USER_NAME")
-    private String userName;
+    /** 카테고리 상세 코드 */
+    @Column(name = "CATE_DETL_CD")
+    private String cateDetlCd;
 
-    /** 닉네임 */
-    @Column(name = "NICK_NAME")
-    private String nickName;
+    /** 카테고리 상세 명 */
+    @Column(name = "CATE_DETL_NAME")
+    private String cateDetlName;
 
-    /** 생년월일 */
-    @Column(name = "BIRTH")
-    private String birth;
+    /** 카테고리 상세 내용 */
+    @Column(name = "CATE_DETL_CNTNT")
+    private String cateDetlCntnt;
 
-    /** 생일구분 */
-    @Column(name = "BIRTH_FLAG")
-    private String birthFlag;
+    /** 사용여부 */
+    @Column(name = "USE_YN")
+    private String useYn;
 
-    /** 태어난 시간 */
-    @Column(name = "BIRTH_TIME")
-    private String birthTime;
+    /** 광고여부 */
+    @Column(name = "AD_YN")
+    private String adYn;
 
-    /** 관심 카테고리 코드 리스트 (구분자 ',' 나열) */
-    @Column(name = "CATE_CODE_LIST")
-    private String cateCodeList;
+    /** 조회수 */
+    @Column(name = "INQRY_CNT")
+    private Integer inqryCnt;
 
-//    @JoinColumn(name = "USER_ID")
-//    @OneToOne(fetch = FetchType.LAZY)
-//    private UserLuckInfoEntity userLuckInfoEntity;
+    /** 순번 */
+    @Column(name = "ORDER_NO")
+    private Integer orderNo;
 
 }
-
-

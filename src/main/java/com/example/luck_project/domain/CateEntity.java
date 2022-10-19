@@ -34,8 +34,8 @@ public class CateEntity {
     private String useYn;
 
 
-    @JoinColumn(name = "CATE_CD")
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<CateImgEntity> cateImgEntity;
+//    @JoinColumn(name = "CATE_CD")
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<CateImgEntity> cateImgEntity;
 
 }

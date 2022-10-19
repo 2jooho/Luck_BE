@@ -24,4 +24,7 @@ public class UserInfoDto {
     /** 일지 */
     private String dayBtm;
 
+    /** 관심 카테고리 목록 */
+    private String cateCodeList;
+
 }

@@ -1,13 +1,14 @@
 package com.example.luck_project.common.interceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.example.luck_project.common.exception.ApiException;
-import com.example.luck_project.common.util.ResultCode;
+import com.example.luck_project.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static com.example.luck_project.exception.ErrorCode.BAD_REQUEST;
 
 
 @Component
@@ -21,7 +22,7 @@ public class ApiAuthInterceptor implements HandlerInterceptor {
         // 1. Request Method 체크 => 인터페이스는 POST, GET, PATCH, DELETE 메소드만 사용
         //======================================================================================
         if (isRequiredMethod(request)) {
-            throw new ApiException(ResultCode.INVALID_METHOD, "허용하지 않는 메소드 요청");
+            throw new CustomException(BAD_REQUEST);
         }
 
         return HandlerInterceptor.super.preHandle(request, response, handler);

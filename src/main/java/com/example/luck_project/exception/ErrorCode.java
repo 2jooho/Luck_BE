@@ -15,7 +15,12 @@ public enum ErrorCode {
 
     PURE_LUCK_INFO_FAIL(107, "비장술 운세 정보 미존재"),
 
-    BASIC_CATE_INFO_FAIL(108, "기본 카테고리 정보 미존재");
+    BASIC_CATE_INFO_FAIL(108, "기본 카테고리 정보 미존재"),
+
+    CATE_DETAIL_INFO_FAIL(109, "상세 카테고리 정보 미존재"),
+
+    ;
+
 
     private final int status;
     private final String message;

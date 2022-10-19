@@ -12,13 +12,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "lck_cate_img")
-public class CateImgEntity {
-    /** 카테고리 코드 */
+@Table(name = "lck_cate_detl_img")
+public class CateDetailImgEntity {
+    /** 카테고리 상세 코드 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CATE_CD")
-    private String cateCode;
+    @Column(name = "CATE_DETL_CD")
+    private String cateDetlCd;
 
     /** 이미지 경로 */
     @Column(name = "FILE_PATH")

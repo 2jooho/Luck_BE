@@ -19,6 +19,8 @@ public enum ErrorCode {
 
     CATE_DETAIL_INFO_FAIL(109, "상세 카테고리 정보 미존재"),
 
+    USER_NOT_FOUND_PAYMENT(109, "결제 정보가 존재하지 않는 계정"),
+
     ;
 
 

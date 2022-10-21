@@ -1,4 +1,4 @@
-package com.example.luck_project.dto;
+package com.example.luck_project.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +11,12 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Valid
 public class CateListReq {
+    /**
+     * 아이디(필수)
+     */
+    @NotBlank(message = "userId는 필수 입니다.")
+    private String userId;
+
     /**
      * 카테고리 코드(필수)
      */

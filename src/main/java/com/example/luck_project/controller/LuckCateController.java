@@ -1,14 +1,13 @@
 package com.example.luck_project.controller;
 
-import com.example.luck_project.dto.CateListReq;
-import com.example.luck_project.dto.CateListRes;
+import com.example.luck_project.dto.request.CateListReq;
+import com.example.luck_project.dto.response.CateListRes;
 import com.example.luck_project.service.CateService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,14 +32,16 @@ public class LuckCateController {
     public ResponseEntity<CateListRes> cateDetailList(@Validated @RequestBody CateListReq cateListReq){
         Map<String, Object> reqMap = new HashMap<>();
 
+        String userId = cateListReq.getUserId().toUpperCase();
         String cateCode = cateListReq.getCateCode().toUpperCase();
         Optional<Integer> page = Optional.ofNullable(cateListReq.getPage());
         Optional<Integer> pageSize = Optional.ofNullable(cateListReq.getPageingSize());
         Pageable pageable = PageRequest.of(page.orElse(0), pageSize.orElse(10));
 
+        reqMap.put("userId", userId);
         reqMap.put("cateCode", cateCode);
 
-        log.info("[{}] 상세 카테고리 목록 조회", strCRLF(cateCode));
+        log.info("[{}][{}] 상세 카테고리 목록 조회", strCRLF(userId), strCRLF(cateCode));
 
         CateListRes cateRes = cateService.cateDetailList(reqMap, pageable);
 

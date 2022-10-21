@@ -4,6 +4,7 @@ import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.util.PropertyUtil;
 import com.example.luck_project.domain.*;
 import com.example.luck_project.dto.*;
+import com.example.luck_project.dto.response.MainRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.repository.*;
 import org.apache.commons.lang3.StringUtils;

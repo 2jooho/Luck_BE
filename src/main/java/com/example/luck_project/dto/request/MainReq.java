@@ -1,4 +1,4 @@
-package com.example.luck_project.dto;
+package com.example.luck_project.dto.request;
 
 import lombok.*;
 

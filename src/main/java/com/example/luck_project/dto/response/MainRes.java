@@ -1,5 +1,7 @@
-package com.example.luck_project.dto;
+package com.example.luck_project.dto.response;
 
+import com.example.luck_project.dto.CateDto;
+import com.example.luck_project.dto.RecommandCateDto;
 import lombok.*;
 
 import java.util.List;

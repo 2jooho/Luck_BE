@@ -35,18 +35,22 @@ public class PureLuckMainController {
         Map<String, Object> reqMap = new HashMap<>();
 
         String userId = pureLuckMainReq.getUserId().toUpperCase();
-        String pureCnctn = pureLuckMainReq.getPureCnctn().toUpperCase();
+        String pureCnctn = pureLuckMainReq.getPureCnctn();
         String cateDetailCode = pureLuckMainReq.getCateDetailCode().toUpperCase();
+        String todayVersYear = pureLuckMainReq.getTodayVersYear();
 
         reqMap.put("userId", userId);
         reqMap.put("pureCnctn", pureCnctn);
         reqMap.put("cateDetailCode", cateDetailCode);
+        reqMap.put("todayVersYear", todayVersYear);
+
 
         log.info("[{}][{}][{}] 비장술 정보 조회", strCRLF(userId), strCRLF(pureCnctn), strCRLF(cateDetailCode));
 
         PureLuckMainRes pureLuckMainRes = pureLuckService.pureLuckMain(reqMap);
 
         return new ResponseEntity<>(pureLuckMainRes, HttpStatus.OK);
+
     }
 
     /**

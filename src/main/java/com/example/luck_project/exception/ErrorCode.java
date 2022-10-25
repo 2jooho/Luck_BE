@@ -21,6 +21,11 @@ public enum ErrorCode {
 
     USER_NOT_FOUND_PAYMENT(109, "결제 정보가 존재하지 않는 계정"),
 
+    BASIC_DATE_NOT_FOUND(110, "기준 날짜 정보 미존재"),
+
+    CATE_DETL_PURE_NOT_FOUND(111, "카테고리 상세 비장술 정보 미존재"),
+
+
     ;
 
 

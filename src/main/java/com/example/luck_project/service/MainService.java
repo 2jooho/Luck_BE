@@ -1,6 +1,7 @@
 package com.example.luck_project.service;
 
 import com.example.luck_project.common.config.ApiSupport;
+import com.example.luck_project.common.util.DataCode;
 import com.example.luck_project.common.util.PropertyUtil;
 import com.example.luck_project.domain.*;
 import com.example.luck_project.dto.*;
@@ -12,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,15 +47,23 @@ public class MainService extends ApiSupport {
     private CateDetailImgInfoRepository cateDetailImgInfoRepository;
 
     @Autowired
+    private UserPureCombRepository userPureCombRepository;
+
+    @Autowired
+    private BasicDateRepository basicDateRepository;
+
+    @Autowired
     private PropertyUtil propertyUtil;
 
 
     @Transactional(readOnly = true)
     public MainRes main(String userId) {
         MainRes mainRes = new MainRes();
+        String pureCnctn = ""; //비장술 조합
 
         //하단 내용은 향후 메소드화 시켜야함
         logger.info("[{}] 사용자 정보 조회", userId);
+        //사용자의 사주정보(년지월지)를 조회
         Optional<UserInfoDto> userInfoDto = userInfoRepository.serchUserInfo(userId);
         //사용자 정보가 없는 경우 Exception
         userInfoDto.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -65,9 +77,56 @@ public class MainService extends ApiSupport {
 
         //비장술 운세 정보 조회
         logger.info("[{}][{}] 비장술 운세 정보 조회", userId, ydPureCnctn);
+
+        //오늘 날짜 띠 정보 조회
+        LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String todayDate = today.format(formatter);
+
+        Optional<BasicDateEntity> basicDateEntity = basicDateRepository.findTop1ByOrderByBasicDateDesc();
+        basicDateEntity.orElseThrow(() -> new CustomException(BASIC_DATE_NOT_FOUND));
+
+        String versYear = ""; //띠 정보
+
+        logger.info("[{}][{}][{}] 기준날짜 띠 찾기", userId, ydPureCnctn, basicDateEntity.get().getBasicDate());
+        //기준 날짜와 오늘 날짜가 같지 않은 경우 오늘 날짜 띠 찾기
+        if(!StringUtils.equals(basicDateEntity.get().getBasicDate(), todayDate)){
+            int minusDate = Integer.valueOf(todayDate) - Integer.valueOf(basicDateEntity.get().getBasicDate());
+            String basicVersYear = basicDateEntity.get().getVersYearInfo();
+
+            Optional<Integer> codeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, basicVersYear));
+            codeNum.orElseThrow(() -> new CustomException(BASIC_DATE_NOT_FOUND));
+
+            int todayVersYear = codeNum.get() + minusDate;
+            while(true) {
+                if (todayVersYear > 12) {
+                    todayVersYear = todayVersYear - 12;
+                } else {
+                    versYear = DataCode.VERS_YEAR_NAME_ARR[todayVersYear-1];
+                    break;
+                }
+            }
+        }else{
+            versYear = basicDateEntity.get().getBasicDate();
+        }
+
+        // 사주정보 목록
+        List<String> luckCnctnList = new ArrayList<>();
+        luckCnctnList.add(ydPureCnctn);
+        luckCnctnList.add(dyPureCnctn);
+
+        logger.info("[{}][{}][{}] 비장술 조합 정보 조회", userId, versYear, basicDateEntity.get().getBasicDate());
+        //비장술 정보 조회
+        Optional<UserPureCombinationEntity> pureCombinationEntity = userPureCombRepository.findTop1ByLuckCnctnInAndVersYear(luckCnctnList, versYear);
+        pureCombinationEntity.orElseThrow(() -> new CustomException(PURE_LUCK_INFO_FAIL));
+
+        // 비장술 정보 목록
         List<String> pureCnctnList = new ArrayList<>();
-        pureCnctnList.add(ydPureCnctn);
-        pureCnctnList.add(dyPureCnctn);
+        pureCnctn = pureCombinationEntity.get().getPureYear() + "," + pureCombinationEntity.get().getPureDay();
+        pureCnctnList.add(pureCnctn);
+        pureCnctnList.add(pureCombinationEntity.get().getPureDay() + "," + pureCombinationEntity.get().getPureYear());
+
+        logger.info("[{}][{}][{}] 비장술 정보 조회", userId, versYear, basicDateEntity.get().getBasicDate());
 
         Optional<PureInfoEntity> pureInfoEntity = pureInfoRepository.findByPureCnctnIn(pureCnctnList);
         //비장술 운세 정보가 없는 경우 Exception
@@ -165,7 +224,9 @@ public class MainService extends ApiSupport {
 
         //응답 파라미터 설정
         mainRes.setNickName(userInfoDto.get().getNickName());
-        mainRes.setPureCnctn(ydPureCnctn);
+        mainRes.setLuckCnctn(ydPureCnctn);
+        mainRes.setPureCnctn(pureCnctn);
+        mainRes.setTodayVersYear(versYear);
         mainRes.setPureCntnt(pureInfoEntity.get().getPureCntnt());
         mainRes.setCharactorFlag(pureInfoEntity.get().getCharactorFlag());
         mainRes.setRecommandCateList(recommandCateDtoList);

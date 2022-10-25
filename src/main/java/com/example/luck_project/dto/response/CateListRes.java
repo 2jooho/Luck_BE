@@ -36,12 +36,4 @@ public class CateListRes {
     /** 상세 카테고리 리스트 */
     private List<CateDetailDto> cateDetailList;
 
-    public String getPaymentStartDate() {
-        return StringUtils.isNotBlank(paymentStartDate) ? paymentStartDate : "";
-    }
-
-    public String getPaymentEndDate() {
-        return StringUtils.isNotBlank(paymentEndDate) ? paymentEndDate : "";
-    }
-
 }

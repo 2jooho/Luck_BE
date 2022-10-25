@@ -18,6 +18,12 @@ public class PureLuckMainReq {
     private String userId;
 
     /**
+     * 오늘 띠 정보(필수)
+     */
+    @NotBlank(message = "todayVersYear 필수 입니다.")
+    private String todayVersYear;
+
+    /**
      * 비장술 조합(필수)
      */
     @NotBlank(message = "pureCnctn는 필수 입니다.")
@@ -28,17 +34,5 @@ public class PureLuckMainReq {
      */
     @NotBlank(message = "cateDetailCode는 필수 입니다.")
     private String cateDetailCode;
-
-    /**
-     * 열람 가능 개수
-     */
-    @NotBlank(message = "rdnAvlblCnt 필수 입니다.")
-    private Integer rdnAvlblCnt;
-
-    /**
-     * 열람 제한 여부
-     */
-    @NotBlank(message = "rdnRstrcYn 필수 입니다.")
-    private String rdnRstrcYn;
 
 }

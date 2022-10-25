@@ -15,8 +15,14 @@ public class MainRes {
     /** 닉네임 */
     private String nickName;
 
+    /** 사주 조합 */
+    private String luckCnctn;
+
     /** 비장술 조합 */
     private String pureCnctn;
+
+    /** 오늘 띠 */
+    private String todayVersYear;
 
     /** 비장술 내용 */
     private String pureCntnt;

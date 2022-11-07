@@ -37,3 +37,7 @@ spring:
 ##    database-platform: org.hibernate.dialect.H2Dialect
 ##    generate-ddl: true
 #
+
+###jwt 설정
+jwt:
+  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa

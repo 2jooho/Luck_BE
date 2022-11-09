@@ -3,19 +3,19 @@ package com.example.luck_project.service;
 import com.example.luck_project.domain.UserEntity;
 import com.example.luck_project.repository.UserInfoRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService2 implements UserDetailsService {
-
+public class CustomUserDetailsService2 implements UserDetailsService{
+    protected final Logger logger  = LogManager.getLogger("INFO");
     private final UserInfoRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
@@ -27,8 +27,8 @@ public class CustomUserDetailsService2 implements UserDetailsService {
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
     private UserDetails createUserDetails(UserEntity member) {
         return User.builder()
-                .username(member.getUsername())
-                .password(passwordEncoder.encode(member.getPassword()))
+                .username(member.getUserId())
+                .password(member.getPassword())
                 .roles(member.getRoles().toArray(new String[0]))
                 .build();
     }

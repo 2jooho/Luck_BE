@@ -25,6 +25,10 @@ public enum ErrorCode {
 
     CATE_DETL_PURE_NOT_FOUND(111, "카테고리 상세 비장술 정보 미존재"),
 
+    ALREADY_EXISTS_NICKNAME(112, "이미 존재하는 닉네임"),
+
+    RE_TOKEN_RESPONSE(113, "토큰 재발급"),
+
 
     ;
 

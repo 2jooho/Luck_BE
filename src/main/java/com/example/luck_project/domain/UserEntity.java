@@ -2,6 +2,7 @@ package com.example.luck_project.domain;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -19,9 +20,10 @@ import java.util.stream.Collectors;
 @Getter
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 @Table(name = "lck_user_info")
+@DynamicUpdate
 @Builder
 public class UserEntity implements UserDetails, Persistable<String> {
 
@@ -58,9 +60,18 @@ public class UserEntity implements UserDetails, Persistable<String> {
     @Column(name = "SEX")
     private String sex;
 
+    /** 핸드폰 번호 */
+    @Column(name = "PHONE_NM")
+    private String phoneNm;
+
     /** 관심 카테고리 코드 리스트 (구분자 ',' 나열) */
     @Column(name = "CATE_CODE_LIST")
     private String cateCodeList;
+
+    /** 마지막 로그인 일시 */
+    @CreatedDate
+    @Column(name = "LAST_LOGIN_DATE", length = 14)
+    private String lastLoginDt;
 
     /** 등록일시 */
     @CreatedDate
@@ -71,9 +82,24 @@ public class UserEntity implements UserDetails, Persistable<String> {
     @Column(name = "RGPS_ID")
     private String rgpsId = "API";
 
+    /** 수정일시 */
+    @CreatedDate
+    @Column(name = "EDIT_DTM")
+    private LocalDateTime editDtm;
+
+    /** 수정자 */
+    @Column(name = "UPUS_ID", length = 20)
+    private String upusId;
+
 //    @JoinColumn(name = "USER_ID")
 //    @OneToOne(fetch = FetchType.LAZY)
 //    private UserLuckInfoEntity userLuckInfoEntity;
+
+    public void lastLoginDtUpdate(String lastLoginDt, LocalDateTime editDtm, String upusId) {
+        this.lastLoginDt = lastLoginDt;
+        this.editDtm = editDtm;
+        this.upusId = upusId;
+    }
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

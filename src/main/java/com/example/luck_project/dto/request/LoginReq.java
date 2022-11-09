@@ -37,6 +37,7 @@ public class LoginReq {
      * 단말기 OS타입(1:ios, 2:android, 9:etc)
      */
     @Size(max = 1)
+    @Pattern(regexp = "^[129]{1}$", message = "단말기 OS 타입은 1,2,9만 가능합니다.")
     @NotBlank(message = "osType 필수 입니다.")
     private String osType;
 
@@ -51,6 +52,7 @@ public class LoginReq {
      */
     @Size(max = 1)
     @NotBlank(message = "loginType 필수 입니다.")
+    @Pattern(regexp = "^[MAma]{1}$", message = "로그인 타입은 M, A만 가능합니다.")
     private String loginType;
 
 }

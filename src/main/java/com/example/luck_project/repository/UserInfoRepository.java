@@ -8,8 +8,41 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserInfoRepository extends JpaRepository<UserEntity, String>, UserInfoRepositoryCustom {
-
-    List<UserEntity> findAll();
-
+    /**
+     * 회원 정보 조회
+     * @param userId
+     * @return
+     */
     Optional<UserEntity> findByUserId(String userId);
+
+    /**
+     * 아이디 개수 조회
+     * @param userId
+     * @return
+     */
+    Optional<Integer> countByUserId(String userId);
+
+    /**
+     * 닉네임 개수 조회
+     * @param nickName
+     * @return
+     */
+    Optional<Integer> countByNickName(String nickName);
+
+    /**
+     * 회원 개수 조회
+     * @param userName
+     * @param phoneNumber
+     * @return
+     */
+    Optional<Integer> countByUserNameAndPhoneNm(String userName, String phoneNumber);
+
+    /**
+     * 아이디와 비밀번호를 통한 회원 정보 확인
+     * @param userId
+     * @param password
+     * @return
+     */
+    boolean existsByUserIdAndUserPw(String userId, String password);
+
 }

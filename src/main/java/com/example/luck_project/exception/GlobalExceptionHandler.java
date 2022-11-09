@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -44,9 +45,9 @@ public class GlobalExceptionHandler extends ApiSupport {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public String handleRuntimeException(final RuntimeException re) {
+    public ResponseEntity handleRuntimeException(RuntimeException re) {
         logger.error("handleRuntimeException : {}", re.getMessage());
-        return re.getMessage();
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Data

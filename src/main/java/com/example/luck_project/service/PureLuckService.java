@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.example.luck_project.exception.ErrorCode.CATE_DETL_PURE_NOT_FOUND;
 
@@ -29,6 +28,7 @@ public class PureLuckService extends ApiSupport {
     CateDetailPureRepository cateDetailPureRepository;
     @Autowired
     UserPureCombRepository userPureCombRepository;
+
 
     /**
      * 비장술 정보 조회
@@ -144,6 +144,9 @@ public class PureLuckService extends ApiSupport {
 //        3. 최고 조합 띠날을 기준으로 시간을 돌려서 찾는다(ex 합식이면 강일진+3 강일진 시작시간 +6시간이 합식 시작시간)
 //        4. 오늘 띠를 기준으로 최고 시간대를 찾는다. (ex 합식이면 강일진+3 강일진 시작시간 +6시간이 합식 시작시간) (묘 날이면 묘가05~00 시작이니까 11:00부터 13:00이 최적 시간)
 
+
+        //사용완료 +1
+//        userPaymentEntity.updateUseCmplnCnt();
 
         //응답 파라미터 설정
         pureLuckMainRes.setTodayVersYear(todayVersYear);

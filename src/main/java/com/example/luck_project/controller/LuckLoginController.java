@@ -3,7 +3,6 @@ package com.example.luck_project.controller;
 import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.config.jwt.JwtTokenProvider;
 import com.example.luck_project.common.util.SecurityUtil;
-import com.example.luck_project.domain.UserEntity;
 import com.example.luck_project.dto.TokenInfo;
 import com.example.luck_project.dto.request.LoginReq;
 import com.example.luck_project.dto.response.LoginRes;
@@ -24,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Map;
 
 @RestController
@@ -148,18 +145,19 @@ public class LuckLoginController extends ApiSupport {
         return new ResponseEntity<>(loginRes, HttpStatus.OK);
     }
 
-    /**
-     * 토큰 재발급
-     * @param user
-     * @return
-     */
-    @PostMapping("/auth/reissue/token")
-    public ResponseEntity<TokenInfo> luckLogin(@RequestBody Map<String, String> user) {
-        String memberId = user.get("userId");
-        String password = user.get("password");
-        TokenInfo tokenInfo = loginService.loginTest(memberId, password);
-        return new ResponseEntity<>(tokenInfo, HttpStatus.OK);
-    }
+
+//    /**
+//     * 토큰 재발급
+//     * @param user
+//     * @return
+//     */
+//    @PostMapping("/auth/reissue/token")
+//    public ResponseEntity<TokenInfo> luckLogin(@RequestBody Map<String, String> user) {
+//        String memberId = user.get("userId");
+//        String password = user.get("password");
+//        TokenInfo tokenInfo = loginService.loginTest(memberId, password);
+//        return new ResponseEntity<>(tokenInfo, HttpStatus.OK);
+//    }
 
     /**
      * CRLF 개행제거

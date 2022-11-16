@@ -25,12 +25,26 @@ import java.util.stream.Collectors;
 @Table(name = "lck_user_info")
 @DynamicUpdate
 @Builder
+@SequenceGenerator(
+        name = "SEQ_USER_INFO"
+        , sequenceName = "USER_INFO_SEQ"
+        , initialValue = 1
+        , allocationSize = 1
+)
 public class UserEntity implements UserDetails, Persistable<String> {
 
     /** 아이디 */
     @Id
     @Column(name = "USER_ID")
     private String userId;
+
+    /** 사용자 번호 */
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE
+            , generator = "SEQ_USER_INFO"
+    )
+    @Column(name = "USER_NM")
+    private long userNm;
 
     /** 패스워드 */
     @Column(name = "USER_PW")
@@ -72,6 +86,18 @@ public class UserEntity implements UserDetails, Persistable<String> {
     @CreatedDate
     @Column(name = "LAST_LOGIN_DATE", length = 14)
     private String lastLoginDt;
+
+    /** 로그인 구분 */
+    @Column(name = "LOGIN_DVSN_CODE", length = 1)
+    private String loginDvsn;
+
+    /** 휴면계정여부 */
+    @Column(name = "INACTIVITY_FLAG", length = 1)
+    private String inactivityFlag;
+
+    /** 비밀번호 변경일 */
+    @Column(name = "PASS_MOD_DT", length = 14)
+    private String passModDt;
 
     /** 등록일시 */
     @CreatedDate
@@ -151,6 +177,10 @@ public class UserEntity implements UserDetails, Persistable<String> {
     public boolean isEnabled() {
         return true;
     }
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private UserMobileDeviceEntity userMobileDeviceEntity;
 
 }
 

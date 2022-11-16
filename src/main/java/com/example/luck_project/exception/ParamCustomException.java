@@ -7,7 +7,8 @@ import java.util.Map;
 
 @Getter
 @AllArgsConstructor
-public class CustomException extends RuntimeException {
+public class ParamCustomException extends RuntimeException {
     private final ErrorCode errorCode;
+    private final Map<String, Object> exceptionMap;
 
 }

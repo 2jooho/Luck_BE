@@ -56,13 +56,13 @@ public class LuckOauthController extends ApiSupport {
      * @throws IOException
      * @throws CustomException
      */
-    @PostMapping(value = "/auth/{socialLoginType}/callback")
+    @GetMapping(value = "/auth/{socialLoginType}/callback")
     public ResponseEntity<GetSocialOAuthRes> callback (
             @PathVariable(name = "socialLoginType") String socialLoginPath,
             @RequestParam(name = "code") String authCode) throws IOException, CustomException {
 
         System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :"+ authCode);
-        Constant.SocialLoginType socialLoginType= Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());
+        Constant.SocialLoginType socialLoginType = Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());
         GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLogin(socialLoginType, authCode);
         return ResponseEntity.ok().body(getSocialOAuthRes);
     }

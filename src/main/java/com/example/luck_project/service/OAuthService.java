@@ -4,20 +4,30 @@ import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.config.Oauth.Constant;
 import com.example.luck_project.common.config.Oauth.GoogleOauth;
 import com.example.luck_project.common.config.Oauth.KakaoOauth;
+import com.example.luck_project.domain.UserEntity;
 import com.example.luck_project.dto.GoogleOAuthToken;
 import com.example.luck_project.dto.GoogleUser;
 import com.example.luck_project.dto.KakaoOAuthToken;
 import com.example.luck_project.dto.KakaoUser;
+import com.example.luck_project.dto.request.LoginReq;
 import com.example.luck_project.dto.response.GetSocialOAuthRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.exception.ErrorCode;
+import com.example.luck_project.repository.UserInfoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
+import static com.example.luck_project.exception.ErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +37,10 @@ public class OAuthService extends ApiSupport {
     private final KakaoOauth kakaoOauth;
     private final HttpServletResponse response;
 
+    @Autowired
+    UserInfoRepository userInfoRepository;
+
+    LoginService loginService;
 
 //    /**
 //     * 구글 로그인 리다이렉트
@@ -128,29 +142,30 @@ public class OAuthService extends ApiSupport {
 
                 //다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
                 GoogleUser googleUser = googleOauth.getUserInfo(userInfoResponse);
-                //
-                String user_id = googleUser.getEmail();
+                //구글로 부터 전달받은 이메일
+                String userId = googleUser.getEmail().toUpperCase();
+                //db에 아이디가 존재하는지 확인
+                Optional<UserEntity> userEntity = userInfoRepository.findByUserIdAndLoginDvsn(userId, "G");
+                userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-                //우리 서버의 db와 대조하여 해당 user가 존재하는 지 확인한다.
-//                int user_num=accountProvider.getUserNum(user_id);
+                logger.info("[{}] 휴면계정 체크", userId);
+                //마지막 로그인 기준 1년이 지난 회원인 경우 휴면계정
 
-//                if(user_num!=0){
-//                    //서버에 user가 존재하면 앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
-//                    String jwtToken=jwtService.createJwt(user_num,user_id);
-//                    //액세스 토큰과 jwtToken, 이외 정보들이 담긴 자바 객체를 다시 전송한다.
-//                    GetSocialOAuthRes getSocialOAuthRes=new GetSocialOAuthRes(jwtToken,user_num,oAuthToken.getAccess_token(),oAuthToken.getToken_type());
-//                    return getSocialOAuthRes;
-//                }
-//                else {
-//                    throw new CustomException(ErrorCode.BAD_REQUEST);
-//                }
 
-                if(!user_id.isBlank()){
-                    getSocialOAuthRes = new GetSocialOAuthRes(null,0, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
-                    return getSocialOAuthRes;
-                }else {
-                    throw new CustomException(ErrorCode.BAD_REQUEST);
-                }
+                logger.info("[{}] 마지막 로그인 시점 업데이트", userId);
+                //로그인 시점 업데이트
+                LocalDateTime nowDate = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                String todayDate = nowDate.format(formatter);
+                userEntity.get().lastLoginDtUpdate(todayDate, nowDate, "API");
+
+                //jwt 토큰 생성 후 헤더 응답
+                loginService.createToken(userId, userEntity.get().getPassword(), response);
+
+                // json 응답 설정
+                getSocialOAuthRes = new GetSocialOAuthRes(userId, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+                return getSocialOAuthRes;
+
             }
             case KAKAO:{
                 //카카오로 일회성 코드를 보내 액세스 토큰이 담긴 응답객체를 받아옴
@@ -165,14 +180,31 @@ public class OAuthService extends ApiSupport {
                 //다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
                 KakaoUser kakaoUser = kakaoOauth.getUserInfo(userInfoResponse);
 
-                String user_id = kakaoUser.getEmail();
+                //카카오에게 전달받은 이메일
+                String userId = kakaoUser.getEmail().toUpperCase();
+                //db에 아이디가 존재하는지 확인
+                Optional<UserEntity> userEntity = userInfoRepository.findByUserIdAndLoginDvsn(userId, "K");
+                userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-                if(!user_id.isBlank()){
-                    getSocialOAuthRes = new GetSocialOAuthRes(null,0, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
-                    return getSocialOAuthRes;
-                }else {
-                    throw new CustomException(ErrorCode.BAD_REQUEST);
-                }
+                logger.info("[{}] 휴면계정 체크", userId);
+                //마지막 로그인 기준 1년이 지난 회원인 경우 휴면계정
+
+
+                logger.info("[{}] 마지막 로그인 시점 업데이트", userId);
+                //로그인 시점 업데이트
+                LocalDateTime nowDate = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                String todayDate = nowDate.format(formatter);
+                userEntity.get().lastLoginDtUpdate(todayDate, nowDate, "API");
+
+                //jwt 토큰 생성 후 헤더 응답
+                int idx = userId.indexOf("@");
+                String password = userId.substring(0, idx);
+                loginService.createToken(userId, password+userEntity.get().getUserNm(), response);
+
+                // json 응답 설정
+                getSocialOAuthRes = new GetSocialOAuthRes(userId, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+                return getSocialOAuthRes;
 
             }
             default:{

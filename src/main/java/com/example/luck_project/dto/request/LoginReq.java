@@ -1,7 +1,6 @@
 package com.example.luck_project.dto.request;
 
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -10,6 +9,9 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Valid
 public class LoginReq {
@@ -54,5 +56,13 @@ public class LoginReq {
     @NotBlank(message = "loginType 필수 입니다.")
     @Pattern(regexp = "^[MAma]{1}$", message = "로그인 타입은 M, A만 가능합니다.")
     private String loginType;
+
+    /**
+     * 로그인 방법(B:기본 로그인, K:카카오 로그인, G:구글 로그인)
+     */
+    @Size(max = 1)
+    @NotBlank(message = "loginDvsn 필수 입니다.")
+    @Pattern(regexp = "^[BKGbkg]{1}$", message = "로그인 타입은 B, K ,G만 가능합니다.")
+    private String loginDvsn;
 
 }

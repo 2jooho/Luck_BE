@@ -3,6 +3,8 @@ package com.example.luck_project.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
@@ -29,7 +31,9 @@ public enum ErrorCode {
 
     RE_TOKEN_RESPONSE(113, "토큰 재발급"),
 
+    LOGIN_COUNT_FAIL(114, "로그인 횟수 초과"),
 
+    LOGIN_AUTH_FAIL(115, "12개월 이상 미접속 회원으로 휴면계정 처리 되었습니다. \n본인인증 후 이용 바랍니다."),
     ;
 
 

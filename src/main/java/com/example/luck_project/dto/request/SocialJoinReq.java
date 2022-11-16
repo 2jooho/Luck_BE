@@ -3,12 +3,12 @@ package com.example.luck_project.dto.request;
 import com.example.luck_project.domain.UserEntity;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
+import org.springframework.lang.Nullable;
 
-import javax.management.relation.Role;
-import javax.persistence.Column;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +17,7 @@ import java.util.Collections;
 @Getter
 @ToString
 @Valid
-public class JoinReq {
+public class SocialJoinReq {
     /**
      * 아이디(필수)
      */
@@ -28,8 +28,6 @@ public class JoinReq {
     /**
      * 비밀번호
      */
-    @NotBlank(message = "password 필수 입니다.")
-    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}", message = "비밀번호는 8~16자리수여야 합니다. 영문 대소문자, 숫자, 특수문자를 1개 이상 포함해야 합니다.")
     private String password;
 
     /**
@@ -83,7 +81,7 @@ public class JoinReq {
     /**
      * 로그인 구분
      */
-    @NotBlank(message = "로그인 구분은 필수 입력값입니다.")
+    @Nullable
     @Pattern(regexp = "^[BKGbkg]{1}$" , message = "로그인 구분은 1자리 B,K,G 형식입니다.")
     private String loginDvsn;
 
@@ -97,6 +95,7 @@ public class JoinReq {
     public void encryptPassword(String BCryptpassword) {
         this.password = BCryptpassword;
     }
+
 
     /* DTO -> Entity */
     public UserEntity toEntity() {
@@ -116,10 +115,11 @@ public class JoinReq {
                 .phoneNm(phoneNm)
                 .cateCodeList(cateCodeList)
                 .loginDvsn(loginDvsn)
-                .passModDt(todayDate)
                 .rgsttDtm(LocalDateTime.now())
+                .passModDt(todayDate)
                 .roles(Collections.singletonList("USER"))
                 .build();
+
         return user;
     }
 

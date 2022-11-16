@@ -18,9 +18,10 @@ public interface UserInfoRepository extends JpaRepository<UserEntity, String>, U
     /**
      * 아이디 개수 조회
      * @param userId
+     * @param loginDvsn
      * @return
      */
-    Optional<Integer> countByUserId(String userId);
+    Optional<Integer> countByUserIdAndLoginDvsn(String userId, String loginDvsn);
 
     /**
      * 닉네임 개수 조회
@@ -35,7 +36,7 @@ public interface UserInfoRepository extends JpaRepository<UserEntity, String>, U
      * @param phoneNumber
      * @return
      */
-    Optional<Integer> countByUserNameAndPhoneNm(String userName, String phoneNumber);
+    Optional<UserEntity> findByUserNameAndPhoneNm(String userName, String phoneNumber);
 
     /**
      * 아이디와 비밀번호를 통한 회원 정보 확인
@@ -44,5 +45,14 @@ public interface UserInfoRepository extends JpaRepository<UserEntity, String>, U
      * @return
      */
     boolean existsByUserIdAndUserPw(String userId, String password);
+
+    /**
+     * 회원 정보 조회
+     * @param userId
+     * @param loginDvsn
+     * @return
+     */
+    Optional<UserEntity> findByUserIdAndLoginDvsn(String userId, String loginDvsn);
+
 
 }

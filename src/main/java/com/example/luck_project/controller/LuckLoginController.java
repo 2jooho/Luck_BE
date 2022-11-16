@@ -122,7 +122,7 @@ public class LuckLoginController extends ApiSupport {
      * @return
      */
     @PostMapping("/auth/login")
-    public ResponseEntity<LoginRes> luckLogin(@Validated @RequestBody LoginReq loginReq, HttpServletResponse response){
+    public ResponseEntity<LoginRes> luckLogin(@Validated @RequestBody LoginReq loginReq){
         String userId = loginReq.getUserId().toUpperCase();
 
         boolean isError = false;
@@ -134,13 +134,17 @@ public class LuckLoginController extends ApiSupport {
             logger.info("로그인 타입 에러");
             isError = true;
         }
+        if(!StringUtils.equals("B", loginReq.getLoginDvsn())){
+            logger.info("로그인 구분 에러");
+            isError = true;
+        }
 
         if(isError){
             throw new CustomException(ErrorCode.VALIDATION_FAIL);
         }
 
         logger.info("[{}] 로그인 컨트롤러", userId);
-        LoginRes loginRes = loginService.login(loginReq, response);
+        LoginRes loginRes = loginService.login(loginReq);
 
         return new ResponseEntity<>(loginRes, HttpStatus.OK);
     }

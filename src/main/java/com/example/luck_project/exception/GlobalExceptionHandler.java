@@ -12,12 +12,32 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 import static com.example.luck_project.exception.ErrorHttpStatusMapper.mapToStatus;
 
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ApiSupport {
+
+    @ExceptionHandler(ParamCustomException.class)
+    protected ResponseEntity<Map<String, Object>> handleCustomException(final ParamCustomException ce){
+        final ErrorCode errorCode = ce.getErrorCode();
+        logger.error("errorStatus: {} / errorMessage: {}", errorCode.getStatus(), errorCode.getMessage());
+        String encodeMessage = "";
+        HttpHeaders headers = new HttpHeaders();
+
+        try {
+            encodeMessage = URLEncoder.encode(errorCode.getMessage(), "UTF-8");
+        } catch(UnsupportedEncodingException unEx) {
+            encodeMessage = "";
+        } finally {
+            headers.set("resultCode", String.valueOf(errorCode.getStatus()));
+            headers.set("resultMessage", encodeMessage);
+        }
+
+        return new ResponseEntity<>(ce.getExceptionMap() ,headers, mapToStatus(errorCode));
+    }
 
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(final CustomException ce){

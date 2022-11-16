@@ -43,7 +43,7 @@ public class JwtTokenProvider extends ApiSupport {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
     // 어세스 토큰 유효시간 | 10분
-    private long accessTokenValidTime = 10 * 60 * 1000L;
+    private long accessTokenValidTime = 1 * 60 * 1000L;
     // 리프레시 토큰 유효시간 | 1일
     private long refreshTokenValidTime = 24 * 60 * 60 * 1000L;
 
@@ -53,6 +53,7 @@ public class JwtTokenProvider extends ApiSupport {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+        authentication.getAuthorities().forEach(System.out::println);
         System.out.println("authorities:"+ authorities+"authentication.getName() :"+ authentication.getName());
         long now = (new Date()).getTime();
         // Access Token 생성
@@ -80,6 +81,21 @@ public class JwtTokenProvider extends ApiSupport {
                 .build();
     }
 
+    // Create token(2)
+//    public String createToken(String userId, List<String> roles, String tokenType) {
+//        Claims claims = Jwts.claims().setSubject(email); // claims 생성 및 payload 설정
+//        claims.put("roles", roles); // 권한 설정, key/ value 쌍으로 저장
+//
+//        Date date = new Date();
+//        return Jwts.builder()
+//                .setSubject(userId)
+//                .claim("auth", authorities) //발행 유저 정보 저장
+//                .setExpiration(tokenType.equals("access") ? new Date(date.getTime() + accessTokenValidTime) : new Date(date.getTime() + refreshTokenValidTime)) // 토큰 유효 시간 저장
+//                .signWith(key, SignatureAlgorithm.HS256) // 해싱 알고리즘 및 키 설정
+//                .compact(); // 생성
+//    }
+
+
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     // JWT 에서 인증 정보 조회
     public Authentication getAuthentication(String accessToken) {
@@ -89,12 +105,14 @@ public class JwtTokenProvider extends ApiSupport {
         if (claims.get("auth") == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
-
+        System.out.println("claims : "+claims.toString());
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("auth").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
+
+        authorities.stream().forEach(System.out::println);
 
         // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);

@@ -66,9 +66,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String userId = jwtTokenProvider.getUserId(refreshToken);
                     /// 이메일로 권한정보 받아오기
                     List<String> roles = jwtTokenProvider.getRoles(userId);
+                    if(userId.isBlank() || roles.size() < 1 || roles == null){
+                        throw new CustomException(ErrorCode.RE_TOKEN_RESPONSE);
+                    }
+
                     System.out.println("userId: "+ userId+ "/ roles : "+ roles);
                     //토큰 발급
                     Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                    if(!userId.equals(authentication.getName())){
+                        throw new CustomException(ErrorCode.RE_TOKEN_RESPONSE);
+                    }
                     TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
                     /// 헤더에 어세스 토큰 추가
                     jwtTokenProvider.setHeaderAccessToken(response, tokenInfo.getAccessToken());

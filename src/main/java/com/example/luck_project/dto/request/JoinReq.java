@@ -10,6 +10,8 @@ import javax.persistence.Column;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 @Getter
@@ -79,6 +81,13 @@ public class JoinReq {
     private String phoneNm;
 
     /**
+     * 로그인 구분
+     */
+    @NotBlank(message = "로그인 구분은 필수 입력값입니다.")
+    @Pattern(regexp = "^[BKGbkg]{1}$" , message = "로그인 구분은 1자리 B,K,G 형식입니다.")
+    private String loginDvsn;
+
+    /**
      * 관심 카테고리 목록
      */
     private String cateCodeList;
@@ -91,6 +100,10 @@ public class JoinReq {
 
     /* DTO -> Entity */
     public UserEntity toEntity() {
+        LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String todayDate = today.format(formatter);
+
         UserEntity user = UserEntity.builder()
                 .userId(userId)
                 .userPw(password)
@@ -102,6 +115,8 @@ public class JoinReq {
                 .sex(sex)
                 .phoneNm(phoneNm)
                 .cateCodeList(cateCodeList)
+                .loginDvsn(loginDvsn)
+                .passModDt(todayDate)
                 .rgsttDtm(LocalDateTime.now())
                 .roles(Collections.singletonList("USER"))
                 .build();

@@ -1,7 +1,9 @@
 package com.example.luck_project.controller;
 
 import com.example.luck_project.common.config.ApiSupport;
+import com.example.luck_project.common.config.Oauth.Constant;
 import com.example.luck_project.dto.request.JoinReq;
+import com.example.luck_project.dto.request.SocialJoinReq;
 import com.example.luck_project.dto.response.JoinRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.exception.ErrorCode;
@@ -11,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +40,24 @@ public class LuckJoinController extends ApiSupport {
     }
 
     /**
+     * 소셜 회원가입
+     * @param socialLoginPath
+     * @param socialJoinReq
+     * @return
+     */
+    @PostMapping("/auth/{socialLoginPath}/join")
+    public ResponseEntity<JoinRes> luckSocialJoin(@PathVariable(name = "socialLoginPath") String socialLoginPath, @Validated @RequestBody SocialJoinReq socialJoinReq){
+        String userId = socialJoinReq.getUserId().toUpperCase();
+
+        logger.info("[{}][{}] 소셜 회원가입 컨트롤러", userId, socialLoginPath);
+
+        Constant.SocialLoginType socialLoginType = Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());
+        JoinRes joinRes = joinService.socialJoin(socialJoinReq, socialLoginType);
+
+        return new ResponseEntity<>(joinRes, HttpStatus.OK);
+    }
+
+    /**
      * 아이디 중복 검사
      * @param userInfo
      * @return
@@ -48,19 +65,25 @@ public class LuckJoinController extends ApiSupport {
     @PostMapping("/auth/idCheck")
     public ResponseEntity luckIdCheck(@RequestBody Optional<Map<String, String>> userInfo){
         String userId = "";
+        String loginDvsn = "";
         if(userInfo.isPresent()){
             userId = Optional.of(userInfo.get().get("userId")).get();
-            if(userId.length() > 20){
+            loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
+            if(userId.isBlank() || userId.length() > 20){
                 logger.info("[{}] userId는 20자리를 넘을 수 없습니다.", userId);
                 throw new CustomException(ErrorCode.VALIDATION_FAIL);
             }
+            if(loginDvsn.isBlank() || !loginDvsn.contains("BKG")){
+                logger.info("[{}] loginDvsn 에러", loginDvsn);
+                throw new CustomException(ErrorCode.VALIDATION_FAIL);
+            }
         }else{
-            logger.info("[{}] userId는 필수 입니다.", userId);
+            logger.info("요청값이 존재하지 않습니다.");
             throw new CustomException(ErrorCode.VALIDATION_FAIL);
         }
 
         logger.info("[{}] 아이디 중복검사 컨트롤러", userId);
-        joinService.idCheck(userId);
+        joinService.idCheck(userId, loginDvsn);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

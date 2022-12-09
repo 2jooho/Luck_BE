@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.example.luck_project.exception.ErrorCode.*;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class MainService extends ApiSupport {
@@ -80,9 +83,10 @@ public class MainService extends ApiSupport {
 
         //오늘 날짜 띠 정보 조회
         LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String todayDate = today.format(formatter);
 
+        //기본으로 들어있는 값중 최근 것을 조회하여 날짜 정보를 얻는데 사용 => insert는 00시에 배치가 돌지만 1개만 존재해도 구할 수 있음
         Optional<BasicDateEntity> basicDateEntity = basicDateRepository.findTop1ByOrderByBasicDateDesc();
         basicDateEntity.orElseThrow(() -> new CustomException(BASIC_DATE_NOT_FOUND));
 
@@ -90,17 +94,22 @@ public class MainService extends ApiSupport {
 
         logger.info("[{}][{}][{}] 기준날짜 띠 찾기", userId, ydPureCnctn, basicDateEntity.get().getBasicDate());
         //기준 날짜와 오늘 날짜가 같지 않은 경우 오늘 날짜 띠 찾기
-        if(!StringUtils.equals(basicDateEntity.get().getBasicDate(), todayDate)){
-            int minusDate = Integer.valueOf(todayDate) - Integer.valueOf(basicDateEntity.get().getBasicDate());
+        //20221011,유 -> 신
+        String basicDate = basicDateEntity.get().getBasicDate();
+        if(!StringUtils.equals(basicDate, todayDate)){
+            LocalDate dateBefore = LocalDate.parse(basicDate); //형식 : 2022-10-11
+            LocalDate dateAfter = LocalDate.parse(todayDate);
+            long minusDate = DAYS.between(dateBefore, dateAfter);
             String basicVersYear = basicDateEntity.get().getVersYearInfo();
 
             Optional<Integer> codeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, basicVersYear));
             codeNum.orElseThrow(() -> new CustomException(BASIC_DATE_NOT_FOUND));
 
-            int todayVersYear = codeNum.get() + minusDate;
+            int todayVersYear = codeNum.get() + (int)minusDate;
             while(true) {
                 if (todayVersYear > 12) {
-                    todayVersYear = todayVersYear - 12;
+                    int forCnt = todayVersYear/12;
+                    todayVersYear = todayVersYear - (forCnt*12);
                 } else {
                     versYear = DataCode.VERS_YEAR_NAME_ARR[todayVersYear-1];
                     break;
@@ -127,7 +136,7 @@ public class MainService extends ApiSupport {
         pureCnctnList.add(pureCombinationEntity.get().getPureDay() + "," + pureCombinationEntity.get().getPureYear());
 
         logger.info("[{}][{}][{}] 비장술 정보 조회", userId, versYear, basicDateEntity.get().getBasicDate());
-
+        //ex. 강일진,해결신의 운세
         Optional<PureInfoEntity> pureInfoEntity = pureInfoRepository.findByPureCnctnIn(pureCnctnList);
         //비장술 운세 정보가 없는 경우 Exception
         pureInfoEntity.orElseThrow(() -> new CustomException(PURE_LUCK_INFO_FAIL));

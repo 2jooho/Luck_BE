@@ -1,11 +1,11 @@
 package com.example.luck_project.domain;
 
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,26 +25,31 @@ import java.util.stream.Collectors;
 @Table(name = "lck_user_info")
 @DynamicUpdate
 @Builder
-@SequenceGenerator(
-        name = "SEQ_USER_INFO"
-        , sequenceName = "USER_INFO_SEQ"
-        , initialValue = 1
-        , allocationSize = 1
-)
-public class UserEntity implements UserDetails, Persistable<String> {
+//@SequenceGenerator(
+//        name = "SEQ_USER_INFO"
+//        , sequenceName = "USER_INFO_SEQ"
+//        , initialValue = 1
+//        , allocationSize = 1
+//)
+@SQLDelete(sql = "UPDATE lck_user_info SET bolter_falg = true WHERE user_no = ?")
+@Where(clause = "bolter_falg = false")
+public class UserEntity implements UserDetails, Persistable<Long> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_NO")
+    private Long id;
 
     /** 아이디 */
-    @Id
-    @Column(name = "USER_ID")
     private String userId;
 
-    /** 사용자 번호 */
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE
-            , generator = "SEQ_USER_INFO"
-    )
-    @Column(name = "USER_NM")
-    private long userNm;
+//    /** 사용자 번호 */
+//    @GeneratedValue(
+//            strategy = GenerationType.SEQUENCE
+//            , generator = "SEQ_USER_INFO"
+//    )
+//    @Column(name = "USER_NM")
+//    private long userNm;
 
     /** 패스워드 */
     @Column(name = "USER_PW")
@@ -99,6 +104,16 @@ public class UserEntity implements UserDetails, Persistable<String> {
     @Column(name = "PASS_MOD_DT", length = 14)
     private String passModDt;
 
+    /** 회원 탈퇴 여부 */
+    //delete 쿼리가 발생하였을때, sqldelete어노테이션의 쿼리가 실행된다.
+    //sqldelete의 실행 쿼리는 트랜잭션이 끝나고 실제 db에 쿼리를 보낼때 관리
+    @Column(name = "BOLTER_FALG")
+    private boolean deleted = Boolean.FALSE; // 탈퇴 여부 기본값 false
+
+    /** 회원 탈퇴 일자 */
+    @Column(name = "BOLTER_DATE")
+    private LocalDateTime bolterDate;
+
     /** 등록일시 */
     @CreatedDate
     @Column(name = "RGSTT_DTM")
@@ -126,14 +141,20 @@ public class UserEntity implements UserDetails, Persistable<String> {
         this.editDtm = editDtm;
         this.upusId = upusId;
     }
+    public void bolterDateUpdate(LocalDateTime bolterDate, LocalDateTime editDtm, String upusId) {
+        this.bolterDate = bolterDate;
+        this.editDtm = editDtm;
+        this.upusId = upusId;
+    }
+
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
     @Override
-    public String getId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
     @Override
@@ -178,9 +199,8 @@ public class UserEntity implements UserDetails, Persistable<String> {
         return true;
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private UserMobileDeviceEntity userMobileDeviceEntity;
+    @OneToOne(mappedBy = "userEntity")
+    UserMobileDeviceEntity userMobileDeviceEntity;
 
 }
 

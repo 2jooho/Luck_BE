@@ -28,6 +28,11 @@ public class LuckCateController {
     @Autowired
     private CateService cateService;
 
+    /**
+     * 카테고리 목록 조회
+     * @param cateListReq
+     * @return
+     */
     @PostMapping("/cateDetailList.do")
     public ResponseEntity<CateListRes> cateDetailList(@Validated @RequestBody CateListReq cateListReq){
         Map<String, Object> reqMap = new HashMap<>();

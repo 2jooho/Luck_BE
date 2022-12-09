@@ -36,11 +36,13 @@ public class PureLuckMainController {
 
         String userId = pureLuckMainReq.getUserId().toUpperCase();
         String pureCnctn = pureLuckMainReq.getPureCnctn();
+        String cateCode = pureLuckMainReq.getCateCode().toUpperCase();
         String cateDetailCode = pureLuckMainReq.getCateDetailCode().toUpperCase();
         String todayVersYear = pureLuckMainReq.getTodayVersYear();
 
         reqMap.put("userId", userId);
         reqMap.put("pureCnctn", pureCnctn);
+        reqMap.put("cateCode", cateCode);
         reqMap.put("cateDetailCode", cateDetailCode);
         reqMap.put("todayVersYear", todayVersYear);
 

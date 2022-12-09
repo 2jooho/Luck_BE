@@ -8,6 +8,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
+/**
+ * 사용자의 비장술 조합 (combination)
+ */
 @Getter
 @ToString
 @AllArgsConstructor
@@ -15,13 +18,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "lck_user_pure_luck_comb")
 @DynamicUpdate
-public class UserPureCombinationEntity {
+public class UserPureCombinationEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     /**
      * 사주조합
      */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LUCK_CNCTN")
     private String luckCnctn;
 
@@ -43,4 +47,10 @@ public class UserPureCombinationEntity {
     @Column(name = "PURE_DAY")
     private String pureDay;
 
+    public void of(String luckCnctn, String versYear, String pureYear, String pureDay) {
+        this.luckCnctn = luckCnctn;
+        this.versYear = versYear;
+        this.pureYear = pureYear;
+        this.pureDay = pureDay;
+    }
 }

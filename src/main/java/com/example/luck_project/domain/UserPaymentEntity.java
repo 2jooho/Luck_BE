@@ -1,10 +1,7 @@
 package com.example.luck_project.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -18,11 +15,13 @@ import java.util.Date;
 @Entity
 @Table(name = "lck_user_payament_status")
 @DynamicUpdate
-public class UserPaymentEntity {
+public class UserPaymentEntity extends BaseEntity {
 
-    /** 아이디 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /** 아이디 */
     @Column(name = "USER_ID")
     private String userId;
 
@@ -34,17 +33,27 @@ public class UserPaymentEntity {
     @Column(name = "USE_CMPLN_CNT")
     private Integer useCmplnCnt;
 
-    /** 결제 상태 */
+    /** 상태 {P:패스, C:카운트}*/
     @Column(name = "STATUS")
     private String status;
 
-    /** 결제 시작일 */
-    @Column(name = "PAYMENT_START")
-    private LocalDateTime paymentStart;
+//    /** 결제 시작일 */
+//    @Column(name = "PAYMENT_START")
+//    private LocalDateTime paymentStart;
+//
+//    /** 결제 종료일 */
+//    @Column(name = "PAYMENT_END")
+//    private LocalDateTime paymentEnd;
 
-    /** 결제 종료일 */
-    @Column(name = "PAYMENT_END")
-    private LocalDateTime paymentEnd;
+
+    @Builder
+    public void of(String userId, Integer useCnt, Integer useCmplnCnt, String status) {
+        this.userId = userId;
+        this.useCnt = useCnt;
+        this.useCmplnCnt = useCmplnCnt;
+        this.status = status;
+    }
+
 
     /**
      * 사용 완료 개수 업데이트

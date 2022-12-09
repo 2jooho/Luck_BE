@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.example.luck_project.exception.ErrorCode.USER_NOT_FOUND;
@@ -129,6 +131,9 @@ public class OAuthService extends ApiSupport {
      */
     public GetSocialOAuthRes oAuthLogin(Constant.SocialLoginType socialLoginType, String code) throws IOException {
         GetSocialOAuthRes getSocialOAuthRes;
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("loginType", "oAuth");
+
         switch (socialLoginType){
             case GOOGLE:{
                 //구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답객체를 받아옴
@@ -160,7 +165,8 @@ public class OAuthService extends ApiSupport {
                 userEntity.get().lastLoginDtUpdate(todayDate, nowDate, "API");
 
                 //jwt 토큰 생성 후 헤더 응답
-                loginService.createToken(userId, userEntity.get().getPassword(), response);
+                paramMap.put("role", userEntity.get().getRoles().get(0));
+                loginService.createToken(userId, "", response, paramMap);
 
                 // json 응답 설정
                 getSocialOAuthRes = new GetSocialOAuthRes(userId, oAuthToken.getAccess_token(), oAuthToken.getToken_type());
@@ -198,9 +204,8 @@ public class OAuthService extends ApiSupport {
                 userEntity.get().lastLoginDtUpdate(todayDate, nowDate, "API");
 
                 //jwt 토큰 생성 후 헤더 응답
-                int idx = userId.indexOf("@");
-                String password = userId.substring(0, idx);
-                loginService.createToken(userId, password+userEntity.get().getUserNm(), response);
+                paramMap.put("role", userEntity.get().getRoles().get(0));
+                loginService.createToken(userId, "", response, paramMap);
 
                 // json 응답 설정
                 getSocialOAuthRes = new GetSocialOAuthRes(userId, oAuthToken.getAccess_token(), oAuthToken.getToken_type());

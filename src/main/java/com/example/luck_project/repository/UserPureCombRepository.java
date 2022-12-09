@@ -12,4 +12,7 @@ public interface UserPureCombRepository extends JpaRepository<UserPureCombinatio
     Optional<UserPureCombinationEntity> findTop1ByPureYearInOrPureDayInAndLuckCnctn(List<String> pureTypeList, List<String> pureTypeList2, String luckCnctn);
 
     Optional<UserPureCombinationEntity> findTop1ByPureYearAndLuckCnctnAndPureDayIn(String pureType, String luckCnctn, List<String> pureTypeList);
+
+    Integer countByLuckCnctnIn(List<String> luckCnctnList);
+
 }

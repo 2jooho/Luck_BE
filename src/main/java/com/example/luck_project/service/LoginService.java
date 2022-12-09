@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,16 +55,16 @@ public class LoginService extends ApiSupport {
     private UserMobileDeviceRepository userMobileDeviceRepository;
 
     @Transactional
-    public TokenInfo loginTest(String memberId, String password) {
-        logger.info("[{}][{}] 로그인 로직 진행", memberId, password);
+    public TokenInfo loginTest(String memberId, String id) {
+        logger.info("[{}][{}] 로그인 로직 진행", memberId, id);
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, password);
-        logger.info("[{}][{}][{}] 인증 여부 : {}", memberId,passwordEncoder.encode(password), authenticationToken);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, id);
+        logger.info("[{}][{}][{}] 인증 여부 : {}", memberId,passwordEncoder.encode(id), authenticationToken);
         // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
         // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        logger.info("[{}][{}][{}] 유저 정보 확인 : {}", memberId, passwordEncoder.encode(password), authentication);
+        logger.info("[{}][{}][{}] 유저 정보 확인 : {}", memberId, passwordEncoder.encode(id), authentication);
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
         String accessToken = tokenInfo.getAccessToken();
@@ -76,27 +78,37 @@ public class LoginService extends ApiSupport {
     }
 
 
-    public void createToken(String userId, String password, HttpServletResponse response){
+    public void createToken(String userId, String password, HttpServletResponse response, Map<String, String> paramMap){
         TokenInfo tokenInfo;
-        logger.info("[{}][{}] 로그인 로직 진행", userId, password);
-        // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
-        // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, password);
-        logger.info("[{}][{}][{}] 인증 여부 ", userId, passwordEncoder.encode(password), authenticationToken);
-        // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-        // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        logger.info("[{}][{}][{}] 유저 정보 확인 : {}", userId, passwordEncoder.encode(password), authentication);
-        // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        tokenInfo = jwtTokenProvider.generateToken(authentication);
+        String loginType = paramMap.getOrDefault("loginType", "");
+        if(loginType.equals("oAuth")){
+            logger.info("[{}][{}] 외부인증 토큰 로직 진행", userId, password);
+            tokenInfo = jwtTokenProvider.oAuthCreateToken(userId, paramMap.getOrDefault("role", "USER"));
+
+        }else{
+            logger.info("[{}][{}] 로그인 로직 진행", userId, password);
+            // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
+            // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, password);
+            logger.info("[{}][{}][{}] 인증 여부 ", userId, passwordEncoder.encode(password), authenticationToken);
+            // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
+            // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            logger.info("[{}][{}][{}] 유저 정보 확인 : {}", userId, passwordEncoder.encode(password), authentication);
+            // 3. 인증 정보를 기반으로 JWT 토큰 생성
+            tokenInfo = jwtTokenProvider.generateToken(authentication);
+        }
+
         String accessToken = tokenInfo.getAccessToken();
         String refreshToken = tokenInfo.getRefreshToken();
-        logger.info("[{}][{}][{}] 토큰 확인", userId, accessToken, refreshToken);
         // 리프레시 토큰 저장소에 저장
         tokenRepository.save(new RefreshTokenEntity(refreshToken));
+        logger.info("[{}][{}][{}] 토큰 확인", userId, accessToken, refreshToken);
+
         /// 헤더에 어세스 토큰 추가
         jwtTokenProvider.setHeaderAccessToken(response, tokenInfo.getAccessToken());
         jwtTokenProvider.setHeaderRefreshToken(response, tokenInfo.getRefreshToken());
+
     }
 
 
@@ -111,7 +123,7 @@ public class LoginService extends ApiSupport {
         String userId = loginReq.getUserId().toUpperCase();
         String password = loginReq.getPassword();
         boolean loginFlag = false;
-
+        String loginType = "basic";
         logger.info("[{}] 고객 정보 조회: pw : {}", userId, passwordEncoder.encode(password));
         Optional<UserEntity> userEntity = userInfoRepository.findByUserId(userId);
         userEntity.orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -219,11 +231,12 @@ public class LoginService extends ApiSupport {
 
             System.out.println("토큰 생성 진행");
             logger.info("[{}] 토큰 생성", userId);
-            this.createToken(userId, password, response);
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("loginType", "basic");
+            this.createToken(userId, password, response, paramMap);
         }
 
         return loginRes;
     }
-
 
 }

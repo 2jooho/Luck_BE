@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "lck_cate_detl")
-public class CateDetailEntity {
+public class CateDetailEntity extends BaseEntity {
 
     /** 카테고리 코드 */
     @Id
@@ -48,5 +48,9 @@ public class CateDetailEntity {
     /** 순번 */
     @Column(name = "ORDER_NO")
     private Integer orderNo;
+
+    /** 최고 시간용 비장술 타입 */
+    @Column(name = "TIME_PURE_TYPE")
+    private String timePureType;
 
 }

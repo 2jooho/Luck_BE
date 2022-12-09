@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 this.setAuthentication(accessToken);
             }
             // 어세스 토큰이 만료된 상황 | 리프레시 토큰 또한 존재하는 상황
-            else if (!jwtTokenProvider.validateToken(accessToken) && refreshToken != null) {
+            else if (refreshToken != null) {
                 System.out.println("accessToken: "+ accessToken + "//refreshToken :"+ refreshToken);
                 // 재발급 후, 컨텍스트에 다시 넣기
                 /// 리프레시 토큰 검증

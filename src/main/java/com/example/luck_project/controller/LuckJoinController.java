@@ -67,13 +67,13 @@ public class LuckJoinController extends ApiSupport {
         String userId = "";
         String loginDvsn = "";
         if(userInfo.isPresent()){
-            userId = Optional.of(userInfo.get().get("userId")).get();
+            userId = Optional.of(userInfo.get().get("userId")).get().toUpperCase();
             loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
             if(userId.isBlank() || userId.length() > 20){
                 logger.info("[{}] userId는 20자리를 넘을 수 없습니다.", userId);
                 throw new CustomException(ErrorCode.VALIDATION_FAIL);
             }
-            if(loginDvsn.isBlank() || !loginDvsn.contains("BKG")){
+            if(loginDvsn.isBlank() || !"BKG".contains(loginDvsn)){
                 logger.info("[{}] loginDvsn 에러", loginDvsn);
                 throw new CustomException(ErrorCode.VALIDATION_FAIL);
             }
@@ -113,6 +113,65 @@ public class LuckJoinController extends ApiSupport {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+    /**
+     * 초기 회원 정보 설정
+     * @param userInfo
+     * @return
+     */
+    @PostMapping("/auth/userSetting")
+    public ResponseEntity userSetting(@RequestBody Optional<Map<String, String>> userInfo){
+        String userId = "";
+        String loginDvsn = "";
+        if(userInfo.isPresent()){
+            userId = Optional.of(userInfo.get().get("userId")).get().toUpperCase();
+            loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
+            if(userId.isBlank() ){
+                logger.info("userId는 필수 입니다.");
+                throw new CustomException(ErrorCode.VALIDATION_FAIL);
+            }else if(loginDvsn.isBlank() || !"BKG".contains(loginDvsn)){
+                logger.info("[{}] loginDvsn는 필수 입니다.", loginDvsn);
+                throw new CustomException(ErrorCode.VALIDATION_FAIL);
+            }
+        }else{
+            logger.info("요청값이 존재하지 않습니다.");
+            throw new CustomException(ErrorCode.VALIDATION_FAIL);
+        }
+
+        joinService.userSetting(null, userId, loginDvsn);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 회원탈퇴
+     * @param userInfo
+     * @return
+     */
+    @PostMapping("/auth/bolter")
+    public ResponseEntity userBolter(@RequestBody Optional<Map<String, String>> userInfo) {
+        String userId = "";
+        String loginDvsn = "";
+
+        if(userInfo.isPresent()){
+            userId = Optional.of(userInfo.get().get("userId")).get().toUpperCase();
+            loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
+            if(userId.isBlank() ){
+                logger.info("userId는 필수 입니다.");
+                throw new CustomException(ErrorCode.VALIDATION_FAIL);
+            }else if(loginDvsn.isBlank() || !"BKG".contains(loginDvsn)){
+                logger.info("[{}] loginDvsn는 필수 입니다.", loginDvsn);
+                throw new CustomException(ErrorCode.VALIDATION_FAIL);
+            }
+        }else{
+            logger.info("요청값이 존재하지 않습니다.");
+            throw new CustomException(ErrorCode.VALIDATION_FAIL);
+        }
+
+        joinService.userBolter(userId, loginDvsn);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
     /**

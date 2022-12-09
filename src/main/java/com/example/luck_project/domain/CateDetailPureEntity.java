@@ -8,6 +8,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
+/**
+ * 상세 카테고리 비장술 조합 정보
+ */
 @Getter
 @ToString
 @AllArgsConstructor

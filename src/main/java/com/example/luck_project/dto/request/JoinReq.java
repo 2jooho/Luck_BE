@@ -2,6 +2,7 @@ package com.example.luck_project.dto.request;
 
 import com.example.luck_project.domain.UserEntity;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 @Getter
+@Setter
 @ToString
 @Valid
 public class JoinReq {

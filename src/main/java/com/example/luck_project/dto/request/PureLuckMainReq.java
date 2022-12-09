@@ -1,5 +1,6 @@
 package com.example.luck_project.dto.request;
 
+import com.example.luck_project.domain.BaseEntity;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Valid
-public class PureLuckMainReq {
+public class PureLuckMainReq extends BaseEntity {
     /**
      * 아이디(필수)
      */
@@ -28,6 +29,12 @@ public class PureLuckMainReq {
      */
     @NotBlank(message = "pureCnctn는 필수 입니다.")
     private String pureCnctn;
+
+    /**
+     * 카테고리 코드(필수)
+     */
+    @NotBlank(message = "cateCode는 필수 입니다.")
+    private String cateCode;
 
     /**
      * 상세 카테고리 코드(필수)

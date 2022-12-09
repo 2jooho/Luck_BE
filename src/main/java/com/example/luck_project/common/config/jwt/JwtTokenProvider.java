@@ -95,6 +95,33 @@ public class JwtTokenProvider extends ApiSupport {
 //                .compact(); // 생성
 //    }
 
+    // Create token(3)
+        public TokenInfo oAuthCreateToken(String userId, String roles) {
+        Claims claims = Jwts.claims().setSubject(userId); // claims 생성 및 payload 설정
+        claims.put("auth", "ROLE_"+roles); // 권한 설정, key/ value 쌍으로 저장
+        long now = (new Date()).getTime();
+        Date accessTokenExpiresIn = new Date(now + accessTokenValidTime);
+        String accessToken = Jwts.builder()
+                .setSubject(userId)
+                .setClaims(claims) // 발행 유저 정보 저장
+                .setExpiration(accessTokenExpiresIn) // 토큰 유효 시간 저장
+                .signWith(key, SignatureAlgorithm.HS256) // 해싱 알고리즘 및 키 설정
+                .compact(); // 생성
+
+        // Refresh Token 생성
+        String refreshToken = Jwts.builder()
+                .setSubject(userId)
+                .setExpiration(new Date(now + refreshTokenValidTime))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return TokenInfo.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
 
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     // JWT 에서 인증 정보 조회

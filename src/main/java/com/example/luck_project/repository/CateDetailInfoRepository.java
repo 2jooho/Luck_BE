@@ -14,4 +14,6 @@ public interface CateDetailInfoRepository extends JpaRepository<CateDetailEntity
     Optional<List<CateDetailEntity>> findTop8ByUseYnOrderByAdYnDescInqryCntDesc(String useYn);
     Optional<Page<CateDetailEntity>> findByCateCdOrderByInqryCntDescOrderNo(String cateCd, Pageable pageable);
 
+    Optional<CateDetailEntity> findByCateCdAndCateDetlCd(String cateCd, String cateDetailCd);
+
 }

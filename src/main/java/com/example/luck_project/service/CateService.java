@@ -52,7 +52,7 @@ public class CateService extends ApiSupport {
         CateListRes cateListRes = new CateListRes();
         String userId = reqMap.get("userId").toString();
         String cateCode = reqMap.get("cateCode").toString();
-        String rdnRstrcYn = "Y";
+        String rdnRstrcYn = "Y";    //열람제한 여부
         int rdnAvlblCnt = 0;
         LocalDateTime paymentStartDate = null;
         LocalDateTime paymentEndDate = null;
@@ -69,17 +69,19 @@ public class CateService extends ApiSupport {
         
         //사용자 열람 개수 체크
         rdnAvlblCnt = userPaymentEntity.get().getUseCnt() - userPaymentEntity.get().getUseCmplnCnt();
-
-        //사용자 열람 결제 대상자 체크
-        if(StringUtils.isNotBlank(String.valueOf(userPaymentEntity.get().getPaymentStart())) && StringUtils.isNotBlank(String.valueOf(userPaymentEntity.get().getPaymentEnd()))){
-            paymentStartDate = userPaymentEntity.get().getPaymentStart();
-            paymentEndDate = userPaymentEntity.get().getPaymentEnd();
-            if( (paymentStartDate.isBefore(nowDate) || paymentStartDate.isEqual(nowDate))
-                    && (paymentEndDate.isAfter(nowDate) || paymentEndDate.isEqual(nowDate))
-            ){
-                rdnRstrcYn = "N";
-            }
+        if(rdnAvlblCnt > 0){
+            rdnRstrcYn = "N";
         }
+        //사용자 열람 결제 대상자 체크 - 제외
+//        if(StringUtils.isNotBlank(String.valueOf(userPaymentEntity.get().getPaymentStart())) && StringUtils.isNotBlank(String.valueOf(userPaymentEntity.get().getPaymentEnd()))){
+//            paymentStartDate = userPaymentEntity.get().getPaymentStart();
+//            paymentEndDate = userPaymentEntity.get().getPaymentEnd();
+//            if( (paymentStartDate.isBefore(nowDate) || paymentStartDate.isEqual(nowDate))
+//                    && (paymentEndDate.isAfter(nowDate) || paymentEndDate.isEqual(nowDate))
+//            ){
+//                rdnRstrcYn = "N";
+//            }
+//        }
 
         logger.info("[{}][{}] 카테고리 상세 정보 목록 조회", userId, cateCode);
         //카테고리 상세 정보 목록 조회
@@ -119,10 +121,10 @@ public class CateService extends ApiSupport {
         cateListRes.setPage(pageable.getPageSize());
         cateListRes.setRdnAvlblCnt(rdnAvlblCnt);
         cateListRes.setRdnRstrcYn(rdnRstrcYn);
-        if(rdnRstrcYn.equals("N")){
-            cateListRes.setPaymentStartDate(String.valueOf(paymentStartDate));
-            cateListRes.setPaymentEndDate(String.valueOf(paymentEndDate));
-        }
+//        if(rdnRstrcYn.equals("N")){
+//            cateListRes.setPaymentStartDate(String.valueOf(paymentStartDate));
+//            cateListRes.setPaymentEndDate(String.valueOf(paymentEndDate));
+//        }
         cateListRes.setCateDetailList(cateDetailDtoList);
 
         return cateListRes;

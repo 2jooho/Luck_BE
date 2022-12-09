@@ -4,9 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,6 +18,9 @@ public class UserMobileDeviceEntity {
 
     /** 로그인 히스토리 시퀀스 */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "USER_ID", length = 20)
     private String userId;
 
@@ -52,4 +53,8 @@ public class UserMobileDeviceEntity {
     /** 수정자 */
     @Column(name = "UPUS_ID", length = 20)
     private String upusId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_NO", insertable = false, updatable = false)
+    UserEntity userEntity;
 }

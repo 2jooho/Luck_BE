@@ -24,14 +24,14 @@ public class CateListRes {
     /** 열람 가능 개수 */
     private Integer rdnAvlblCnt;
 
-    /** 열람 제한 여부 */
+    /** 열람 제한 여부 {Y:제한, N:미제한}*/
     private String rdnRstrcYn;
 
-    /** 결제 시작 일시(열람 제한 여부 'N'인 경우 응답) */
-    private String paymentStartDate;
-
-    /** 결제 종료 일시(열람 제한 여부 'N'인 경우 응답) */
-    private String paymentEndDate;
+//    /** 결제 시작 일시(열람 제한 여부 'N'인 경우 응답) */
+//    private String paymentStartDate;
+//
+//    /** 결제 종료 일시(열람 제한 여부 'N'인 경우 응답) */
+//    private String paymentEndDate;
 
     /** 상세 카테고리 리스트 */
     private List<CateDetailDto> cateDetailList;

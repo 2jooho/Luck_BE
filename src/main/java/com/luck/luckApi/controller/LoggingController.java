@@ -10,14 +10,14 @@ public class LoggingController {
     @Value("${logging-module.version}")
     private String version;
 
-    @GetMapping("/")
-    public String version() {
-        return String.format("Project Version(test) : %s", version);
-    }
-
-    @GetMapping("/health")
-    public String checkHealth() {
-        return "healthy";
-    }
+//    @GetMapping("/")
+//    public String version() {
+//        return String.format("Project Version(test) : %s", version);
+//    }
+//
+//    @GetMapping("/health")
+//    public String checkHealth() {
+//        return "healthy";
+//    }
 
 }

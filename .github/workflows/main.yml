@@ -6,6 +6,10 @@ name: logging-system
 on:
   workflow_dispatch:
 
+env:
+  S3_BUCKET_NAME: luck-system-deploy
+  PROJECT_NAME: test-deploy
+
 jobs:
   build:
 
@@ -43,7 +47,7 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://luck-system-deploy/$GITHUB_SHA.zip
-        
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+
       - name: Code Deploy
-        run: aws deploy create-deployment --application-name luck-system-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=luck-system-deploy,bundleType=zip,key=$GITHUB_SHA.zip
+        run: aws deploy create-deployment --application-name luck-system-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name airbnb-code-deploy --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip

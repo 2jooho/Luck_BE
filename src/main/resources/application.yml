@@ -1,8 +1,8 @@
 
 # application.yml
-#logging-module:
-#  version: 0.0.1
-#
+logging-module:
+  version: 0.0.1
+
 
 
 spring:

@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  S3_BUCKET_NAME: luck-system-deploy
+  S3_BUCKET_NAME: pure_luck_bucket
   PROJECT_NAME: test-deploy
 
 jobs:

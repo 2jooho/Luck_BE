@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@PropertySource(value = {
-		"classpath:/profiles/database-local.yml"
-})
+//@PropertySource(value = {
+//		"classpath:/profiles/database-local.yml"
+//})
 //${spring.profiles.active}
 public class LuckProjectApplication extends SpringBootServletInitializer {
 

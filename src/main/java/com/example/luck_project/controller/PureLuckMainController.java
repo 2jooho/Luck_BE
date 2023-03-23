@@ -1,10 +1,11 @@
 package com.example.luck_project.controller;
 
+import com.example.luck_project.common.util.ReplaceStringUtil;
+import com.example.luck_project.controller.constants.BaseController;
 import com.example.luck_project.dto.request.PureLuckMainReq;
 import com.example.luck_project.dto.response.PureLuckMainRes;
 import com.example.luck_project.service.PureLuckService;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.luck_project.controller.constants.ApiUrl.*;
+
 @RestController
-@RequestMapping("/luck")
-@Log4j2
-public class PureLuckMainController {
+@RequestMapping(BASE_URL)
+@Slf4j
+public class PureLuckMainController extends BaseController {
 
     @Autowired
     private PureLuckService pureLuckService;
@@ -30,7 +33,7 @@ public class PureLuckMainController {
      * @param pureLuckMainReq
      * @return
      */
-    @PostMapping("/pureLuckMain.do")
+    @PostMapping(PURE_LUCK_MAIN_URL)
     public ResponseEntity<PureLuckMainRes> pureLuckMain(@Validated @RequestBody PureLuckMainReq pureLuckMainReq){
         Map<String, Object> reqMap = new HashMap<>();
 
@@ -47,29 +50,12 @@ public class PureLuckMainController {
         reqMap.put("todayVersYear", todayVersYear);
 
 
-        log.info("[{}][{}][{}] 비장술 정보 조회", strCRLF(userId), strCRLF(pureCnctn), strCRLF(cateDetailCode));
+        log.info("[{}][{}][{}] 비장술 정보 조회", ReplaceStringUtil.replaceStringCRLF(userId), ReplaceStringUtil.replaceStringCRLF(pureCnctn), ReplaceStringUtil.replaceStringCRLF(cateDetailCode));
 
         PureLuckMainRes pureLuckMainRes = pureLuckService.pureLuckMain(reqMap);
 
-        return new ResponseEntity<>(pureLuckMainRes, HttpStatus.OK);
+        return new ResponseEntity<>(pureLuckMainRes, getSuccessHeaders(), HttpStatus.OK);
 
-    }
-
-    /**
-     * CRLF 개행제거
-     */
-    public String strCRLF(Object obj) {
-        String retStr= null;
-
-        if(obj != null) {
-            if(obj instanceof Throwable) {
-                retStr = ExceptionUtils.getStackTrace((Throwable) obj).replaceAll("\r\n", "");
-            } else {
-                retStr = obj.toString().replaceAll("\r\n", "");
-            }
-        }
-
-        return retStr;
     }
 
 }

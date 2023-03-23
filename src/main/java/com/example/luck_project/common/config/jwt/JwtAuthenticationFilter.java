@@ -2,7 +2,6 @@ package com.example.luck_project.common.config.jwt;
 
 import com.example.luck_project.dto.TokenInfo;
 import com.example.luck_project.exception.CustomException;
-import com.example.luck_project.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -15,8 +14,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.List;
+
+import static com.example.luck_project.constants.ResponseCode.RE_TOKEN_RESPONSE;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -67,14 +67,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     /// 이메일로 권한정보 받아오기
                     List<String> roles = jwtTokenProvider.getRoles(userId);
                     if(userId.isBlank() || roles.size() < 1 || roles == null){
-                        throw new CustomException(ErrorCode.RE_TOKEN_RESPONSE);
+                        throw new CustomException(RE_TOKEN_RESPONSE);
                     }
 
                     System.out.println("userId: "+ userId+ "/ roles : "+ roles);
                     //토큰 발급
                     Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                     if(!userId.equals(authentication.getName())){
-                        throw new CustomException(ErrorCode.RE_TOKEN_RESPONSE);
+                        throw new CustomException(RE_TOKEN_RESPONSE);
                     }
                     TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
                     /// 헤더에 어세스 토큰 추가
@@ -83,9 +83,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     /// 컨텍스트에 넣기
                     this.setAuthentication(tokenInfo.getAccessToken());
                 }
-                response.setHeader("resultCode", String.valueOf(ErrorCode.RE_TOKEN_RESPONSE.getStatus()));
-                response.setHeader("resultMessage", URLEncoder.encode(ErrorCode.RE_TOKEN_RESPONSE.getMessage(), "UTF-8"));
-                throw new CustomException(ErrorCode.RE_TOKEN_RESPONSE);
+//                response.setHeader("resultCode", String.valueOf(RE_TOKEN_RESPONSE.getResponseCode()));
+//                response.setHeader("resultMessage", URLEncoder.encode(RE_TOKEN_RESPONSE.getMessage(), "UTF-8"));
+                throw new CustomException(RE_TOKEN_RESPONSE);
             }
         }
         filterChain.doFilter(request, response);

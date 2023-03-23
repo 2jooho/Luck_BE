@@ -1,6 +1,5 @@
 package com.example.luck_project.service;
 
-import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.util.DataCode;
 import com.example.luck_project.domain.CateDetailEntity;
 import com.example.luck_project.domain.CateDetailPureEntity;
@@ -14,8 +13,8 @@ import com.example.luck_project.repository.CateDetailInfoRepository;
 import com.example.luck_project.repository.CateDetailPureRepository;
 import com.example.luck_project.repository.UserPaymentInfoRepository;
 import com.example.luck_project.repository.UserPureCombRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.example.luck_project.exception.ErrorCode.CATE_DETL_PURE_NOT_FOUND;
-import static com.example.luck_project.exception.ErrorCode.PAYMENT_INFO_NOT_FOUND;
+import static com.example.luck_project.constants.ResponseCode.CATE_DETL_PURE_NOT_FOUND;
+import static com.example.luck_project.constants.ResponseCode.PAYMENT_INFO_NOT_FOUND;
+
 
 @Service
-public class PureLuckService extends ApiSupport {
+@Slf4j
+public class PureLuckService {
 
     @Autowired
     CateDetailPureRepository cateDetailPureRepository;
@@ -56,7 +60,7 @@ public class PureLuckService extends ApiSupport {
         String cateDetailCode = String.valueOf(reqMap.get("cateDetailCode"));   //ex. A0002
         String todayVersYear = String.valueOf(reqMap.get("todayVersYear")); //ex. 인
 
-        logger.info("[{}][{}][{}] 상세 카테고리 비장술 목록 조회", userId, pureCnctn, cateDetailCode);
+        log.info("[{}][{}][{}] 상세 카테고리 비장술 목록 조회", userId, pureCnctn, cateDetailCode);
         //상세 카테고리 비장술 목록 조회
         //좋은 비장술타입 순서대로 조회
         Optional<List<CateDetailPureEntity>> cateDetailPureEntityList = cateDetailPureRepository.findByCateDetlCodeOrderByPureOrder(cateDetailCode);
@@ -83,7 +87,7 @@ public class PureLuckService extends ApiSupport {
         }
 
 
-        logger.info("날짜 정보 찾기");
+        log.info("날짜 정보 찾기");
         Optional<Integer> todayCodeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, todayVersYear));
         Optional<Integer> userCodeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, userPureCombinationEntity.get().getVersYear()));
 
@@ -91,16 +95,16 @@ public class PureLuckService extends ApiSupport {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String todayDate = today.format(formatter);
         String pureDate = String.valueOf(Integer.valueOf(todayDate) + (((12-todayCodeNum.get())+userCodeNum.get())));
-        logger.info("test : {}/{}/{}/{}", todayDate, todayCodeNum.get(), userCodeNum.get(), pureDate);
+        log.info("test : {}/{}/{}/{}", todayDate, todayCodeNum.get(), userCodeNum.get(), pureDate);
 
-        logger.info("최고 시간 구하기(랜덤)");
+        log.info("최고 시간 구하기(랜덤)");
         //상세 카테고리의 최고 시간 비장술 타입 조회
         Optional<CateDetailEntity> cateDetailEntity = cateDetailInfoRepository.findByCateCdAndCateDetlCd(cateCode, cateDetailCode);
         cateDetailPureEntityList.orElseThrow(() -> new CustomException(CATE_DETL_PURE_NOT_FOUND));
         //오늘 띠 숫자 + 랜덤(강천일합금)숫자 => 제외 랜덤 시 재조회 시 시간바뀜
 //        Collections.shuffle(pureTypeList);
         int pureTimeNum = userCodeNum.get() + DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailEntity.get().getTimePureType());
-        logger.info("확인스 : {}/ {}/ {}/{}", pureTimeNum, todayCodeNum.get(),DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, pureTypeList.get(0)), pureTypeList.get(0));
+        log.info("확인스 : {}/ {}/ {}/{}", pureTimeNum, todayCodeNum.get(),DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, pureTypeList.get(0)), pureTypeList.get(0));
         String pureTime = "";
         if(pureTimeNum > 12){
             pureTime = DataCode.VERS_YEAR_TIME_ARR[pureTimeNum-14];
@@ -108,7 +112,7 @@ public class PureLuckService extends ApiSupport {
             pureTime = DataCode.VERS_YEAR_TIME_ARR[pureTimeNum-2];
         }
 
-        logger.info("확인스 : {}/{}", pureTime , pureTimeNum);
+        log.info("확인스 : {}/{}", pureTime , pureTimeNum);
         List<BestDayAndTimeDto> bestDayAndTimeDtoList = new ArrayList<>();
         BestDayAndTimeDto bestDayAndTimeDto = new BestDayAndTimeDto();
         bestDayAndTimeDto.setBestDate(pureDate);
@@ -117,14 +121,14 @@ public class PureLuckService extends ApiSupport {
         bestDayAndTimeDtoList.add(bestDayAndTimeDto);
 
         //하단에 표시될 최고 시간 2개 -> 1개
-        logger.info("오늘의 최고 시간 조회");
+        log.info("오늘의 최고 시간 조회");
         int firstCodeNum= DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailEntity.get().getTimePureType());
 //        int secondCodeNum= DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailPureEntityList.get().get(1).getPureType());
 
         int best1Time = todayCodeNum.get() + firstCodeNum;
-        logger.info("오늘의 최고 시간 확인용 {}/{}/{}", todayCodeNum.get(), firstCodeNum, best1Time);
+        log.info("오늘의 최고 시간 확인용 {}/{}/{}", todayCodeNum.get(), firstCodeNum, best1Time);
 //        int best2Time = todayCodeNum.get() + secondCodeNum;
-//        logger.info("오늘의 최고 시간 확인용2 {}/{}/{}", todayCodeNum.get(), secondCodeNum, best2Time);
+//        log.info("오늘의 최고 시간 확인용2 {}/{}/{}", todayCodeNum.get(), secondCodeNum, best2Time);
 
         List<TodayBestTimeDto> todayBestTimeDtoList = new ArrayList<>();
 
@@ -178,23 +182,6 @@ public class PureLuckService extends ApiSupport {
         pureLuckMainRes.setTodayBestTimeList(todayBestTimeDtoList);
 
         return pureLuckMainRes;
-    }
-
-    /**
-     * CRLF 개행제거
-     */
-    public String strCRLF(Object obj) {
-        String retStr= null;
-
-        if(obj != null) {
-            if(obj instanceof Throwable) {
-                retStr = ExceptionUtils.getStackTrace((Throwable) obj).replaceAll("\r\n", "");
-            } else {
-                retStr = obj.toString().replaceAll("\r\n", "");
-            }
-        }
-
-        return retStr;
     }
 
 }

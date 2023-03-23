@@ -1,19 +1,21 @@
 package com.example.luck_project.service;
 
-import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.util.DataCode;
 import com.example.luck_project.common.util.PropertyUtil;
 import com.example.luck_project.domain.*;
-import com.example.luck_project.dto.*;
+import com.example.luck_project.dto.CateDto;
+import com.example.luck_project.dto.CateImgDto;
+import com.example.luck_project.dto.RecommandCateDto;
+import com.example.luck_project.dto.UserInfoDto;
 import com.example.luck_project.dto.response.MainRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,11 +27,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.example.luck_project.exception.ErrorCode.*;
+import static com.example.luck_project.constants.ResponseCode.*;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
-public class MainService extends ApiSupport {
+@Slf4j
+public class MainService {
 
     @Autowired
     private UserInfoRepository userInfoRepository;
@@ -65,7 +68,7 @@ public class MainService extends ApiSupport {
         String pureCnctn = ""; //비장술 조합
 
         //하단 내용은 향후 메소드화 시켜야함
-        logger.info("[{}] 사용자 정보 조회", userId);
+        log.info("[{}] 사용자 정보 조회", userId);
         //사용자의 사주정보(년지월지)를 조회
         Optional<UserInfoDto> userInfoDto = userInfoRepository.serchUserInfo(userId);
         //사용자 정보가 없는 경우 Exception
@@ -79,7 +82,7 @@ public class MainService extends ApiSupport {
                         .collect(Collectors.toList());
 
         //비장술 운세 정보 조회
-        logger.info("[{}][{}] 비장술 운세 정보 조회", userId, ydPureCnctn);
+        log.info("[{}][{}] 비장술 운세 정보 조회", userId, ydPureCnctn);
 
         //오늘 날짜 띠 정보 조회
         LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -92,7 +95,7 @@ public class MainService extends ApiSupport {
 
         String versYear = ""; //띠 정보
 
-        logger.info("[{}][{}][{}] 기준날짜 띠 찾기", userId, ydPureCnctn, basicDateEntity.get().getBasicDate());
+        log.info("[{}][{}][{}] 기준날짜 띠 찾기", userId, ydPureCnctn, basicDateEntity.get().getBasicDate());
         //기준 날짜와 오늘 날짜가 같지 않은 경우 오늘 날짜 띠 찾기
         //20221011,유 -> 신
         String basicDate = basicDateEntity.get().getBasicDate();
@@ -124,7 +127,7 @@ public class MainService extends ApiSupport {
         luckCnctnList.add(ydPureCnctn);
         luckCnctnList.add(dyPureCnctn);
 
-        logger.info("[{}][{}][{}] 비장술 조합 정보 조회", userId, versYear, basicDateEntity.get().getBasicDate());
+        log.info("[{}][{}][{}] 비장술 조합 정보 조회", userId, versYear, basicDateEntity.get().getBasicDate());
         //비장술 정보 조회
         Optional<UserPureCombinationEntity> pureCombinationEntity = userPureCombRepository.findTop1ByLuckCnctnInAndVersYear(luckCnctnList, versYear);
         pureCombinationEntity.orElseThrow(() -> new CustomException(PURE_LUCK_INFO_FAIL));
@@ -135,14 +138,14 @@ public class MainService extends ApiSupport {
         pureCnctnList.add(pureCnctn);
         pureCnctnList.add(pureCombinationEntity.get().getPureDay() + "," + pureCombinationEntity.get().getPureYear());
 
-        logger.info("[{}][{}][{}] 비장술 정보 조회", userId, versYear, basicDateEntity.get().getBasicDate());
+        log.info("[{}][{}][{}] 비장술 정보 조회", userId, versYear, basicDateEntity.get().getBasicDate());
         //ex. 강일진,해결신의 운세
         Optional<PureInfoEntity> pureInfoEntity = pureInfoRepository.findByPureCnctnIn(pureCnctnList);
         //비장술 운세 정보가 없는 경우 Exception
         pureInfoEntity.orElseThrow(() -> new CustomException(PURE_LUCK_INFO_FAIL));
 
         //추천 카테고리 조회
-        logger.info("[{}] 추천 카테고리 정보 조회", userId);
+        log.info("[{}] 추천 카테고리 정보 조회", userId);
         //사용자가 선택한 정보 중 광고가 붙은 카테고리 8개, 만약, 광고가 붙은 카테고리가 없는 경우 상세카테고리 조회수 총 합이 가장 큰 순으로 8개 단 광고가 붙어야함 만약 없으면 상세카테고리 조회수 많은거로
         //사용자가 선택한 정보 중 광고가 붙은 카테고리 8개
         //아우터 조인을 해야하나..
@@ -193,7 +196,7 @@ public class MainService extends ApiSupport {
         });
 
         //카테고리 및 카테고리 이미지 정보 조회
-        logger.info("[{}] 카테고리 정보 조회", userId);
+        log.info("[{}] 카테고리 정보 조회", userId);
         Optional<List<CateEntity>> cateEntityList= cateInfoRepository.findByUseYn("Y");
 
         //카테고리 정보가 존재하지 않는 경우 Exception

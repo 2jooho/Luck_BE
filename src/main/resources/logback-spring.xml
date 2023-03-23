@@ -83,3 +83,26 @@
 <!--    </logger>-->
 
 <!--</configuration>-->
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-3level %logger{5} - %msg %n</pattern>
+		</encoder>
+	</appender>
+	<logger name="jdbc" level="OFF"/>
+	<logger name="jdbc.sqlonly" level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	<logger name="jdbc.resultsettable" level="INFO" additivity="false">
+	<appender-ref ref="CONSOLE" />
+	</logger>
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>

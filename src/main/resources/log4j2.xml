@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info" monitorInterval="30">
     <Properties>
-        <Property name="LOG_FILE_NAME">D:/IdeaProjects/log</Property>
+        <Property name="LOG_FILE_NAME">./logs</Property>
     </Properties>
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="%d %-5level [%t] [%F:%L] (%m)%n"/>
+            <PatternLayout charset="UTF-8" pattern="%d %-5level [%t] [%F:%L] (%m)%n"/>
         </Console>
 
         <RollingFile name="API">

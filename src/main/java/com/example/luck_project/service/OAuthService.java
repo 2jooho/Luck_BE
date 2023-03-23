@@ -1,6 +1,5 @@
 package com.example.luck_project.service;
 
-import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.config.Oauth.Constant;
 import com.example.luck_project.common.config.Oauth.GoogleOauth;
 import com.example.luck_project.common.config.Oauth.KakaoOauth;
@@ -9,12 +8,11 @@ import com.example.luck_project.dto.GoogleOAuthToken;
 import com.example.luck_project.dto.GoogleUser;
 import com.example.luck_project.dto.KakaoOAuthToken;
 import com.example.luck_project.dto.KakaoUser;
-import com.example.luck_project.dto.request.LoginReq;
 import com.example.luck_project.dto.response.GetSocialOAuthRes;
 import com.example.luck_project.exception.CustomException;
-import com.example.luck_project.exception.ErrorCode;
 import com.example.luck_project.repository.UserInfoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,12 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.example.luck_project.exception.ErrorCode.USER_NOT_FOUND;
+import static com.example.luck_project.constants.ResponseCode.USER_NOT_FOUND;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class OAuthService extends ApiSupport {
+public class OAuthService {
     private final GoogleOauth googleOauth;
     private final KakaoOauth kakaoOauth;
     private final HttpServletResponse response;
@@ -153,11 +152,11 @@ public class OAuthService extends ApiSupport {
                 Optional<UserEntity> userEntity = userInfoRepository.findByUserIdAndLoginDvsn(userId, "G");
                 userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-                logger.info("[{}] 휴면계정 체크", userId);
+                log.info("[{}] 휴면계정 체크", userId);
                 //마지막 로그인 기준 1년이 지난 회원인 경우 휴면계정
 
 
-                logger.info("[{}] 마지막 로그인 시점 업데이트", userId);
+                log.info("[{}] 마지막 로그인 시점 업데이트", userId);
                 //로그인 시점 업데이트
                 LocalDateTime nowDate = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -192,11 +191,11 @@ public class OAuthService extends ApiSupport {
                 Optional<UserEntity> userEntity = userInfoRepository.findByUserIdAndLoginDvsn(userId, "K");
                 userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-                logger.info("[{}] 휴면계정 체크", userId);
+                log.info("[{}] 휴면계정 체크", userId);
                 //마지막 로그인 기준 1년이 지난 회원인 경우 휴면계정
 
 
-                logger.info("[{}] 마지막 로그인 시점 업데이트", userId);
+                log.info("[{}] 마지막 로그인 시점 업데이트", userId);
                 //로그인 시점 업데이트
                 LocalDateTime nowDate = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");

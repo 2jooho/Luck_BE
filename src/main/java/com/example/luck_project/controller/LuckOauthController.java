@@ -1,22 +1,26 @@
 package com.example.luck_project.controller;
 
-import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.config.Oauth.Constant;
+import com.example.luck_project.controller.constants.BaseController;
 import com.example.luck_project.dto.response.GetSocialOAuthRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.service.OAuthService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+import static com.example.luck_project.controller.constants.ApiUrl.*;
+
 @RestController
-@RequestMapping("/luck")
+@RequestMapping(BASE_URL)
 @RequiredArgsConstructor
-public class LuckOauthController extends ApiSupport {
+@Slf4j
+public class LuckOauthController extends BaseController {
 
     @Autowired
     private OAuthService oAuthService;
@@ -39,12 +43,12 @@ public class LuckOauthController extends ApiSupport {
      * @param socialLoginPath
      * @throws IOException
      */
-    @PostMapping("/auth/{socialLoginType}/login") //GOOGLE이 들어올 것이다.
+    @PostMapping(AUTH_TYPE_LOGIN_URL) //GOOGLE이 들어올 것이다.
     public void socialLoginRedirect(@PathVariable(name="socialLoginType") String socialLoginPath) throws IOException {
         //소셜 로그인 타입
         Constant.SocialLoginType socialLoginType = Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());
 
-        logger.info("[{}] 소셜 로그인", socialLoginType);
+        log.info("[{}] 소셜 로그인", socialLoginType);
         oAuthService.oAuthRequest(socialLoginType);
     }
 
@@ -56,7 +60,7 @@ public class LuckOauthController extends ApiSupport {
      * @throws IOException
      * @throws CustomException
      */
-    @GetMapping(value = "/auth/{socialLoginType}/callback")
+    @GetMapping(value = AUTH_CALLBACK_URL)
     public ResponseEntity<GetSocialOAuthRes> callback (
             @PathVariable(name = "socialLoginType") String socialLoginPath,
             @RequestParam(name = "code") String authCode) throws IOException, CustomException {
@@ -64,24 +68,8 @@ public class LuckOauthController extends ApiSupport {
         System.out.println(">> 소셜 로그인 API 서버로부터 받은 code :"+ authCode);
         Constant.SocialLoginType socialLoginType = Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());
         GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLogin(socialLoginType, authCode);
-        return ResponseEntity.ok().body(getSocialOAuthRes);
+
+        return new ResponseEntity<>(getSocialOAuthRes, getSuccessHeaders(), HttpStatus.OK);
     }
-
-    /**
-     * CRLF 개행제거
-     */
-    public String strCRLF(Object obj) {
-        String retStr= null;
-
-        if(obj != null) {
-            if(obj instanceof Throwable) {
-                retStr = ExceptionUtils.getStackTrace((Throwable) obj).replaceAll("\r\n", "");
-            } else {
-                retStr = obj.toString().replaceAll("\r\n", "");
-            }
-        }
-
-        return retStr;
-    }
-
+    
 }

@@ -3,8 +3,7 @@ package com.example.luck_project.service;
 import com.example.luck_project.domain.UserEntity;
 import com.example.luck_project.repository.UserInfoRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomUserDetailsService2 implements UserDetailsService{
-    protected final Logger logger  = LogManager.getLogger("INFO");
     private final UserInfoRepository memberRepository;
 
     @Override

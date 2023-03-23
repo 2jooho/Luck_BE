@@ -1,9 +1,12 @@
 package com.example.luck_project.controller;
 
+import com.example.luck_project.common.util.ReplaceStringUtil;
+import com.example.luck_project.controller.constants.BaseController;
 import com.example.luck_project.dto.request.CateListReq;
 import com.example.luck_project.dto.response.CateListRes;
 import com.example.luck_project.service.CateService;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -20,10 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.example.luck_project.controller.constants.ApiUrl.*;
+
 @RestController
-@RequestMapping("/luck")
-@Log4j2
-public class LuckCateController {
+@RequestMapping(BASE_URL)
+@Slf4j
+public class LuckCateController extends BaseController {
 
     @Autowired
     private CateService cateService;
@@ -33,7 +38,7 @@ public class LuckCateController {
      * @param cateListReq
      * @return
      */
-    @PostMapping("/cateDetailList.do")
+    @PostMapping(CATE_DETAIL_LIST_URL)
     public ResponseEntity<CateListRes> cateDetailList(@Validated @RequestBody CateListReq cateListReq){
         Map<String, Object> reqMap = new HashMap<>();
 
@@ -46,28 +51,11 @@ public class LuckCateController {
         reqMap.put("userId", userId);
         reqMap.put("cateCode", cateCode);
 
-        log.info("[{}][{}] 상세 카테고리 목록 조회", strCRLF(userId), strCRLF(cateCode));
+        log.info("[{}][{}] 상세 카테고리 목록 조회", ReplaceStringUtil.replaceStringCRLF(userId), ReplaceStringUtil.replaceStringCRLF(cateCode));
 
         CateListRes cateRes = cateService.cateDetailList(reqMap, pageable);
 
-        return new ResponseEntity<>(cateRes, HttpStatus.OK);
-    }
-
-    /**
-     * CRLF 개행제거
-     */
-    public String strCRLF(Object obj) {
-        String retStr= null;
-
-        if(obj != null) {
-            if(obj instanceof Throwable) {
-                retStr = ExceptionUtils.getStackTrace((Throwable) obj).replaceAll("\r\n", "");
-            } else {
-                retStr = obj.toString().replaceAll("\r\n", "");
-            }
-        }
-
-        return retStr;
+        return new ResponseEntity<>(cateRes, getSuccessHeaders(), HttpStatus.OK);
     }
 
 }

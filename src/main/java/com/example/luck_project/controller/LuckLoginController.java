@@ -1,18 +1,17 @@
 package com.example.luck_project.controller;
 
-import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.config.jwt.JwtTokenProvider;
 import com.example.luck_project.common.util.SecurityUtil;
+import com.example.luck_project.controller.constants.BaseController;
 import com.example.luck_project.dto.TokenInfo;
 import com.example.luck_project.dto.request.LoginReq;
 import com.example.luck_project.dto.response.LoginRes;
 import com.example.luck_project.exception.CustomException;
-import com.example.luck_project.exception.ErrorCode;
 import com.example.luck_project.repository.UserInfoRepository;
 import com.example.luck_project.service.LoginService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+import static com.example.luck_project.constants.ResponseCode.VALIDATION_FAIL;
+import static com.example.luck_project.controller.constants.ApiUrl.*;
+
+
 @RestController
-@RequestMapping("/luck")
+@RequestMapping(BASE_URL)
 @RequiredArgsConstructor
-public class LuckLoginController extends ApiSupport {
+@Validated
+@Slf4j
+public class LuckLoginController extends BaseController {
 
     @Autowired
     private LoginService loginService;
@@ -87,7 +92,7 @@ public class LuckLoginController extends ApiSupport {
 
 //    @PostMapping("/join")
 //    public String join(){
-//        logger.info("로그인 시도됨 : {}");
+//        log.info("로그인 시도됨 : {}");
 //
 //        userRepository.save(user);
 //
@@ -97,12 +102,12 @@ public class LuckLoginController extends ApiSupport {
     // 로그인
 //    @PostMapping("/login")
 //    public String login(@RequestBody Map<String, String> user) {
-//        logger.info("user userId = {}", user.get("userId"));
+//        log.info("user userId = {}", user.get("userId"));
 //        UserEntity member = (UserEntity) userRepository.findByUserId(user.get("userId"))
 //                .map(this::createUserDetails)
 //                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
 //
-//        logger.info("getRoles : {}", member.getRoles());
+//        log.info("getRoles : {}", member.getRoles());
 //        return jwtTokenProvider.createToken(member.getUserId(), member.getRoles());
 //    }
 //
@@ -121,32 +126,32 @@ public class LuckLoginController extends ApiSupport {
      * @param loginReq
      * @return
      */
-    @PostMapping("/auth/login")
-    public ResponseEntity<LoginRes> luckLogin(@Validated @RequestBody LoginReq loginReq){
+    @PostMapping(LOGIN_URL)
+    public ResponseEntity<LoginRes> luckLogin(@RequestBody LoginReq loginReq){
         String userId = loginReq.getUserId().toUpperCase();
 
         boolean isError = false;
         if(! (StringUtils.equals("1", loginReq.getOsType()) || StringUtils.equals("2", loginReq.getOsType()) || StringUtils.equals("9", loginReq.getOsType()))){
-            logger.info("단말기 osType 에러");
+            log.info("단말기 osType 에러");
             isError = true;
         }
         if(! (StringUtils.equals("M", loginReq.getLoginType()) || StringUtils.equals("A", loginReq.getLoginType()) )){
-            logger.info("로그인 타입 에러");
+            log.info("로그인 타입 에러");
             isError = true;
         }
         if(!StringUtils.equals("B", loginReq.getLoginDvsn())){
-            logger.info("로그인 구분 에러");
+            log.info("로그인 구분 에러");
             isError = true;
         }
 
         if(isError){
-            throw new CustomException(ErrorCode.VALIDATION_FAIL);
+            throw new CustomException(VALIDATION_FAIL);
         }
 
-        logger.info("[{}] 로그인 컨트롤러", userId);
+        log.info("[{}] 로그인 컨트롤러", userId);
         LoginRes loginRes = loginService.login(loginReq);
 
-        return new ResponseEntity<>(loginRes, HttpStatus.OK);
+        return new ResponseEntity<>(loginRes, getSuccessHeaders(), HttpStatus.OK);
     }
 
 
@@ -162,22 +167,5 @@ public class LuckLoginController extends ApiSupport {
 //        TokenInfo tokenInfo = loginService.loginTest(memberId, password);
 //        return new ResponseEntity<>(tokenInfo, HttpStatus.OK);
 //    }
-
-    /**
-     * CRLF 개행제거
-     */
-    public String strCRLF(Object obj) {
-        String retStr= null;
-
-        if(obj != null) {
-            if(obj instanceof Throwable) {
-                retStr = ExceptionUtils.getStackTrace((Throwable) obj).replaceAll("\r\n", "");
-            } else {
-                retStr = obj.toString().replaceAll("\r\n", "");
-            }
-        }
-
-        return retStr;
-    }
 
 }

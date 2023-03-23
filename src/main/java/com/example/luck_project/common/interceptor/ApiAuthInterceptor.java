@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.example.luck_project.exception.ErrorCode.BAD_REQUEST;
+import static com.example.luck_project.constants.ResponseCode.BAD_REQUEST;
 
 
 @Component

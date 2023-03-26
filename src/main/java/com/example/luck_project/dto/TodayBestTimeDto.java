@@ -15,4 +15,7 @@ public class TodayBestTimeDto {
     /** 시간 */
     private String bestTime;
 
+    /** 시간 */
+    private String timeVersYearImg;
+
 }

@@ -126,6 +126,7 @@ public class LoginService extends ApiSupport {
         String password = loginReq.getPassword();
         boolean loginFlag = false;
         String loginType = "basic";
+        String passwdUpdateYn = "N";
 
         log.info("[{}] 고객 정보 조회: pw : {}", userId, passwordEncoder.encode(password));
         Optional<UserEntity> userEntity = userInfoRepository.findByUserId(userId);
@@ -184,7 +185,7 @@ public class LoginService extends ApiSupport {
         log.info("[{}] 단말기id 조회", userId);
         // 전달받은 단말기id와 기존 db 단말기id 다른 경우 사용자 기기정보 업데이트
         // db 단말기id 정보가 없는 경우 신규 사용자 기기정보 등록
-        Optional<UserMobileDeviceEntity> deviceEntity = userMobileDeviceRepository.findByUserId(userId);
+        Optional<UserMobileDeviceEntity> deviceEntity = userMobileDeviceRepository.findTop1ByUserIdOrderByIdDesc(userId);
         System.out.println("단말기 id 정보 조회 : " + deviceEntity);
         // 단말기 id가 존재하는 경우
         if (deviceEntity.isPresent()) {
@@ -224,7 +225,7 @@ public class LoginService extends ApiSupport {
         System.out.println("date:" + date);
         //180일이 지난 시점이 오늘이거나 지난 경우
         if (date.isEqual(nowDate) || date.isBefore(nowDate)) {
-            loginRes.setPasswdUpdateYn("Y");
+            passwdUpdateYn = "Y";
         }
 
         log.info("[{}] 마지막 로그인 시점 업데이트", userId);
@@ -238,6 +239,10 @@ public class LoginService extends ApiSupport {
             paramMap.put("loginType", "basic");
             this.createToken(userId, password, response, paramMap);
         }
+        loginRes.setUserId(userId);
+        loginRes.setNickName(userEntity.get().getNickName());
+        loginRes.setUserName(userEntity.get().getUsername());
+        loginRes.setPasswdUpdateYn(passwdUpdateYn);
 
         return loginRes;
     }

@@ -45,7 +45,9 @@ public class SecurityConfig {
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, authenticationManagerBuilder), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, authenticationManagerBuilder), UsernamePasswordAuthenticationFilter.class)
+                .cors()
+                ;
         return http.build();
     }
 

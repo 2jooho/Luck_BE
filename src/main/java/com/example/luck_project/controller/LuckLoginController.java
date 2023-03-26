@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -33,6 +30,7 @@ import static com.example.luck_project.controller.constants.ApiUrl.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@CrossOrigin(origins = "http://127.0.0.1:3000/")  // 컨트롤러 클래스의 상단
 public class LuckLoginController extends BaseController {
 
     @Autowired

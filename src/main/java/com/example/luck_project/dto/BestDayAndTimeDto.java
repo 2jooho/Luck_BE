@@ -18,4 +18,6 @@ public class BestDayAndTimeDto {
     /** 시간 */
     private String bestTime;
 
+    private String versYearImgUrl;
+
 }

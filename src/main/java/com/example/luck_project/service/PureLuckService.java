@@ -16,6 +16,7 @@ import com.example.luck_project.repository.UserPureCombRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,13 +47,17 @@ public class PureLuckService {
     @Autowired
     UserPaymentInfoRepository userPaymentInfoRepository;
 
+    @Value("${s3.img.full.url}")
+    private String imgUrl;
+
     /**
      * 비장술 정보 조회
+     *
      * @param reqMap
      * @return
      */
     @Transactional
-    public PureLuckMainRes pureLuckMain(Map<String, Object> reqMap){
+    public PureLuckMainRes pureLuckMain(Map<String, Object> reqMap) {
         PureLuckMainRes pureLuckMainRes = new PureLuckMainRes();
         String userId = String.valueOf(reqMap.get("userId"));
         String pureCnctn = String.valueOf(reqMap.get("pureCnctn")); //ex. 인술
@@ -71,58 +76,71 @@ public class PureLuckService {
         cateDetailPureEntityList.get().stream().forEach(cateDetailPureEntity -> pureTypeList.add(cateDetailPureEntity.getPureType()));
 
         //비장술 조합 정보 조회
-        Optional<UserPureCombinationEntity> userPureCombinationEntity = Optional.of(new UserPureCombinationEntity());
+        Optional<List<UserPureCombinationEntity>> userPureCombinationEntity = Optional.of(new ArrayList<UserPureCombinationEntity>());
         //사용자 조합 정보에서 1순위 비장술 타입을 년지로 넣고 1~12순위를 일지의 in절 조건으로 1개 조회 ex. 금조건/사살신
         //단, 사용자 비장술 조합에는 강일진/해결신, 해결신/강일진 형식으로 2개가 들어가야한다.
-        for(String pureType : pureTypeList){
-            userPureCombinationEntity = userPureCombRepository.findTop1ByPureYearAndLuckCnctnAndPureDayIn(pureType, pureCnctn, pureTypeList);
-            if (userPureCombinationEntity.isPresent()){
+        for (String pureType : pureTypeList) {
+            userPureCombinationEntity = userPureCombRepository.findTop3ByPureYearAndLuckCnctnAndPureDayIn(pureType, pureCnctn, pureTypeList);
+            if (userPureCombinationEntity.isPresent()) {
                 break;
             }
         }
         //사실상 년지 일지가 교차하며 db에 입력 시 필요없는 로직
-        if(!userPureCombinationEntity.isPresent()){
-            userPureCombinationEntity = userPureCombRepository.findTop1ByPureYearInOrPureDayInAndLuckCnctn(pureTypeList, pureTypeList, pureCnctn);
+        if (!userPureCombinationEntity.isPresent()) {
+            userPureCombinationEntity = userPureCombRepository.findTop3ByPureYearInOrPureDayInAndLuckCnctn(pureTypeList, pureTypeList, pureCnctn);
             userPureCombinationEntity.orElseThrow(() -> new CustomException(CATE_DETL_PURE_NOT_FOUND));
         }
 
+        //동일한 띠의 경우 위치만 바뀐경우이기에 제거
+        if(userPureCombinationEntity.get().size() > 1 && StringUtils.equals(userPureCombinationEntity.get().get(0).getVersYear(), userPureCombinationEntity.get().get(1).getVersYear())){
+            userPureCombinationEntity.get().remove(1);
+        }
 
         log.info("날짜 정보 찾기");
-        Optional<Integer> todayCodeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, todayVersYear));
-        Optional<Integer> userCodeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, userPureCombinationEntity.get().getVersYear()));
-
-        LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String todayDate = today.format(formatter);
-        String pureDate = String.valueOf(Integer.valueOf(todayDate) + (((12-todayCodeNum.get())+userCodeNum.get())));
-        log.info("test : {}/{}/{}/{}", todayDate, todayCodeNum.get(), userCodeNum.get(), pureDate);
-
-        log.info("최고 시간 구하기(랜덤)");
         //상세 카테고리의 최고 시간 비장술 타입 조회
         Optional<CateDetailEntity> cateDetailEntity = cateDetailInfoRepository.findByCateCdAndCateDetlCd(cateCode, cateDetailCode);
         cateDetailPureEntityList.orElseThrow(() -> new CustomException(CATE_DETL_PURE_NOT_FOUND));
-        //오늘 띠 숫자 + 랜덤(강천일합금)숫자 => 제외 랜덤 시 재조회 시 시간바뀜
-//        Collections.shuffle(pureTypeList);
-        int pureTimeNum = userCodeNum.get() + DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailEntity.get().getTimePureType());
-        log.info("확인스 : {}/ {}/ {}/{}", pureTimeNum, todayCodeNum.get(),DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, pureTypeList.get(0)), pureTypeList.get(0));
-        String pureTime = "";
-        if(pureTimeNum > 12){
-            pureTime = DataCode.VERS_YEAR_TIME_ARR[pureTimeNum-14];
-        }else{
-            pureTime = DataCode.VERS_YEAR_TIME_ARR[pureTimeNum-2];
-        }
 
-        log.info("확인스 : {}/{}", pureTime , pureTimeNum);
         List<BestDayAndTimeDto> bestDayAndTimeDtoList = new ArrayList<>();
-        BestDayAndTimeDto bestDayAndTimeDto = new BestDayAndTimeDto();
-        bestDayAndTimeDto.setBestDate(pureDate);
-        bestDayAndTimeDto.setBestTime(pureTime);
-        bestDayAndTimeDto.setVersYear(DataCode.VERS_YEAR_NAME_ARR[userCodeNum.get()-1]);
-        bestDayAndTimeDtoList.add(bestDayAndTimeDto);
+        Optional<Integer> todayCodeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, todayVersYear));
+        LocalDateTime today = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String todayDate = today.format(formatter);
+
+        userPureCombinationEntity.get().stream().forEach((entity -> {
+            Optional<Integer> userCodeNum = Optional.of(DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, entity.getVersYear()));
+
+            String pureDate = today.plusDays(((12 - todayCodeNum.get()) + userCodeNum.get())).format(formatter);
+            log.info("test : {}/{}/{}/{}", todayDate, todayCodeNum.get(), userCodeNum.get(), pureDate);
+
+            log.info("최고 시간 구하기(랜덤)");
+
+            //오늘 띠 숫자 + 랜덤(강천일합금)숫자 => 제외 랜덤 시 재조회 시 시간바뀜
+//        Collections.shuffle(pureTypeList);
+            int pureTimeNum = userCodeNum.get() + DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailEntity.get().getTimePureType());
+            log.info("확인스 : {}/ {}/ {}/{}", pureTimeNum, todayCodeNum.get(), DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, pureTypeList.get(0)), pureTypeList.get(0));
+            String pureTime = "";
+            if (pureTimeNum > 12) {
+                pureTime = DataCode.VERS_YEAR_TIME_ARR[pureTimeNum - 14];
+            } else {
+                pureTime = DataCode.VERS_YEAR_TIME_ARR[pureTimeNum - 2];
+            }
+
+            log.info("확인스 : {}/{}", pureTime, pureTimeNum);
+            BestDayAndTimeDto bestDayAndTimeDto = new BestDayAndTimeDto();
+            bestDayAndTimeDto.setBestDate(pureDate);
+            bestDayAndTimeDto.setBestTime(pureTime);
+            bestDayAndTimeDto.setVersYear(DataCode.VERS_YEAR_NAME_ARR[userCodeNum.get() - 1]);
+            bestDayAndTimeDto.setVersYearImgUrl(imgUrl + "/" + bestDayAndTimeDto.getVersYear() + ".png");
+
+            bestDayAndTimeDtoList.add(bestDayAndTimeDto);
+
+        }));
+
 
         //하단에 표시될 최고 시간 2개 -> 1개
         log.info("오늘의 최고 시간 조회");
-        int firstCodeNum= DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailEntity.get().getTimePureType());
+        int firstCodeNum = DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailEntity.get().getTimePureType());
 //        int secondCodeNum= DataCode.getCodeNum(DataCode.PURE_LUCK_NAME_ARR, cateDetailPureEntityList.get().get(1).getPureType());
 
         int best1Time = todayCodeNum.get() + firstCodeNum;
@@ -131,19 +149,18 @@ public class PureLuckService {
 //        log.info("오늘의 최고 시간 확인용2 {}/{}/{}", todayCodeNum.get(), secondCodeNum, best2Time);
 
         List<TodayBestTimeDto> todayBestTimeDtoList = new ArrayList<>();
-
-        if(best1Time > 12){
-            TodayBestTimeDto todayBestTimeDto = new TodayBestTimeDto();
-            best1Time = best1Time-12;
-            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time-2]);
-            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time-2]);
-            todayBestTimeDtoList.add(todayBestTimeDto);
-        }else{
-            TodayBestTimeDto todayBestTimeDto = new TodayBestTimeDto();
-            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time-2]);
-            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time-2]);
-            todayBestTimeDtoList.add(todayBestTimeDto);
+        TodayBestTimeDto todayBestTimeDto = new TodayBestTimeDto();
+        if (best1Time > 12) {
+            best1Time = best1Time - 12;
+            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time - 2]);
+            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2]);
+        } else {
+            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time - 2]);
+            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2]);
         }
+
+        todayBestTimeDto.setTimeVersYearImg(imgUrl + "/" + todayBestTimeDto.getTimeVersYear() + ".png");
+        todayBestTimeDtoList.add(todayBestTimeDto);
 
 //        if(best2Time > 12){
 //            TodayBestTimeDto todayBestTimeDto = new TodayBestTimeDto();
@@ -172,7 +189,7 @@ public class PureLuckService {
         Optional<UserPaymentEntity> userPaymentEntity = userPaymentInfoRepository.findByUserId(userId);
         userPaymentEntity.orElseThrow(() -> new CustomException(PAYMENT_INFO_NOT_FOUND));
         //사용제한 상태가 C인 경우
-        if(StringUtils.equals(userPaymentEntity.get().getStatus(), "C")){
+        if (StringUtils.equals(userPaymentEntity.get().getStatus(), "C")) {
             userPaymentEntity.get().updateUseCmplnCnt(userPaymentEntity.get().getUseCmplnCnt() + 1);
         }
 

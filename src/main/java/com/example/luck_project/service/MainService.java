@@ -90,7 +90,7 @@ public class MainService {
         String todayDate = today.format(formatter);
 
         //기본으로 들어있는 값중 최근 것을 조회하여 날짜 정보를 얻는데 사용 => insert는 00시에 배치가 돌지만 1개만 존재해도 구할 수 있음
-        Optional<BasicDateEntity> basicDateEntity = basicDateRepository.findTop1ByOrderByBasicDateDesc();
+        Optional<BasicDateEntity> basicDateEntity = basicDateRepository.findTop1ByOrderByIdDesc();
         basicDateEntity.orElseThrow(() -> new CustomException(BASIC_DATE_NOT_FOUND));
 
         String versYear = ""; //띠 정보
@@ -119,7 +119,7 @@ public class MainService {
                 }
             }
         }else{
-            versYear = basicDateEntity.get().getBasicDate();
+            versYear = basicDateEntity.get().getVersYearInfo();
         }
 
         // 사주정보 목록

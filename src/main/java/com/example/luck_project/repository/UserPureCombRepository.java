@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface UserPureCombRepository extends JpaRepository<UserPureCombinationEntity, String> {
     Optional<UserPureCombinationEntity> findTop1ByLuckCnctnInAndVersYear(List<String> luckCnctnList, String versYear);
-    Optional<UserPureCombinationEntity> findTop1ByPureYearInOrPureDayInAndLuckCnctn(List<String> pureTypeList, List<String> pureTypeList2, String luckCnctn);
+    Optional<List<UserPureCombinationEntity>> findTop3ByPureYearInOrPureDayInAndLuckCnctn(List<String> pureTypeList, List<String> pureTypeList2, String luckCnctn);
 
-    Optional<UserPureCombinationEntity> findTop1ByPureYearAndLuckCnctnAndPureDayIn(String pureType, String luckCnctn, List<String> pureTypeList);
+    Optional<List<UserPureCombinationEntity>> findTop3ByPureYearAndLuckCnctnAndPureDayIn(String pureType, String luckCnctn, List<String> pureTypeList);
 
     Integer countByLuckCnctnIn(List<String> luckCnctnList);
 

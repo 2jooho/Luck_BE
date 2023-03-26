@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BasicDateRepository extends JpaRepository<BasicDateEntity, String> {
-    Optional<BasicDateEntity> findTop1ByOrderByBasicDateDesc();
+    Optional<BasicDateEntity> findTop1ByOrderByIdDesc();
 }

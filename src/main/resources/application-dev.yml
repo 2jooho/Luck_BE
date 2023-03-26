@@ -73,4 +73,10 @@ logging:
 jwt:
   secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
 
+s3:
+  img:
+    url: https://pureluckupload.s3.ap-northeast-2.amazonaws.com
+    full:
+      url: https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img
+
 

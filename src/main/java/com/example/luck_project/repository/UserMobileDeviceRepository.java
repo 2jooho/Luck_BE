@@ -12,7 +12,7 @@ public interface UserMobileDeviceRepository extends JpaRepository<UserMobileDevi
      * @param userId
      * @return
      */
-    Optional<UserMobileDeviceEntity> findByUserId(String userId);
+    Optional<UserMobileDeviceEntity> findTop1ByUserIdOrderByIdDesc(String userId);
 
 
 }

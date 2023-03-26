@@ -43,7 +43,7 @@ public class LuckOauthController extends BaseController {
      * @param socialLoginPath
      * @throws IOException
      */
-    @PostMapping(AUTH_TYPE_LOGIN_URL) //GOOGLE이 들어올 것이다.
+    @GetMapping(AUTH_TYPE_LOGIN_URL) //GOOGLE이 들어올 것이다.
     public void socialLoginRedirect(@PathVariable(name="socialLoginType") String socialLoginPath) throws IOException {
         //소셜 로그인 타입
         Constant.SocialLoginType socialLoginType = Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());

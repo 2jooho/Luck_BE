@@ -108,7 +108,10 @@ public class CommonLogAdvice extends ApiSupport {
             //결과 메시지 획득
             if(response != null){
                 resultCode 	  = response.getHeader("resultCode");
-                resultMessage = URLDecoder.decode(response.getHeader("resultMessage"), "UTF-8");
+                resultMessage = StringUtils.defaultString(response.getHeader("resultMessage"), "");
+                if(!resultMessage.isBlank()) {
+                    URLDecoder.decode(resultMessage, "UTF-8");
+                }
             }
 
             servletPath  = StringUtils.defaultIfEmpty(request.getServletPath(), "");

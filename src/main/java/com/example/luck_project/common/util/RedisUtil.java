@@ -21,13 +21,20 @@ public class RedisUtil {
         return redisCacheTemplate.delete(key);
     }
 
-    public void setValue(String key, String value) {redisCacheTemplate.opsForValue().set(key, value);}
+    public void setValue(String key, String value) {
+        redisCacheTemplate.opsForValue().set(key, value);
+    }
 
     public Long incrementAndGet(String key) {
         return redisCacheTemplate.opsForValue().increment(key);
     }
     public Map<Object,Object> getHashAll(String key) {
         return redisCacheTemplate.opsForHash().entries(key);
+    }
+
+    public Boolean setExpireValue (String key, String value, long expireTime) {
+        redisCacheTemplate.opsForValue().set(key, value);
+        return redisCacheTemplate.expire(key, Duration.ofSeconds(expireTime));
     }
 
     //키, 넣을 값, 유지시간
@@ -39,6 +46,11 @@ public class RedisUtil {
     //키, 필드키
     public Object getHashDataByFieldKey(String key, String fieldKey) {
         return redisCacheTemplate.opsForHash().get(key, fieldKey);
+    }
+
+    //키 존재 유무
+    public Boolean existsValue (String key) {
+        return redisCacheTemplate.hasKey(key);
     }
 
 }

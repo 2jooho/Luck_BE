@@ -111,7 +111,7 @@ public class OAuthService {
             }break;
             case KAKAO:{
                 //각 소셜 로그인을 요청하면 소셜로그인 페이지로 리다이렉트 해주는 프로세스이다.
-//                redirectURL= googleOauth.getOauthRedirectURL();
+//                redirectURL = kakaoOauth.getOauthRedirectURL();
             }break;
             default:{
                 throw new IllegalArgumentException("알 수 없는 소셜 로그인 형식입니다.");

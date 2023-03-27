@@ -2,6 +2,7 @@ package com.example.luck_project.service;
 
 import com.example.luck_project.common.config.ApiSupport;
 import com.example.luck_project.common.config.jwt.JwtTokenProvider;
+import com.example.luck_project.common.util.RedisUtil;
 import com.example.luck_project.domain.RefreshTokenEntity;
 import com.example.luck_project.domain.UserEntity;
 import com.example.luck_project.domain.UserLoginHistoryEntity;
@@ -44,6 +45,7 @@ public class LoginService extends ApiSupport {
     private final PasswordEncoder passwordEncoder;
 
     private final HttpServletResponse response;
+    private final RedisUtil redisUtil;
     @Autowired
     private TokenRepository tokenRepository;
     @Autowired
@@ -103,7 +105,9 @@ public class LoginService extends ApiSupport {
         String accessToken = tokenInfo.getAccessToken();
         String refreshToken = tokenInfo.getRefreshToken();
         // 리프레시 토큰 저장소에 저장
-        tokenRepository.save(new RefreshTokenEntity(refreshToken));
+
+        redisUtil.setExpireValue("refresh"+userId, tokenInfo.getRefreshToken(), (24 * 60 * 60 * 1000L));
+//        tokenRepository.save(new RefreshTokenEntity(refreshToken));
         log.info("[{}][{}][{}] 토큰 확인", userId, accessToken, refreshToken);
 
         /// 헤더에 어세스 토큰 추가

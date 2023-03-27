@@ -79,4 +79,8 @@ s3:
     full:
       url: https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img
 
+coolsms:
+  api:
+    secret:
+    key:
 

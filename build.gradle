@@ -99,7 +99,8 @@ dependencies {
     annotationProcessor 'com.github.spotbugs:spotbugs-annotations:4.7.1'
 
     // Swagger
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 
     // test
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -128,7 +129,8 @@ dependencies {
     implementation group: 'com.amazonaws.secretsmanager', name: 'aws-secretsmanager-jdbc', version: '1.0.6'
     implementation group: 'com.amazonaws.secretsmanager', name: 'aws-secretsmanager-caching-java', version: '1.0.1'
 
-
+    //coolsms
+//    compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 }
 
 tasks.named('test') {

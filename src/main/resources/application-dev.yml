@@ -34,6 +34,10 @@ spring:
       host: 127.0.0.1
       port: 26388
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 # 로그 설정
 jasypt:
   encryptor:
@@ -81,6 +85,6 @@ s3:
 
 coolsms:
   api:
-    secret:
-    key:
+    secret: F7GFQKOSGB0IFLDYTHXJQLHM1LIANQUJ
+    key: NCSUDHLDODKWEAQM
 

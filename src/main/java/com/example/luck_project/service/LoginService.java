@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ public class LoginService extends ApiSupport {
     private final PasswordEncoder passwordEncoder;
 
     private final HttpServletResponse response;
-    private final RedisUtil redisUtil;
+//    private final RedisUtil redisUtil;
     @Autowired
     private TokenRepository tokenRepository;
     @Autowired
@@ -106,8 +107,8 @@ public class LoginService extends ApiSupport {
         String refreshToken = tokenInfo.getRefreshToken();
         // 리프레시 토큰 저장소에 저장
 
-        redisUtil.setExpireValue("refresh"+userId, tokenInfo.getRefreshToken(), (24 * 60 * 60 * 1000L));
-//        tokenRepository.save(new RefreshTokenEntity(refreshToken));
+//        redisUtil.setExpireValue("refresh"+userId, tokenInfo.getRefreshToken(), (24 * 60 * 60 * 1000L));
+        tokenRepository.save(new RefreshTokenEntity(refreshToken));
         log.info("[{}][{}][{}] 토큰 확인", userId, accessToken, refreshToken);
 
         /// 헤더에 어세스 토큰 추가
@@ -178,10 +179,11 @@ public class LoginService extends ApiSupport {
             loginHistoryRepository.save(loginHistoryEntity);
             System.out.println("로그인 이력 등록 성공");
             //실패 이력 상태값 변경
-            Optional<UserLoginHistoryEntity> userLoginHistoryEntity = loginHistoryRepository.findByUserIdAndLoginIscode(userId, "X");
+            Optional<List<UserLoginHistoryEntity>> userLoginHistoryEntity = loginHistoryRepository.findByUserIdAndLoginIscode(userId, "X");
             if (userLoginHistoryEntity.isPresent()) {
-                System.out.println("로그인 실패 이력 상태값 조회");
-                userLoginHistoryEntity.get().iscodeUpdate("I");
+                userLoginHistoryEntity.get().stream().forEach((historyEntity)-> {
+                    historyEntity.iscodeUpdate("I");
+                });
                 System.out.println("로그인 이력 수정 성공");
             }
         }

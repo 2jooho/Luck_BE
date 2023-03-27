@@ -3,6 +3,7 @@ package com.example.luck_project.repository;
 import com.example.luck_project.domain.UserLoginHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LoginHistoryRepository extends JpaRepository<UserLoginHistoryEntity, String> {
@@ -20,6 +21,6 @@ public interface LoginHistoryRepository extends JpaRepository<UserLoginHistoryEn
      * @param isCode
      * @return
      */
-    Optional<UserLoginHistoryEntity> findByUserIdAndLoginIscode(String userId, String isCode);
+    Optional<List<UserLoginHistoryEntity>> findByUserIdAndLoginIscode(String userId, String isCode);
 
 }

@@ -9,6 +9,7 @@ import com.example.luck_project.dto.response.LoginRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.repository.UserInfoRepository;
 import com.example.luck_project.service.LoginService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,7 @@ import static com.example.luck_project.controller.constants.ApiUrl.*;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
-@CrossOrigin(origins = "http://127.0.0.1:3000/")  // 컨트롤러 클래스의 상단
+@Api(tags = {"로그인 api"}) //swagger 소주제
 public class LuckLoginController extends BaseController {
 
     @Autowired
@@ -125,6 +126,8 @@ public class LuckLoginController extends BaseController {
      * @return
      */
     @PostMapping(LOGIN_URL)
+    @ApiOperation(value = "로그인 API", notes = "로그인 가능 여부를 확인한다.")
+    @ApiResponses({@ApiResponse(code = 200, message = "로그인 성공")    })
     public ResponseEntity<LoginRes> luckLogin(@RequestBody LoginReq loginReq){
         String userId = loginReq.getUserId().toUpperCase();
 

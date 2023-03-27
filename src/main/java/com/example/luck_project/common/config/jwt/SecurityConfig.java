@@ -1,5 +1,6 @@
 package com.example.luck_project.common.config.jwt;
 
+import com.example.luck_project.common.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisUtil redisUtil;
 
 //1. httpBasic().disable().csrf().disable(): rest api이므로 basic auth 및 csrf 보안을 사용하지 않는다는 설정이다.
 //
@@ -45,7 +47,7 @@ public class SecurityConfig {
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, authenticationManagerBuilder), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, authenticationManagerBuilder, redisUtil), UsernamePasswordAuthenticationFilter.class)
                 .cors()
                 ;
         return http.build();

@@ -66,5 +66,8 @@ logging:
 jwt:
   secret: REDACTED
 
-
+coolsms:
+  api:
+    secret:
+    key:
 

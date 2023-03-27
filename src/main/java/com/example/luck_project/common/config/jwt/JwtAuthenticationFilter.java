@@ -1,5 +1,6 @@
 package com.example.luck_project.common.config.jwt;
 
+import com.example.luck_project.common.util.RedisUtil;
 import com.example.luck_project.dto.TokenInfo;
 import com.example.luck_project.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import static com.example.luck_project.constants.ResponseCode.RE_TOKEN_RESPONSE;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisUtil redisUtil;
 
     //    @Override
 //    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -58,7 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 boolean validateRefreshToken = jwtTokenProvider.validateToken(refreshToken);
                 System.out.println("validateRefreshToken: "+ validateRefreshToken);
                 /// 리프레시 토큰 저장소 존재유무 확인
-                boolean isRefreshToken = jwtTokenProvider.existsRefreshToken(refreshToken);
+                boolean isRefreshToken = redisUtil.existsValue(refreshToken);
+//                boolean isRefreshToken = jwtTokenProvider.existsRefreshToken(refreshToken);
                 System.out.println("isRefreshToken: "+ isRefreshToken);
 
                 if (validateRefreshToken && isRefreshToken) {
@@ -80,6 +83,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     /// 헤더에 어세스 토큰 추가
                     jwtTokenProvider.setHeaderAccessToken(response, tokenInfo.getAccessToken());
                     jwtTokenProvider.setHeaderRefreshToken(response, tokenInfo.getRefreshToken());
+
+                    //레디스에 넣기
+                    redisUtil.setExpireValue("refresh"+userId, tokenInfo.getRefreshToken(), (24 * 60 * 60 * 1000L));
+
                     /// 컨텍스트에 넣기
                     this.setAuthentication(tokenInfo.getAccessToken());
                 }

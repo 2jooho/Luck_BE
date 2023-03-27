@@ -1,5 +1,6 @@
 package com.example.luck_project.dto.request;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ public class LoginReq {
      */
     @NotBlank(message = "userId는 필수 입니다.")
     @Size(max = 20)
+    @ApiModelProperty(name="userId", example = "test", value = "사용자 아이디", required = true) //swagger 처리
     private String userId;
 
     /**

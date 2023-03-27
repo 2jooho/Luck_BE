@@ -130,7 +130,7 @@ dependencies {
     implementation group: 'com.amazonaws.secretsmanager', name: 'aws-secretsmanager-caching-java', version: '1.0.1'
 
     //coolsms
-//    compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+    compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 }
 
 tasks.named('test') {

@@ -6,6 +6,7 @@ import com.example.luck_project.dto.GoogleUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,7 @@ public class GoogleOauth implements SocialOauth {
 
     private final ObjectMapper objectMapper;
 
+    @Autowired
     private final RestTemplate restTemplate;
 
     /**

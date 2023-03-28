@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ import static com.example.luck_project.controller.constants.ApiUrl.*;
 @RestController
 @RequestMapping(BASE_URL)
 @Slf4j
+@Validated
 public class LuckJoinController extends BaseController {
     @Autowired
     private JoinService joinService;
@@ -33,7 +35,7 @@ public class LuckJoinController extends BaseController {
      * @return
      */
     @PostMapping(JOIN_URL)
-    public ResponseEntity<JoinRes> luckJoin(@Validated @RequestBody JoinReq joinReq){
+    public ResponseEntity<JoinRes> luckJoin(@Valid @RequestBody JoinReq joinReq){
         String userId = joinReq.getUserId().toUpperCase();
 
         log.info("[{}] 회원가입 컨트롤러", userId);

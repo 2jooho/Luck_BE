@@ -62,7 +62,7 @@ public class JoinService {
         Optional<UserEntity> userEntity = userInfoRepository.findByUserNameAndPhoneNm(userName, joinReq.getPhoneNm());
         //사용자 정보 존재 시
         if (userEntity.isPresent()) {
-            log.info("이미 존재하는 계정 : {}/{}/{}", userId, joinReq.getUserName(), joinReq.getPhoneNm());
+            log.info("이미 존재하는 계정 : {}/{}", userId, joinReq.getUserName());
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("userId", userEntity.get().getUserId());
             paramMap.put("loginDvsn", userEntity.get().getLoginDvsn());
@@ -74,7 +74,6 @@ public class JoinService {
 //        log.info("[{}] 비밀번호 암호화", nickName);
         /* 비밀번호 암호화 */
         joinReq.encryptPassword(passwordEncoder.encode(joinReq.getPassword()));
-        System.out.printf("비밀번호 : {}", joinReq.getPassword());
 
         log.info("[{}] 회원 정보 등록", nickName);
         UserEntity user = joinReq.toEntity();
@@ -215,7 +214,9 @@ public class JoinService {
         List<String> luckCnctnList = new ArrayList<>();
         luckCnctnList.add(luckCnctn);
         luckCnctnList.add(chnLuckCnctn);
+        log.info("비장술 조합 확인");
         Integer pureCombCnt = userPureCombRepository.countByLuckCnctnIn(luckCnctnList);
+        log.info("비장술 조합 조회:{}", pureCombCnt);
         if (!(pureCombCnt >= 12)) {
             System.out.println("arrlength:" + DataCode.VERS_YEAR_NAME_ARR.length);
             int pureYearCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, yearB);

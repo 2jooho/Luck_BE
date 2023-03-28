@@ -65,7 +65,7 @@ public class JoinReq {
     /**
      * 태어난 시간
      */
-    @Pattern(regexp = "^[0-9]{4}$" , message = "태어난 시간은 4자리 숫자 형식입니다.")
+    @Pattern(regexp = "^[0-9]{1}$" , message = "태어난 시간은 1자리 숫자 형식입니다.")
     private String birthTime;
 
     /**
@@ -79,7 +79,7 @@ public class JoinReq {
      * 핸드폰 번호
      */
     @NotBlank(message = "핸드폰번호는 필수 입력값입니다.")
-    @Pattern(regexp = "^[0-9]{0,12}$" , message = "핸드폰번호는 12자리 숫자 형식입니다.")
+    @Pattern(regexp = "^[0-9]{0,12}$" , message = "핸드폰번호는 최대 12자리 숫자 형식입니다.")
     private String phoneNm;
 
     /**

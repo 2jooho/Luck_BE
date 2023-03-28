@@ -41,6 +41,7 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     private Long id;
 
     /** 아이디 */
+    @Column(name = "USER_ID", nullable = false)
     private String userId;
 
 //    /** 사용자 번호 */
@@ -132,7 +133,7 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     @Column(name = "UPUS_ID", length = 20)
     private String upusId;
 
-//    @JoinColumn(name = "USER_ID")
+//    @JoinColumn(name = "USER_NO")
 //    @OneToOne(fetch = FetchType.LAZY)
 //    private UserLuckInfoEntity userLuckInfoEntity;
 

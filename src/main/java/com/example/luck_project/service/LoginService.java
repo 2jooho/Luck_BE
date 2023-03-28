@@ -133,11 +133,11 @@ public class LoginService extends ApiSupport {
         String loginType = "basic";
         String passwdUpdateYn = "N";
 
-        log.info("[{}] 고객 정보 조회: pw : {}", userId, passwordEncoder.encode(password));
+        log.info("[{}] 고객 정보 조회", userId);
         Optional<UserEntity> userEntity = userInfoRepository.findByUserId(userId);
         userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
-        log.info("[{}][{}] 계정 잠금 체크 및 휴면계정 체크", userId, password);
+        log.info("[{}] 계정 잠금 체크 및 휴면계정 체크", userId);
         // 로그인 실패 카운트 10회 이상일 경우 로그인 실패
         int loginCount = loginHistoryRepository.countByUserIdAndLoginIscode(userId, "X").get();
         System.out.println("loginCount:" + loginCount);

@@ -1,16 +1,14 @@
 package com.example.luck_project.controller;
 
 import com.example.luck_project.controller.constants.BaseController;
+import com.example.luck_project.dto.request.ConfirmsSMS;
 import com.example.luck_project.dto.request.SendSMS;
 import com.example.luck_project.service.OtpService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Random;
@@ -23,8 +21,8 @@ public class OtpController extends BaseController {
     @Autowired
     private OtpService otpService;
 
-//    @PostMapping("/common/otp/send.do")
-//    public ResponseEntity<OtpRes> luckLogin(@Validated @RequestBody OtpReq otpReq){
+//    @PostMapping("/otp/send.do")
+//    public ResponseEntity<OtpRes> luckLogin(@Validated @RequestMappingestBody OtpReseq otpReq){
 //        Map<String, String> paramMap = new HashMap<>();
 //        String osType = otpReq.getOsType();
 //
@@ -40,12 +38,20 @@ public class OtpController extends BaseController {
 //        return new ResponseEntity<>(otpRes, HttpStatus.OK);
 //    }
 
-//    @PostMapping("/check/sendSMS")
-//    public ResponseEntity<Object> sendSMS(@Valid SendSMS sendSMS) {
+//    @PostMapping("/otp/sendSMS")
+//    public ResponseEntity<Object> sendSMS(@RequestBody @Valid SendSMS sendSMS) {
 //        otpService.certifiedPhoneNumber(sendSMS);
 //
 //        return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
 //    }
+
+    //인증번호 확인
+    @PostMapping("/sms-certification/confirms")
+    public ResponseEntity<Object> SmsVerification(@RequestBody @Valid ConfirmsSMS confirmsSMS) {
+        otpService.verifySms(confirmsSMS);
+
+        return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
+    }
 
 
 

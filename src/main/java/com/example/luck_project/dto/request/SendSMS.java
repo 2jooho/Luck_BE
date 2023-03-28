@@ -16,7 +16,7 @@ public class SendSMS {
     @Pattern(regexp = "^[0-9]{0,11}$" , message = "핸드폰번호는 11자리 숫자 형식입니다.")
     private String phoneNm;
 
-    @NotBlank(message = "통신사는 필수 입력값입니다.")
-    @Pattern(regexp = "^[1234]{1}$" , message = "통신사 형식은 1,2,3,4 입니다.")
-    private String phoneType;
+//    @NotBlank(message = "통신사는 필수 입력값입니다.")
+//    @Pattern(regexp = "^[1234]{1}$" , message = "통신사 형식은 1,2,3,4 입니다.")
+//    private String phoneType;
 }

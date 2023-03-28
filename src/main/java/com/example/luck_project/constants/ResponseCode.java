@@ -56,6 +56,7 @@ public enum ResponseCode {
     USER_LUCK_NOT_FOUND("118", "사용자 사주 정보 미존재", HttpStatus.INTERNAL_SERVER_ERROR),
 
     USER_NOT_FOUND_PAYMENT("119", "결제 정보가 존재하지 않는 계정", HttpStatus.INTERNAL_SERVER_ERROR),
+    PHONE_AUTH_NUMBER_FAIL("120", "인증번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
 
     ;
     

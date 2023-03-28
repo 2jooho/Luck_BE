@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_FILE_NAME">./logs</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout charset="UTF-8" pattern="%d %-5level [%t] [%F:%L] (%m)%n"/>
+        </Console>
+
+        <RollingFile name="API">
+            <fileName>${LOG_FILE_NAME}/if/api.log</fileName>
+            <FilePattern>${LOG_FILE_NAME}/if/api_%d{yyyyMMdd}.log</FilePattern>
+            <PatternLayout>
+                <pattern>%d %-5level [%t] [%F:%L] %replace{%msg}{[\r\n]+}{|}%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="ERROR">
+            <fileName>${LOG_FILE_NAME}/error/error.log</fileName>
+            <FilePattern>${LOG_FILE_NAME}/error/error_%d{yyyyMMdd}.log</FilePattern>
+            <PatternLayout>
+                <pattern>%d %-5level [%t] [%F:%L] %replace{%msg}{[\r\n]+}{|}%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+            </Policies>
+            <ThresholdFilter level="ERROR"/>
+        </RollingFile>
+
+        <RollingFile name="RESULT">
+            <fileName>${LOG_FILE_NAME}/result/result.log</fileName>
+            <FilePattern>${LOG_FILE_NAME}/result/result_%d{yyyyMMdd}.log</FilePattern>
+            <PatternLayout>
+                <pattern>%d %msg %n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="SQL">
+            <fileName>${LOG_FILE_NAME}/sql/sql.log</fileName>
+            <FilePattern>${LOG_FILE_NAME}/sql/sql_%d{yyyyMMdd}.log</FilePattern>
+            <PatternLayout>
+                <pattern>%d %5level [%t] %msg %n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+
+        <Logger name="INFO" level="info" additivity="false">
+            <AppenderRef ref="API" />
+            <AppenderRef ref="ERROR" />
+        </Logger>
+        <Logger name="RESULT" level="info" additivity="false">
+            <AppenderRef ref="RESULT" />
+        </Logger>
+
+    </Loggers>
+</Configuration>

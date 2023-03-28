@@ -1,18 +1,27 @@
 package com.example.luck_project.service;
 
 import com.example.luck_project.common.util.PropertyUtil;
+import com.example.luck_project.common.util.RedisUtil;
+import com.example.luck_project.dto.request.ConfirmsSMS;
 import com.example.luck_project.dto.request.SendSMS;
 import com.example.luck_project.dto.response.OtpRes;
+import com.example.luck_project.exception.CustomException;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import static com.example.luck_project.constants.ResponseCode.PHONE_AUTH_NUMBER_FAIL;
+import static com.example.luck_project.constants.ResponseCode.RE_TOKEN_RESPONSE;
 
 
 @Service
@@ -22,6 +31,12 @@ public class OtpService {
     private String api_key = "본인의 API KEY";
     @Value("${coolsms.api.secret}")
     private String api_secret = "본인의 API SECRET";
+
+    private RedisUtil redisUtil;
+
+    private final long LIMIT_TIME = 3*60L;
+
+    private final String PREFIX = "sms:";
 
     /**
      * SMS로 OTP를 발송한다.
@@ -81,6 +96,21 @@ public class OtpService {
 //            System.out.println(e.getMessage());
 //            System.out.println(e.getCode());
 //        }
+//        //redis에  3분 동안 넣기
+//        redisUtil.setExpireValue(PREFIX + phoneNumber, authNm, LIMIT_TIME);
 //    }
+
+    /**
+     * 인증번호 확인
+     * @param confirmsSMS
+     */
+    public void verifySms(ConfirmsSMS confirmsSMS) {
+        String authNm = confirmsSMS.getAuthNm();
+        String phoneNumber = confirmsSMS.getPhoneNm();
+        if(!StringUtils.equals(String.valueOf(redisUtil.getValue(PREFIX + phoneNumber)), authNm)){
+            throw new CustomException(PHONE_AUTH_NUMBER_FAIL);
+        }
+    }
+
 
 }

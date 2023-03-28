@@ -69,8 +69,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.6'
 	// Jasypt
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
-	// lang3
-	implementation 'org.apache.commons:commons-lang3:3.9'
 	// log4j2
 	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
@@ -131,6 +129,19 @@ dependencies {
 
     //coolsms
     compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+
+    //view
+//    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+//    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+//    implementation 'org.springframework.boot:spring-boot-devtools'
+//    implementation 'org.webjars.bower:bootstrap:4.3.1'
+//    implementation 'org.webjars.bower:vue:2.5.16'
+//    implementation 'org.webjars.bower:axios:0.17.1'
+//    implementation 'com.google.code.gson:gson:2.8.0'
+
+    // apache
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
 tasks.named('test') {

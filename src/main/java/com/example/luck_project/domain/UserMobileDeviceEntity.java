@@ -43,6 +43,7 @@ public class UserMobileDeviceEntity {
 
     /** 등록자 */
     @Column(name = "RGPS_ID", length = 20)
+    @Builder.Default
     private String rgpsId = "API";
 
     /** 수정일시 */

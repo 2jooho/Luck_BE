@@ -24,7 +24,6 @@ public class CateDetailPureEntity {
      * 비장술 타입
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PURE_TYPE")
     private String pureType;
 

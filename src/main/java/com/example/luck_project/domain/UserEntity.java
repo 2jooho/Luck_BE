@@ -109,6 +109,7 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     //delete 쿼리가 발생하였을때, sqldelete어노테이션의 쿼리가 실행된다.
     //sqldelete의 실행 쿼리는 트랜잭션이 끝나고 실제 db에 쿼리를 보낼때 관리
     @Column(name = "BOLTER_FALG")
+    @Builder.Default
     private boolean deleted = Boolean.FALSE; // 탈퇴 여부 기본값 false
 
     /** 회원 탈퇴 일자 */
@@ -122,6 +123,7 @@ public class UserEntity implements UserDetails, Persistable<Long> {
 
     /** 등록자 */
     @Column(name = "RGPS_ID")
+    @Builder.Default
     private String rgpsId = "API";
 
     /** 수정일시 */

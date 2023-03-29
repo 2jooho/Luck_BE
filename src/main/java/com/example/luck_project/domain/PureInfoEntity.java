@@ -17,7 +17,6 @@ public class PureInfoEntity {
 
     /** 비장술 조합 */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PURE_CNCTN")
     private String pureCnctn;
 

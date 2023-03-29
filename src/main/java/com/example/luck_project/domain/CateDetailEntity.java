@@ -17,7 +17,6 @@ public class CateDetailEntity extends BaseEntity {
 
     /** 카테고리 코드 */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATE_CD")
     private String cateCd;
 

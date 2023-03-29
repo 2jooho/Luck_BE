@@ -16,7 +16,6 @@ import javax.persistence.*;
 public class CateDetailImgEntity {
     /** 카테고리 상세 코드 */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATE_DETL_CD")
     private String cateDetlCd;
 

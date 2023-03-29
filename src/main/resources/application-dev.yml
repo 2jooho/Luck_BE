@@ -10,6 +10,8 @@ spring:
     ##  username: ENC(cN0s/mR5UggvjHYgMFI3rQ==)
     ##  password: ENC(+TXnxk0d55R4/NuLYoz0AnM3/A2hh4Nn)
   jpa:
+    database: mysql   # 추가 해준 부분
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect # 추가 해준 부분
     open-in-view: true
     show-sql: true
     properties:

@@ -38,12 +38,12 @@ public class OtpController extends BaseController {
 //        return new ResponseEntity<>(otpRes, HttpStatus.OK);
 //    }
 
-//    @PostMapping("/otp/sendSMS")
-//    public ResponseEntity<Object> sendSMS(@RequestBody @Valid SendSMS sendSMS) {
-//        otpService.certifiedPhoneNumber(sendSMS);
-//
-//        return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
-//    }
+    @PostMapping("/otp/sendSMS")
+    public ResponseEntity<Object> sendSMS(@RequestBody @Valid SendSMS sendSMS) {
+        otpService.certifiedPhoneNumber(sendSMS);
+
+        return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
+    }
 
     //인증번호 확인
     @PostMapping("/sms-certification/confirms")

@@ -41,7 +41,7 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     private Long id;
 
     /** 아이디 */
-    @Column(name = "USER_ID", nullable = false)
+    @Column(name = "USER_ID", nullable = false, unique = true)
     private String userId;
 
 //    /** 사용자 번호 */

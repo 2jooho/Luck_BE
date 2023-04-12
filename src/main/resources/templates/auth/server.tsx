@@ -1,5 +1,5 @@
 import client from './client';
-import {randomPhotoState, searchUserState} from './type';
+import {randomPhotoState, searchUserState, RegisterField} from './type';
 
 export const getPhoto = async () => {
     const response = await client.get<randomPhotoState[]>('/photos/random', {
@@ -29,10 +29,13 @@ export const searchUser = async (text: string) => {
     return response.data.results;
 };
 
-const api = new Axios(true);
 
-export const getUserData = async (param: string) => {
-    const res = await api.(
 
-    )
+export const Login = async ({userId, password}:RegisterField) => {
+    const response = await authAPI.post(API_ROUTE.AUTH.LOG_IN,
+        {
+            userId,
+            password,
+        });
+    return response;
 }

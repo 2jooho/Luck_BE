@@ -11,8 +11,38 @@ import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import Loading from '../components/Loading'
 import { useIsFocused } from '@react-navigation/native';
+import { logIn } from 'api';
 
 const Login = ({navigation}) => {
+
+    const { mutate } = useMutation(logIn, {
+        ...QUERY.DEFAULT_CONFIG,
+        onSuccess: (res) => {
+            console.log(res);
+            setUsers(res.data); // 데이터는 response.data 안에 들어있습니다.
+            // AsyncStorage.multiSet([
+            //     ['accessToken', response.data.accessToken],
+            //     ['refreshToken', response.data.refreshToken]
+            // ])
+            ///response.headers.Authorization.split('Bearer ')[1]
+            // alert(JSON.stringify(res.headers));
+            const accessToken = JSON.stringify(res.headers['authorization']);
+            const refreshToken = JSON.stringify(res.headers['refreshtoken']);
+
+            console.log("accessToken:"+accessToken);
+            console.log("refreshToken:"+refreshToken);
+            AsyncStorage.setItem('accessToken', accessToken);
+            AsyncStorage.setItem('refreshToken', refreshToken);
+            AsyncStorage.setItem('userId', userId);
+            if(loading){
+                AsyncStorage.setItem('loging', 'Y');
+            }
+
+            navigation.navigate('MainPage', {userId: userId});
+        },
+        onError: (error: unknown) => errorHandler(error),
+    });
+
 
     // 외부연동
     // axios

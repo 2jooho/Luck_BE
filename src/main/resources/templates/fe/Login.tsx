@@ -12,14 +12,35 @@ import axios from 'axios';
 import Loading from '../components/Loading'
 import { useIsFocused } from '@react-navigation/native';
 import { logIn } from 'api';
+import { useQuery, useMutation } from 'react-query';
+import { useDispatch } from 'react-redux';
+import { setUserData } from 'redux/modules/userData';
 
 const Login = ({navigation}) => {
 
-    const { mutate } = useMutation(logIn, {
-        ...QUERY.DEFAULT_CONFIG,
+    const dispatch = useDispatch();
+
+    // const { data: taskData, refetch } = useQuery<TaskDetailDataForm>(
+    //     taskQueryKey,
+    //     fetchTaskData,
+    //     {
+    //         ...QUERY.DEFAULT_CONFIG,
+    //         enabled: false,
+    //         onSuccess: (data) => {
+    //             if (data) dispatch(setTicketData(data?.tickets));
+    //             dispatch(setLabel('all'));
+    //         },
+    //         onError: (error: unknown) => errorHandler(error),
+    //     }
+    // );
+
+    const { mutate } = useMutation(logIn(userId, password), {
+        retry:false,
         onSuccess: (res) => {
             console.log(res);
-            setUsers(res.data); // 데이터는 response.data 안에 들어있습니다.
+            const {data: userData} = res;
+            setUsers(userData); // 데이터는 response.data 안에 들어있습니다.
+            dispatch(setUserData(userData));
             // AsyncStorage.multiSet([
             //     ['accessToken', response.data.accessToken],
             //     ['refreshToken', response.data.refreshToken]
@@ -40,7 +61,8 @@ const Login = ({navigation}) => {
 
             navigation.navigate('MainPage', {userId: userId});
         },
-        onError: (error: unknown) => errorHandler(error),
+        // onError: (error: unknown) => errorHandler(error),
+        onError: (error: unknown) => console.log(error)
     });
 
 

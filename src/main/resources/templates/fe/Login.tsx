@@ -13,8 +13,9 @@ import Loading from '../components/Loading'
 import { useIsFocused } from '@react-navigation/native';
 import { logIn } from 'api';
 import { useQuery, useMutation } from 'react-query';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUserData } from 'redux/modules/userData';
+import GoogleLogin from "../component/firebaseComponent/GoogleLogin";
 
 const Login = ({navigation}) => {
 
@@ -33,6 +34,9 @@ const Login = ({navigation}) => {
     //         onError: (error: unknown) => errorHandler(error),
     //     }
     // );
+    const userData = useSelector((state: any) => {
+        return state.userDataSlicer;
+    });
 
     const { mutate } = useMutation(logIn(userId, password), {
         retry:false,
@@ -62,7 +66,11 @@ const Login = ({navigation}) => {
             navigation.navigate('MainPage', {userId: userId});
         },
         // onError: (error: unknown) => errorHandler(error),
-        onError: (error: unknown) => console.log(error)
+        onError: (error: unknown) => {
+            console.log(error);
+            setLoading(false);
+            setModallOpenYn(true);
+        }
     });
 
 
@@ -186,6 +194,7 @@ const Login = ({navigation}) => {
     const [error, setError] = useState(null);
     const [users, setUsers] : any = useState([]);
     const [loging, setLoging] = useState(false);
+    const [modallOpenYn, setModallOpenYn] = useState(false);
     // const data = [{title: 'test', imgUrl:'../assets/images/main/logo.png'}, {title: 'test', imgUrl:'../assets/images/main/logo.png'}, {title: 'test', imgUrl:'../assets/images/main/logo.png'}, {title: 'test', imgUrl:'../assets/images/main/logo.png'}]
 
     const idInputRef = useRef<TextInput | null>(null);
@@ -195,6 +204,7 @@ const Login = ({navigation}) => {
         loading ? <Loading /> :
         <SafeAreaView style={styles.container}>
             <View>
+            <Modall openYn ={modallOpenYn}></Modall>
             <ImageBackground style={styles.BackgrounImgView}
             source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/login/login_bg-02.jpg'}}  //이미지경로
             resizeMode="cover">
@@ -253,6 +263,7 @@ const Login = ({navigation}) => {
                         style={styles.EmailLoginButton}
                         onPress={() => googleLoginClick()}>
                         <Text style={{color: '#ffffff'}}>구글로 로그인</Text>
+                        {/*<GoogleLogin />*/}
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.EmailJoinButton}

@@ -33,6 +33,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import DrawerNavigator from './src/route/DrawerNavigator';
 import StackNavigator from './src/route/StackNavigator';
 import { QueryClient, QueryClientProvider } from "react-query";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 //import 목록
 //npm install -save axios
@@ -73,7 +74,28 @@ import { QueryClient, QueryClientProvider } from "react-query";
 //drawer 라이브러리
 // npm install @react-navigation/drawer
 
+//리액트 쿼리
+// npm i react-query
+
+//리덕스 툴킷
+//npm install @reduxjs/toolkit
+
+//구글 로그인
+// npm install @react-native-google-signin/google-signin --save
+
+//모달창
+//npm install react-native-simple-modal --save
+
 const App: React.FunctionComponent = () => {
+
+  const googleSigninConfigure = () => {
+    GoogleSignin.configure({ webClientId: '613725492005-eao3uk13qkbqhllhnguaola7h8e1gh37.apps.googleusercontent.com'})
+  }
+  useEffect(()=>{
+    googleSigninConfigure();
+  },[])
+
+// ...code
 
   const [fontLoad, setFontLoad] = useState(false);
   const [authorizationYn, setAuthorization] = useState('N');

@@ -48,8 +48,12 @@ const GoogleLogin = () => {
         // 첫번째 줄은 구글에 로그인하면서 유저의 idToken을 가져온다.
         //     두번째 줄은 가져온 유저의 idToken을 이용하여 Google credential을 생성한다.
         //     마지막 줄은 생성된 credential을 이용해 사용자를 앱으로 로그인 시킨다.
-        const { idToken } = await GoogleSignin.signIn();
-        console.log("idToken"+idToken);
+        //userInfo에는 id_token, scope, serverAuthCode, user : {email, name, photo} 가 들어있다.
+
+        const userInfo = await GoogleSignin.signIn();
+        console.log("idToken:"+userInfo.idToken);
+        console.log("serverAuthCode:"+userInfo.serverAuthCode);
+        console.log("email:"+userInfo.user.email+"/name:"+userInfo.user.name);
         const googleCredential = auth.GoogleAuthProvider.credential(idToken);
         return auth().signInWithCredential(googleCredential);
     }

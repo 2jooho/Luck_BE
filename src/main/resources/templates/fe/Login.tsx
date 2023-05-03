@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {View, Text, SafeAreaView, FlatList, ActivityIndicator, StyleSheet, StatusBar, Image, ImageBackground, TextInput, Alert, BackHandler} from 'react-native';
+import {View, Text, SafeAreaView, FlatList, ActivityIndicator, StyleSheet, StatusBar, Image, ImageBackground, TextInput, Alert, BackHandler, Platform} from 'react-native';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import CateListHeader from '../components/CateListHeader';
 import BestDayAndTime from '../components/BestDayAndTime';
@@ -16,11 +16,15 @@ import { useQuery, useMutation } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserData } from 'redux/modules/userData';
 import GoogleLogin from "../component/firebaseComponent/GoogleLogin";
-
+import DeviceInfo, {
+    getVersion,
+    getUniqueId,
+} from 'react-native-device-info';
 const Login = ({navigation}) => {
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch(); //리덕스 툴킷
 
+    //리액트 쿼리+리덕스 툴킷
     // const { data: taskData, refetch } = useQuery<TaskDetailDataForm>(
     //     taskQueryKey,
     //     fetchTaskData,
@@ -34,10 +38,13 @@ const Login = ({navigation}) => {
     //         onError: (error: unknown) => errorHandler(error),
     //     }
     // );
+
+    //리덕스 툴킷 조회
     const userData = useSelector((state: any) => {
         return state.userDataSlicer;
     });
 
+    //리액트쿼리 useMutation(post, delete, put 방식에 많이 사용된다.)
     const { mutate } = useMutation(logIn(userId, password), {
         retry:false,
         onSuccess: (res) => {
@@ -62,7 +69,7 @@ const Login = ({navigation}) => {
             if(loading){
                 AsyncStorage.setItem('loging', 'Y');
             }
-
+            //             queryClient.invalidateQueries(QUERY.KEY.USER_DATA);
             navigation.navigate('MainPage', {userId: userId});
         },
         // onError: (error: unknown) => errorHandler(error),
@@ -74,6 +81,23 @@ const Login = ({navigation}) => {
     });
 
 
+    // const { mutate } = useMutation(setUserNickname, {
+    //     ...QUERY.DEFAULT_CONFIG,
+    //     onSuccess: (res) => {
+    //         const { data } = res;
+    //         localStorage.setItem(QUERY.KEY.USER_DATA, JSON.stringify({ data }));
+    //         dispatch(setUserData(data));
+    //         queryClient.invalidateQueries(QUERY.KEY.USER_DATA);
+    //         sendToast.success(TOASTIFY.SUCCESS.USER_SETTING);
+    //     },
+    //     onError: (error: unknown) => {
+    //         errorHandler(error);
+    //         sendToast.error(TOASTIFY.ERROR.CHANGE_USER_NAME);
+    //     },
+    // });
+    //
+    // const onNickname = async (data: NicknameForm) => mutate(data);
+
     // 외부연동
     // axios
     let REQUEST_URL = 'http://ec2-3-34-36-9.ap-northeast-2.compute.amazonaws.com:8081/luck/auth/login';
@@ -84,9 +108,9 @@ const Login = ({navigation}) => {
                 {
                     userId: userId,
                     password: password,
-                    deviceId: 'test',
-                    osType: '2',
-                    osVer: '1.0',
+                    deviceId: await getUniqueId(),
+                    osType:  Platform.OS === 'ios'? '1': '2',
+                    osVer: await getVersion(),
                     loginType: 'M',
                     loginDvsn: 'B'
                 },

@@ -14,6 +14,10 @@ import axios from 'axios';
 import Loading from '../components/Loading';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { MainPageApi } from 'api';
+import { useQuery } from 'react-query';
+import { getMainPage } from 'api';
+import { useDispatch } from 'react-redux';
 
 const wait = (timeout) => {
     return new Promise(resolve => {
@@ -27,6 +31,30 @@ const MainPage = ({navigation, route}) => {
     }
     const [response, setResponse] = useState<MainDate[]>([]);
     const [users, setUsers]: any = useState([]);
+    const dispatch = useDispatch();
+    // const { data: taskData, refetch } = useQuery<TaskDetailDataForm>(
+    //     taskQueryKey,
+    //     fetchTaskData,
+    //     {
+    //         ...QUERY.DEFAULT_CONFIG,
+    //         enabled: false,
+    //         onSuccess: (data) => {
+    //             if (data) dispatch(setTicketData(data?.tickets));
+    //             dispatch(setLabel('all'));
+    //         },
+    //         onError: (error: unknown) => errorHandler(error),
+    //     }
+    // );
+    const {data: userData} = useQuery('MainPage', MainPageApi(userId), {
+        retry: false,
+        // onSuccess: (data) => {
+        //     if(data){
+        //         dispatch(setMainPage(data));
+        //     }
+        // },
+        onError: (error:unknown) => alert('error'),
+        }
+    );
 
     // 외부연동
     // axios

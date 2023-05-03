@@ -86,6 +86,18 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 //모달창
 //npm install react-native-simple-modal --save
 
+//encrypted-storage
+//npm install react-native-encrypted-storage
+
+//핸드폰 정보 조회
+//npm install --save react-native-device-info
+
+//앱 버전 정보 조회
+//npm install --save react-native-version-check
+
+//env라이브러리
+//npm install -dev react-native-dotenv
+
 const App: React.FunctionComponent = () => {
 
   const googleSigninConfigure = () => {

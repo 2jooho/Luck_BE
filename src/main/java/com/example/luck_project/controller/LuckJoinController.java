@@ -161,7 +161,7 @@ public class LuckJoinController extends BaseController {
         if(userInfo.isPresent()){
             userId = Optional.of(userInfo.get().get("userId")).get().toUpperCase();
             loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
-            if(userId.isBlank() ){
+            if(userId.isBlank()){
                 log.info("userId는 필수 입니다.");
                 throw new CustomException(VALIDATION_FAIL);
             }else if(loginDvsn.isBlank() || !"BKG".contains(loginDvsn)){

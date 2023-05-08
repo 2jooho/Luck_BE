@@ -1,6 +1,7 @@
 package com.example.luck_project.dto.request;
 
 import com.example.luck_project.domain.UserEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

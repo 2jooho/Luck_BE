@@ -98,6 +98,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 //env라이브러리
 //npm install -dev react-native-dotenv
 
+
 const App: React.FunctionComponent = () => {
 
   const googleSigninConfigure = () => {

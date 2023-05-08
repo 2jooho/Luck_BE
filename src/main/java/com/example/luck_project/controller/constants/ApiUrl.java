@@ -16,4 +16,8 @@ public class ApiUrl {
     public static final String AUTH_NICKNAME_CHECK_URL = "/auth/nickNameCheck";
     public static final String AUTH_USER_SETTING_URL = "/auth/userSetting";
     public static final String AUTH_BOLTER_URL = "/auth/bolter";
+    public static final String AUTH_ID_FIND_URL = "/auth/find/id";
+    public static final String AUTH_RESET_PW_USER_INFO_URL = "/auth/reset/password/userInfo";
+    public static final String AUTH_RESET_PW_URL = "/auth/reset/password";
+    public static final String MYPAGE_URL = "/myPage.do";
 }

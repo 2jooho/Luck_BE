@@ -2,9 +2,12 @@ package com.example.luck_project.controller;
 
 import com.example.luck_project.common.config.Oauth.Constant;
 import com.example.luck_project.controller.constants.BaseController;
+import com.example.luck_project.dto.request.FindIdReq;
 import com.example.luck_project.dto.request.JoinReq;
+import com.example.luck_project.dto.request.ResetPwReq;
 import com.example.luck_project.dto.request.SocialJoinReq;
 import com.example.luck_project.dto.response.JoinRes;
+import com.example.luck_project.dto.response.ResetPwUserInfoRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.service.JoinService;
 import lombok.extern.slf4j.Slf4j;
@@ -174,6 +177,44 @@ public class LuckJoinController extends BaseController {
         }
 
         joinService.userBolter(userId, loginDvsn);
+
+        return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
+    }
+
+    /**
+     * 아이디 찾기
+     * @return
+     */
+    @PostMapping(AUTH_ID_FIND_URL)
+    public ResponseEntity findUserId(@Validated @RequestBody FindIdReq findIdReq) {
+
+        String userId = joinService.findUserId(findIdReq);
+
+        return new ResponseEntity<>(userId, getSuccessHeaders(), HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 재설정(1) - 아이디로 회원정보 조회
+     * @param userId
+     * @return
+     */
+    @PostMapping(AUTH_RESET_PW_USER_INFO_URL)
+    public ResponseEntity resetPwUserInfo(@Validated @RequestBody String userId) {
+
+        ResetPwUserInfoRes res = joinService.getResetPwUserInfo(userId);
+
+        return new ResponseEntity<>(res, getSuccessHeaders(), HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 재설정(2) - 재설정
+     * @param resetPwReq
+     * @return
+     */
+    @PutMapping(AUTH_RESET_PW_URL)
+    public ResponseEntity resetPwUserInfo(@Validated @RequestBody ResetPwReq resetPwReq) {
+
+        joinService.setResetPw(resetPwReq);
 
         return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
     }

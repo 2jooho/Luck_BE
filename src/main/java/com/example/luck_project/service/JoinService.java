@@ -4,9 +4,12 @@ import com.example.luck_project.common.config.Oauth.Constant;
 import com.example.luck_project.common.util.DataCode;
 import com.example.luck_project.constants.ResponseCode;
 import com.example.luck_project.domain.*;
+import com.example.luck_project.dto.request.FindIdReq;
 import com.example.luck_project.dto.request.JoinReq;
+import com.example.luck_project.dto.request.ResetPwReq;
 import com.example.luck_project.dto.request.SocialJoinReq;
 import com.example.luck_project.dto.response.JoinRes;
+import com.example.luck_project.dto.response.ResetPwUserInfoRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +44,7 @@ public class JoinService {
 
     @Autowired
     private UserLuckInfoRepository userLuckInfoRepository;
+
     private final PasswordEncoder passwordEncoder;
 
 
@@ -266,6 +270,53 @@ public class JoinService {
         userEntity.get().bolterDateUpdate(LocalDateTime.now(), LocalDateTime.now(), "API");
         //회원 탈퇴 처리
         userInfoRepository.delete(userEntity.get());
+    }
+
+    /**
+     * 사용자 ID 찾기
+     * @param findIdReq
+     * @return
+     */
+    public String findUserId(FindIdReq findIdReq) {
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserNameAndPhoneNmAndBirth(findIdReq.getName(), findIdReq.getPhoneNm(), findIdReq.getBrith());
+        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        String userId = userEntity.get().getUserId();
+        return userId;
+    }
+
+    /**
+     * 비밀번호 재설정(1) - 아이디로 회원정보 조회
+     * @param userId
+     * @return
+     */
+    public ResetPwUserInfoRes getResetPwUserInfo(String userId) {
+        //회원정보 조회
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserId(userId);
+        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        //응답설정
+        ResetPwUserInfoRes res = new ResetPwUserInfoRes();
+        res.entityToResetPwUserInfoRes(userEntity.get());
+
+        return res;
+    }
+
+    /**
+     * 비밀번호 재설정(2) - 재설정
+     * @return
+     */
+    @Transactional
+    public void setResetPw(ResetPwReq resetPwReq) {
+        if(resetPwReq.getNewPassword().equals(resetPwReq.getNewPasswordCheck())){
+            throw new CustomException(RESET_PASSWORD_MATCH_FAIL);
+        }
+
+        //회원정보 조회
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserId(resetPwReq.getUserId());
+        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        //비밀번호 업데이트
+        userEntity.get().resetPassword(passwordEncoder.encode(resetPwReq.getNewPassword()));
     }
 
 }

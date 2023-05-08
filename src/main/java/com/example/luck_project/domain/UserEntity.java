@@ -1,5 +1,6 @@
 package com.example.luck_project.domain;
 
+import com.example.luck_project.dto.response.ResetPwUserInfoRes;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
@@ -204,6 +205,14 @@ public class UserEntity implements UserDetails, Persistable<Long> {
 
     @OneToOne(mappedBy = "userEntity")
     UserMobileDeviceEntity userMobileDeviceEntity;
+
+    /**
+     * 비밀번호 재설정
+     * @param password
+     */
+    public void resetPassword(String password){
+        this.userPw = password;
+    }
 
 }
 

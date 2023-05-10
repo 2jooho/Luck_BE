@@ -20,7 +20,7 @@ public abstract class BaseEntity {
     private LocalDateTime rgsttDtm;
 
     /** 등록자 */
-    @Column(name = "RGPS_ID")
+    @Column(name = "RGPS_ID", length = 20)
     private String rgpsId = "API";
 
     /** 수정일시 */

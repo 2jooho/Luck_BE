@@ -47,6 +47,8 @@ public class JoinService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final TimeLuckSymbolRepository timeLuckSymbolRepository;
+
 
     /**
      * 회원가입
@@ -60,6 +62,7 @@ public class JoinService {
         String userName = joinReq.getUserName();
         String nickName = joinReq.getNickname();
         String loginDvsn = joinReq.getLoginDvsn();
+        String timeType = StringUtils.defaultString(joinReq.getBirthTimeType(), "");
 
         log.info("[{}][BASIC] 계정 존재 여부 체크", userName);
         //이름, 핸드폰번호 체크
@@ -86,7 +89,7 @@ public class JoinService {
         joinRes.setUserId(userId);
         joinRes.setNickName(nickName);
 
-        this.userSetting(joinReq, userId, loginDvsn);
+        this.userSetting(joinReq, userId, loginDvsn, timeType);
 
         return joinRes;
     }
@@ -136,16 +139,17 @@ public class JoinService {
         String userName = socialJoinReq.getUserName();
         String nickName = socialJoinReq.getNickname();
         String loginDvsn = socialJoinReq.getLoginDvsn();
+        String timeType = StringUtils.defaultString(socialJoinReq.getBirthTimeType(), "");
 
         log.info("[{}][BASIC] 계정 존재 여부 체크", userName);
         //이름, 핸드폰번호 체크
-        Optional<UserEntity> UserEntity = userInfoRepository.findByUserNameAndPhoneNm(userName, socialJoinReq.getPhoneNm());
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserNameAndPhoneNm(userName, socialJoinReq.getPhoneNm());
         //사용자 정보 존재 시
-        if (UserEntity.isPresent()) {
+        if (userEntity.isPresent()) {
             log.info("이미 존재하는 계정 : {}/{}/{}", userId, userName, socialJoinReq.getPhoneNm());
             Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put("userId", UserEntity.get().getUserId());
-            paramMap.put("loginDvsn", UserEntity.get().getLoginDvsn());
+            paramMap.put("userId", userEntity.get().getUserId());
+            paramMap.put("loginDvsn", userEntity.get().getLoginDvsn());
             throw new CustomException(ALREADY_EXISTS_USER);
         }
 
@@ -161,7 +165,7 @@ public class JoinService {
         joinReq.setBirth(socialJoinReq.getBirth());
         joinReq.setBirthFlag(socialJoinReq.getBirthFlag());
 
-        this.userSetting(joinReq, userId, loginDvsn);
+        this.userSetting(joinReq, userId, loginDvsn, timeType);
 
         return joinRes;
     }
@@ -173,7 +177,7 @@ public class JoinService {
      * @param loginDvsn
      */
     @Transactional
-    public void userSetting(JoinReq joinReq, String userId, String loginDvsn) {
+    public void userSetting(JoinReq joinReq, String userId, String loginDvsn, String timeType) {
         //사용자 정보 조회
 //        Optional<UserEntity> userEntity = userInfoRepository.findByUserIdAndLoginDvsn(userId, loginDvsn);
 //        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -202,19 +206,49 @@ public class JoinService {
         }
         calendaRepository.orElseThrow(() -> new CustomException(USER_LUCK_NOT_FOUND));
         System.out.println("년지:" + calendaRepository.get().getCdKyganjee() + "일지:" + calendaRepository.get().getCdKdganjee());
-        String yearB = calendaRepository.get().getCdKyganjee().substring(1, 2);
-        String yearT = calendaRepository.get().getCdKyganjee().substring(0, 1);
-        String dayB = calendaRepository.get().getCdKdganjee().substring(1, 2);
-        String dayT = calendaRepository.get().getCdKdganjee().substring(0, 1);
+
+        //한글 사주(년월일)
+        String koYearB = calendaRepository.get().getCdKyganjee().substring(1, 2);
+        String koYearT = calendaRepository.get().getCdKyganjee().substring(0, 1);
+        String koDayB = calendaRepository.get().getCdKdganjee().substring(1, 2);
+        String koDayT = calendaRepository.get().getCdKdganjee().substring(0, 1);
+        String koMonthB = calendaRepository.get().getCdKmganjee().substring(1, 2);
+        String koMonthT = calendaRepository.get().getCdKmganjee().substring(0, 1);
+
+
+        //한자 사주(년월일)
+        String chYearB = calendaRepository.get().getCdHyganjee().substring(1, 2);
+        String chYearT = calendaRepository.get().getCdHyganjee().substring(0, 1);
+        String chDayB = calendaRepository.get().getCdHdganjee().substring(1, 2);
+        String chDayT = calendaRepository.get().getCdHdganjee().substring(0, 1);
+        String chMonthB = calendaRepository.get().getCdHmganjee().substring(1, 2);
+        String chMonthT = calendaRepository.get().getCdHmganjee().substring(0, 1);
+
+
+        String koTimeB = "";
+        String koTimeT = "";
+        String chTimeB = "";
+        String chTimeT = "";
+        if(!timeType.isBlank()){
+            //시주 계산 표 조회
+            Optional<TimeLuckSymbolEntity> timeLuckSymbolEntity = timeLuckSymbolRepository.findByKoDayTopAndTimeType(koDayT, timeType);
+            //시주 정보 설정
+            koTimeB = StringUtils.defaultString(timeLuckSymbolEntity.get().getKoTimeJoo().substring(1, 2), "");
+            koTimeT = StringUtils.defaultString(timeLuckSymbolEntity.get().getKoTimeJoo().substring(0, 1), "");
+            chTimeB = StringUtils.defaultString(timeLuckSymbolEntity.get().getChTimeJoo().substring(1, 2), "");
+            chTimeT = StringUtils.defaultString(timeLuckSymbolEntity.get().getChTimeJoo().substring(0, 1), "");
+        }
+
 
         //사용자 사주 정보 등록
         UserLuckInfoEntity userLuckInfoEntity = new UserLuckInfoEntity();
-        userLuckInfoEntity.of(userId, yearT, yearB, dayT, dayB);
+        userLuckInfoEntity.koOf(userId, koYearT, koYearB, koDayT, koDayB, koMonthT, koMonthB, koTimeT, koTimeB); //한글 등록
+        userLuckInfoEntity.chOf(chYearT, chYearB, chDayT, chDayB, chMonthT, chMonthB, chTimeT, chTimeB); //한자 등록
         userLuckInfoRepository.save(userLuckInfoEntity);
 
         //사용자의 12가지 비장술 조합을 확인 후 갱신
-        String luckCnctn = dayB.concat(yearB);
-        String chnLuckCnctn = yearB.concat(dayB);
+        String luckCnctn = koDayB.concat(koYearB);
+        String chnLuckCnctn = koYearB.concat(koDayB);
         List<String> luckCnctnList = new ArrayList<>();
         luckCnctnList.add(luckCnctn);
         luckCnctnList.add(chnLuckCnctn);
@@ -223,8 +257,8 @@ public class JoinService {
         log.info("비장술 조합 조회:{}", pureCombCnt);
         if (!(pureCombCnt >= 12)) {
             System.out.println("arrlength:" + DataCode.VERS_YEAR_NAME_ARR.length);
-            int pureYearCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, yearB);
-            int pureDayCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, dayB);
+            int pureYearCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, koYearB);
+            int pureDayCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, koDayB);
             System.out.println("pureYearCnt : " + pureYearCnt + "pureDayCnt : " + pureDayCnt);
             for (int i = 0; i < DataCode.VERS_YEAR_NAME_ARR.length; i++) {
                 log.info("befor pureYearCnt :{}/pureDayCnt:{}", pureYearCnt, pureDayCnt);

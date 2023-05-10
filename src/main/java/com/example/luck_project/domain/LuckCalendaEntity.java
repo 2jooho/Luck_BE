@@ -55,28 +55,42 @@ public class LuckCalendaEntity {
      */
     @Column(name = "cd_ld")
     private String cdLd;
+
     /**
-     * 한자년지
+     * 한자년주
      */
     @Column(name = "cd_hyganjee")
     private String cdHyganjee;
+
     /**
-     * 한글년지
+     * 한글년주
      */
     @Column(name = "cd_kyganjee")
     private String cdKyganjee;
 
     /**
-     * 한자일지
+     * 한자일주
      */
     @Column(name = "cd_hdganjee")
     private String cdHdganjee;
 
     /**
-     * 한글일지
+     * 한글일주
      */
     @Column(name = "cd_kdganjee")
     private String cdKdganjee;
+
+    /**
+     * 한자월주
+     */
+    @Column(name = "cd_hmganjee")
+    private String cdHmganjee;
+
+    /**
+     * 한글월주
+     */
+    @Column(name = "cd_kmganjee")
+    private String cdKmganjee;
 
 }
 

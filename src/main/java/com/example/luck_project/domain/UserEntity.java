@@ -73,9 +73,9 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     @Column(name = "BIRTH_FLAG")
     private String birthFlag;
 
-    /** 태어난 시간 */
-    @Column(name = "BIRTH_TIME")
-    private String birthTime;
+    /** 태어난 시간 구분 */
+    @Column(name = "BIRTH_TIME_TYPE", length = 2)
+    private String birthTimeType;
 
     /** 성별 */
     @Column(name = "SEX")

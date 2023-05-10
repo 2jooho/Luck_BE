@@ -1,7 +1,6 @@
 package com.example.luck_project.dto.response;
 
 import com.example.luck_project.domain.UserEntity;
-import com.example.luck_project.dto.TokenInfo;
 import lombok.*;
 
 @Getter

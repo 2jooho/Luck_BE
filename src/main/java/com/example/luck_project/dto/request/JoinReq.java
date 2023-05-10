@@ -64,10 +64,10 @@ public class JoinReq {
     private String birthFlag;
 
     /**
-     * 태어난 시간
+     * 태어난 시간 구분
      */
-    @Pattern(regexp = "^[0-9]{1}$" , message = "태어난 시간은 1자리 숫자 형식입니다.")
-    private String birthTime;
+    @Pattern(regexp = "^[0-9]{1}$" , message = "태어난 시간 구분은 1자리 숫자 형식입니다.")
+    private String birthTimeType;
 
     /**
      * 성별
@@ -113,7 +113,7 @@ public class JoinReq {
                 .userName(userName)
                 .nickName(nickname)
                 .birth(birth)
-                .birthTime(birthTime)
+                .birthTimeType(birthTimeType)
                 .birthFlag(birthFlag)
                 .sex(sex)
                 .phoneNm(phoneNm)

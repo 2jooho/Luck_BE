@@ -11,6 +11,7 @@ import com.example.luck_project.dto.response.ResetPwUserInfoRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.service.JoinService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -131,9 +132,11 @@ public class LuckJoinController extends BaseController {
     public ResponseEntity userSetting(@RequestBody Optional<Map<String, String>> userInfo){
         String userId = "";
         String loginDvsn = "";
+        String timeType = "";
         if(userInfo.isPresent()){
             userId = Optional.of(userInfo.get().get("userId")).get().toUpperCase();
             loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
+            timeType = Optional.of(StringUtils.defaultString(userInfo.get().get("timeType"), "")).get();
             if(userId.isBlank() ){
                 log.info("userId는 필수 입니다.");
                 throw new CustomException(VALIDATION_FAIL);
@@ -146,7 +149,8 @@ public class LuckJoinController extends BaseController {
             throw new CustomException(VALIDATION_FAIL);
         }
 
-        joinService.userSetting(null, userId, loginDvsn);
+
+        joinService.userSetting(null, userId, loginDvsn, timeType);
 
         return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
     }

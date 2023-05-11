@@ -106,6 +106,10 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     @Column(name = "PASS_MOD_DT", length = 14)
     private String passModDt;
 
+    /** 추천인 코드 */
+    @Column(name = "recommand_code", length = 20)
+    private String recommandCode;
+
     /** 회원 탈퇴 여부 */
     //delete 쿼리가 발생하였을때, sqldelete어노테이션의 쿼리가 실행된다.
     //sqldelete의 실행 쿼리는 트랜잭션이 끝나고 실제 db에 쿼리를 보낼때 관리

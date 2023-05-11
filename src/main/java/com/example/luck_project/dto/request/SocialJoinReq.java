@@ -14,6 +14,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
+import static com.example.luck_project.common.util.CommonUtil.makeShortUUID;
+
 @Getter
 @ToString
 @Valid
@@ -103,6 +105,9 @@ public class SocialJoinReq {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String todayDate = today.format(formatter);
 
+        //추천인 코드 생성
+        String recomendCode = makeShortUUID();
+
         UserEntity user = UserEntity.builder()
                 .userId(userId)
                 .userPw(password)
@@ -115,6 +120,7 @@ public class SocialJoinReq {
                 .phoneNm(phoneNm)
                 .cateCodeList(cateCodeList)
                 .loginDvsn(loginDvsn)
+                .recommandCode(recomendCode)
                 .rgsttDtm(LocalDateTime.now())
                 .passModDt(todayDate)
                 .roles(Collections.singletonList("USER"))

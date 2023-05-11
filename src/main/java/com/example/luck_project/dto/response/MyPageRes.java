@@ -17,9 +17,6 @@ public class MyPageRes {
     /** 생년월일 */
     private String birth;
 
-    /** 나의 지지(한글)  */
-    private String luckBtmKoreanText;
-
     /** 나의 운세 천간 */
     private MyLuckTopDto myLuckTopDto;
 

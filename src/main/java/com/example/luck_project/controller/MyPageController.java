@@ -30,7 +30,7 @@ public class MyPageController extends BaseController {
 
     @GetMapping(MYPAGE_URL)
     @ApiOperation(value = "마이페이지 조회 API", notes = "마이페이지 조회 구성에 필요한 정보 응답")
-    public ResponseEntity<MyPageRes> myPageInfo(@PathVariable(name="userId") String userId){
+    public ResponseEntity<MyPageRes> myPageInfo(@RequestParam String userId){
 
         MyPageRes res = myPageService.getMyPageInfo(userId.toUpperCase());
 

@@ -18,7 +18,7 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
-        hbm2ddl.auto: none
+        hbm2ddl.auto: update
         default_batch_fetch_size: 1000
     hibernate:
       ddl-auto: update
@@ -90,3 +90,23 @@ coolsms:
     secret: F7GFQKOSGB0IFLDYTHXJQLHM1LIANQUJ
     key: NCSUDHLDODKWEAQM
 
+## firebase 설정
+project:
+  properties:
+    firebase-create-scoped: "https://www.googleapis.com/auth/cloud-platform"
+    firebase-api-url: "https://fcm.googleapis.com/v1/projects/pureluck-4e57c/messages:send"
+    firebase-multicast-message-size: 500
+
+  ### batch 설정
+  batch:
+    job:
+      #실행 시 배치 바로 실행 true/false
+      enabled: true
+    jdbc:
+      initialize-schema: always # batch 스키마 자동 생성
+
+mcare:
+  thread-pool:
+    core-pool-size: 10
+    max-pool-size: 50
+    queue-capacity: 65536

@@ -4,9 +4,12 @@ import com.example.luck_project.common.config.Oauth.Constant;
 import com.example.luck_project.common.util.DataCode;
 import com.example.luck_project.constants.ResponseCode;
 import com.example.luck_project.domain.*;
+import com.example.luck_project.dto.request.FindIdReq;
 import com.example.luck_project.dto.request.JoinReq;
+import com.example.luck_project.dto.request.ResetPwReq;
 import com.example.luck_project.dto.request.SocialJoinReq;
 import com.example.luck_project.dto.response.JoinRes;
+import com.example.luck_project.dto.response.ResetPwUserInfoRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +44,10 @@ public class JoinService {
 
     @Autowired
     private UserLuckInfoRepository userLuckInfoRepository;
+
     private final PasswordEncoder passwordEncoder;
+
+    private final TimeLuckSymbolRepository timeLuckSymbolRepository;
 
 
     /**
@@ -56,6 +62,7 @@ public class JoinService {
         String userName = joinReq.getUserName();
         String nickName = joinReq.getNickname();
         String loginDvsn = joinReq.getLoginDvsn();
+        String timeType = StringUtils.defaultString(joinReq.getBirthTimeType(), "");
 
         log.info("[{}][BASIC] 계정 존재 여부 체크", userName);
         //이름, 핸드폰번호 체크
@@ -82,7 +89,7 @@ public class JoinService {
         joinRes.setUserId(userId);
         joinRes.setNickName(nickName);
 
-        this.userSetting(joinReq, userId, loginDvsn);
+        this.userSetting(joinReq, userId, loginDvsn, timeType);
 
         return joinRes;
     }
@@ -132,16 +139,17 @@ public class JoinService {
         String userName = socialJoinReq.getUserName();
         String nickName = socialJoinReq.getNickname();
         String loginDvsn = socialJoinReq.getLoginDvsn();
+        String timeType = StringUtils.defaultString(socialJoinReq.getBirthTimeType(), "");
 
         log.info("[{}][BASIC] 계정 존재 여부 체크", userName);
         //이름, 핸드폰번호 체크
-        Optional<UserEntity> UserEntity = userInfoRepository.findByUserNameAndPhoneNm(userName, socialJoinReq.getPhoneNm());
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserNameAndPhoneNm(userName, socialJoinReq.getPhoneNm());
         //사용자 정보 존재 시
-        if (UserEntity.isPresent()) {
+        if (userEntity.isPresent()) {
             log.info("이미 존재하는 계정 : {}/{}/{}", userId, userName, socialJoinReq.getPhoneNm());
             Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put("userId", UserEntity.get().getUserId());
-            paramMap.put("loginDvsn", UserEntity.get().getLoginDvsn());
+            paramMap.put("userId", userEntity.get().getUserId());
+            paramMap.put("loginDvsn", userEntity.get().getLoginDvsn());
             throw new CustomException(ALREADY_EXISTS_USER);
         }
 
@@ -157,7 +165,7 @@ public class JoinService {
         joinReq.setBirth(socialJoinReq.getBirth());
         joinReq.setBirthFlag(socialJoinReq.getBirthFlag());
 
-        this.userSetting(joinReq, userId, loginDvsn);
+        this.userSetting(joinReq, userId, loginDvsn, timeType);
 
         return joinRes;
     }
@@ -169,7 +177,7 @@ public class JoinService {
      * @param loginDvsn
      */
     @Transactional
-    public void userSetting(JoinReq joinReq, String userId, String loginDvsn) {
+    public void userSetting(JoinReq joinReq, String userId, String loginDvsn, String timeType) {
         //사용자 정보 조회
 //        Optional<UserEntity> userEntity = userInfoRepository.findByUserIdAndLoginDvsn(userId, loginDvsn);
 //        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
@@ -198,19 +206,49 @@ public class JoinService {
         }
         calendaRepository.orElseThrow(() -> new CustomException(USER_LUCK_NOT_FOUND));
         System.out.println("년지:" + calendaRepository.get().getCdKyganjee() + "일지:" + calendaRepository.get().getCdKdganjee());
-        String yearB = calendaRepository.get().getCdKyganjee().substring(1, 2);
-        String yearT = calendaRepository.get().getCdKyganjee().substring(0, 1);
-        String dayB = calendaRepository.get().getCdKdganjee().substring(1, 2);
-        String dayT = calendaRepository.get().getCdKdganjee().substring(0, 1);
+
+        //한글 사주(년월일)
+        String koYearB = calendaRepository.get().getCdKyganjee().substring(1, 2);
+        String koYearT = calendaRepository.get().getCdKyganjee().substring(0, 1);
+        String koDayB = calendaRepository.get().getCdKdganjee().substring(1, 2);
+        String koDayT = calendaRepository.get().getCdKdganjee().substring(0, 1);
+        String koMonthB = calendaRepository.get().getCdKmganjee().substring(1, 2);
+        String koMonthT = calendaRepository.get().getCdKmganjee().substring(0, 1);
+
+
+        //한자 사주(년월일)
+        String chYearB = calendaRepository.get().getCdHyganjee().substring(1, 2);
+        String chYearT = calendaRepository.get().getCdHyganjee().substring(0, 1);
+        String chDayB = calendaRepository.get().getCdHdganjee().substring(1, 2);
+        String chDayT = calendaRepository.get().getCdHdganjee().substring(0, 1);
+        String chMonthB = calendaRepository.get().getCdHmganjee().substring(1, 2);
+        String chMonthT = calendaRepository.get().getCdHmganjee().substring(0, 1);
+
+
+        String koTimeB = "";
+        String koTimeT = "";
+        String chTimeB = "";
+        String chTimeT = "";
+        if(!timeType.isBlank()){
+            //시주 계산 표 조회
+            Optional<TimeLuckSymbolEntity> timeLuckSymbolEntity = timeLuckSymbolRepository.findByKoDayTopAndTimeType(koDayT, timeType);
+            //시주 정보 설정
+            koTimeB = StringUtils.defaultString(timeLuckSymbolEntity.get().getKoTimeJoo().substring(1, 2), "");
+            koTimeT = StringUtils.defaultString(timeLuckSymbolEntity.get().getKoTimeJoo().substring(0, 1), "");
+            chTimeB = StringUtils.defaultString(timeLuckSymbolEntity.get().getChTimeJoo().substring(1, 2), "");
+            chTimeT = StringUtils.defaultString(timeLuckSymbolEntity.get().getChTimeJoo().substring(0, 1), "");
+        }
+
 
         //사용자 사주 정보 등록
         UserLuckInfoEntity userLuckInfoEntity = new UserLuckInfoEntity();
-        userLuckInfoEntity.of(userId, yearT, yearB, dayT, dayB);
+        userLuckInfoEntity.koOf(userId, koYearT, koYearB, koDayT, koDayB, koMonthT, koMonthB, koTimeT, koTimeB); //한글 등록
+        userLuckInfoEntity.chOf(chYearT, chYearB, chDayT, chDayB, chMonthT, chMonthB, chTimeT, chTimeB); //한자 등록
         userLuckInfoRepository.save(userLuckInfoEntity);
 
         //사용자의 12가지 비장술 조합을 확인 후 갱신
-        String luckCnctn = dayB.concat(yearB);
-        String chnLuckCnctn = yearB.concat(dayB);
+        String luckCnctn = koDayB.concat(koYearB);
+        String chnLuckCnctn = koYearB.concat(koDayB);
         List<String> luckCnctnList = new ArrayList<>();
         luckCnctnList.add(luckCnctn);
         luckCnctnList.add(chnLuckCnctn);
@@ -219,8 +257,8 @@ public class JoinService {
         log.info("비장술 조합 조회:{}", pureCombCnt);
         if (!(pureCombCnt >= 12)) {
             System.out.println("arrlength:" + DataCode.VERS_YEAR_NAME_ARR.length);
-            int pureYearCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, yearB);
-            int pureDayCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, dayB);
+            int pureYearCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, koYearB);
+            int pureDayCnt = DataCode.getCodeNum(DataCode.VERS_YEAR_NAME_ARR, koDayB);
             System.out.println("pureYearCnt : " + pureYearCnt + "pureDayCnt : " + pureDayCnt);
             for (int i = 0; i < DataCode.VERS_YEAR_NAME_ARR.length; i++) {
                 log.info("befor pureYearCnt :{}/pureDayCnt:{}", pureYearCnt, pureDayCnt);
@@ -266,6 +304,53 @@ public class JoinService {
         userEntity.get().bolterDateUpdate(LocalDateTime.now(), LocalDateTime.now(), "API");
         //회원 탈퇴 처리
         userInfoRepository.delete(userEntity.get());
+    }
+
+    /**
+     * 사용자 ID 찾기
+     * @param findIdReq
+     * @return
+     */
+    public String findUserId(FindIdReq findIdReq) {
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserNameAndPhoneNmAndBirth(findIdReq.getName(), findIdReq.getPhoneNm(), findIdReq.getBrith());
+        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+        String userId = userEntity.get().getUserId();
+        return userId;
+    }
+
+    /**
+     * 비밀번호 재설정(1) - 아이디로 회원정보 조회
+     * @param userId
+     * @return
+     */
+    public ResetPwUserInfoRes getResetPwUserInfo(String userId) {
+        //회원정보 조회
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserId(userId);
+        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        //응답설정
+        ResetPwUserInfoRes res = new ResetPwUserInfoRes();
+        res.entityToResetPwUserInfoRes(userEntity.get());
+
+        return res;
+    }
+
+    /**
+     * 비밀번호 재설정(2) - 재설정
+     * @return
+     */
+    @Transactional
+    public void setResetPw(ResetPwReq resetPwReq) {
+        if(resetPwReq.getNewPassword().equals(resetPwReq.getNewPasswordCheck())){
+            throw new CustomException(RESET_PASSWORD_MATCH_FAIL);
+        }
+
+        //회원정보 조회
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserId(resetPwReq.getUserId());
+        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        //비밀번호 업데이트
+        userEntity.get().resetPassword(passwordEncoder.encode(resetPwReq.getNewPassword()));
     }
 
 }

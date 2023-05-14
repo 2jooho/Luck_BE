@@ -14,6 +14,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
+import static com.example.luck_project.common.util.CommonUtil.makeShortUUID;
+
 @Getter
 @ToString
 @Valid
@@ -59,10 +61,10 @@ public class SocialJoinReq {
     private String birthFlag;
 
     /**
-     * 태어난 시간
+     * 태어난 시간 구분
      */
     @Pattern(regexp = "^[0-9]{4}$" , message = "태어난 시간은 4자리 숫자 형식입니다.")
-    private String birthTime;
+    private String birthTimeType;
 
     /**
      * 성별
@@ -103,18 +105,22 @@ public class SocialJoinReq {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String todayDate = today.format(formatter);
 
+        //추천인 코드 생성
+        String recomendCode = makeShortUUID();
+
         UserEntity user = UserEntity.builder()
                 .userId(userId)
                 .userPw(password)
                 .userName(userName)
                 .nickName(nickname)
                 .birth(birth)
-                .birthTime(birthTime)
+                .birthTimeType(birthTimeType)
                 .birthFlag(birthFlag)
                 .sex(sex)
                 .phoneNm(phoneNm)
                 .cateCodeList(cateCodeList)
                 .loginDvsn(loginDvsn)
+                .recommandCode(recomendCode)
                 .rgsttDtm(LocalDateTime.now())
                 .passModDt(todayDate)
                 .roles(Collections.singletonList("USER"))

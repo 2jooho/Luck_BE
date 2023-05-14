@@ -1,5 +1,6 @@
 package com.example.luck_project.domain;
 
+import com.example.luck_project.dto.response.ResetPwUserInfoRes;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
@@ -41,7 +42,7 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     private Long id;
 
     /** 아이디 */
-    @Column(name = "USER_ID", nullable = false)
+    @Column(name = "USER_ID", nullable = false, unique = true)
     private String userId;
 
 //    /** 사용자 번호 */
@@ -72,9 +73,9 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     @Column(name = "BIRTH_FLAG")
     private String birthFlag;
 
-    /** 태어난 시간 */
-    @Column(name = "BIRTH_TIME")
-    private String birthTime;
+    /** 태어난 시간 구분 */
+    @Column(name = "BIRTH_TIME_TYPE", length = 2)
+    private String birthTimeType;
 
     /** 성별 */
     @Column(name = "SEX")
@@ -104,6 +105,10 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     /** 비밀번호 변경일 */
     @Column(name = "PASS_MOD_DT", length = 14)
     private String passModDt;
+
+    /** 추천인 코드 */
+    @Column(name = "recommand_code", length = 20)
+    private String recommandCode;
 
     /** 회원 탈퇴 여부 */
     //delete 쿼리가 발생하였을때, sqldelete어노테이션의 쿼리가 실행된다.
@@ -204,6 +209,14 @@ public class UserEntity implements UserDetails, Persistable<Long> {
 
     @OneToOne(mappedBy = "userEntity")
     UserMobileDeviceEntity userMobileDeviceEntity;
+
+    /**
+     * 비밀번호 재설정
+     * @param password
+     */
+    public void resetPassword(String password){
+        this.userPw = password;
+    }
 
 }
 

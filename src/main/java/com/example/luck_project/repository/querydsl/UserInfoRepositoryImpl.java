@@ -22,8 +22,8 @@ public class UserInfoRepositoryImpl implements UserInfoRepositoryCustom {
                         userEntity.userName,
                         userEntity.birth,
                         userEntity.birthFlag,
-                        userLuckInfoEntity.yearBtm,
-                        userLuckInfoEntity.dayBtm,
+                        userLuckInfoEntity.koYearBtm,
+                        userLuckInfoEntity.koDayBtm,
                         userEntity.cateCodeList
                         ))
                 .from(userEntity)

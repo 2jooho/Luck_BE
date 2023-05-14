@@ -2,12 +2,16 @@ package com.example.luck_project.controller;
 
 import com.example.luck_project.common.config.Oauth.Constant;
 import com.example.luck_project.controller.constants.BaseController;
+import com.example.luck_project.dto.request.FindIdReq;
 import com.example.luck_project.dto.request.JoinReq;
+import com.example.luck_project.dto.request.ResetPwReq;
 import com.example.luck_project.dto.request.SocialJoinReq;
 import com.example.luck_project.dto.response.JoinRes;
+import com.example.luck_project.dto.response.ResetPwUserInfoRes;
 import com.example.luck_project.exception.CustomException;
 import com.example.luck_project.service.JoinService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +28,6 @@ import static com.example.luck_project.controller.constants.ApiUrl.*;
 @RestController
 @RequestMapping(BASE_URL)
 @Slf4j
-@Validated
 public class LuckJoinController extends BaseController {
     @Autowired
     private JoinService joinService;
@@ -35,7 +38,7 @@ public class LuckJoinController extends BaseController {
      * @return
      */
     @PostMapping(JOIN_URL)
-    public ResponseEntity<JoinRes> luckJoin(@Valid @RequestBody JoinReq joinReq){
+    public ResponseEntity<JoinRes> luckJoin(@Validated @RequestBody JoinReq joinReq){
         String userId = joinReq.getUserId().toUpperCase();
 
         log.info("[{}] 회원가입 컨트롤러", userId);
@@ -128,9 +131,11 @@ public class LuckJoinController extends BaseController {
     public ResponseEntity userSetting(@RequestBody Optional<Map<String, String>> userInfo){
         String userId = "";
         String loginDvsn = "";
+        String timeType = "";
         if(userInfo.isPresent()){
             userId = Optional.of(userInfo.get().get("userId")).get().toUpperCase();
             loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
+            timeType = Optional.of(StringUtils.defaultString(userInfo.get().get("timeType"), "")).get();
             if(userId.isBlank() ){
                 log.info("userId는 필수 입니다.");
                 throw new CustomException(VALIDATION_FAIL);
@@ -143,7 +148,8 @@ public class LuckJoinController extends BaseController {
             throw new CustomException(VALIDATION_FAIL);
         }
 
-        joinService.userSetting(null, userId, loginDvsn);
+
+        joinService.userSetting(null, userId, loginDvsn, timeType);
 
         return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
     }
@@ -161,7 +167,7 @@ public class LuckJoinController extends BaseController {
         if(userInfo.isPresent()){
             userId = Optional.of(userInfo.get().get("userId")).get().toUpperCase();
             loginDvsn = Optional.of(userInfo.get().get("loginDvsn")).get();
-            if(userId.isBlank() ){
+            if(userId.isBlank()){
                 log.info("userId는 필수 입니다.");
                 throw new CustomException(VALIDATION_FAIL);
             }else if(loginDvsn.isBlank() || !"BKG".contains(loginDvsn)){
@@ -174,6 +180,44 @@ public class LuckJoinController extends BaseController {
         }
 
         joinService.userBolter(userId, loginDvsn);
+
+        return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
+    }
+
+    /**
+     * 아이디 찾기
+     * @return
+     */
+    @PostMapping(AUTH_ID_FIND_URL)
+    public ResponseEntity findUserId(@Validated @RequestBody FindIdReq findIdReq) {
+
+        String userId = joinService.findUserId(findIdReq);
+
+        return new ResponseEntity<>(userId, getSuccessHeaders(), HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 재설정(1) - 아이디로 회원정보 조회
+     * @param userId
+     * @return
+     */
+    @PostMapping(AUTH_RESET_PW_USER_INFO_URL)
+    public ResponseEntity resetPwUserInfo(@Validated @RequestBody String userId) {
+
+        ResetPwUserInfoRes res = joinService.getResetPwUserInfo(userId);
+
+        return new ResponseEntity<>(res, getSuccessHeaders(), HttpStatus.OK);
+    }
+
+    /**
+     * 비밀번호 재설정(2) - 재설정
+     * @param resetPwReq
+     * @return
+     */
+    @PutMapping(AUTH_RESET_PW_URL)
+    public ResponseEntity resetPwUserInfo(@Validated @RequestBody ResetPwReq resetPwReq) {
+
+        joinService.setResetPw(resetPwReq);
 
         return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
     }

@@ -21,6 +21,6 @@ public class ApiUrl {
     public static final String AUTH_RESET_PW_URL = "/auth/reset/password";
     public static final String MYPAGE_URL = "/myPage.do";
 
-    public static final String BASE_URL_BATCH = "luckBatch";
-    public static final String FCM_TOPICS_URL = "pushs/topics/{topic}";
+    public static final String BASE_URL_BATCH = "/luckBatch";
+    public static final String FCM_TOPICS_URL = "/pushs/topics/{topic}";
 }

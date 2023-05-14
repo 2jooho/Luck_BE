@@ -92,7 +92,7 @@ coolsms:
 project:
   properties:
     firebase-create-scoped: "https://www.googleapis.com/auth/cloud-platform"
-    firebase-api-url: "https://fcm.googleapis.com/v1/projects/tourcash-13092/messages:send"
+    firebase-api-url: "https://fcm.googleapis.com/v1/projects/pureluck-4e57c/messages:send"
     firebase-multicast-message-size: 500
 
   ### batch 설정

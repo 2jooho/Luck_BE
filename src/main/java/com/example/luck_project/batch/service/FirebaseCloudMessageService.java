@@ -3,42 +3,61 @@ package com.example.luck_project.batch.service;
 import com.example.luck_project.batch.dto.FcmMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.messaging.FirebaseMessaging;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class FirebaseCloudMessageService {
 
     @Value("${project.properties.firebase-create-scoped}")
     String fireBaseCreateScoped;
 
     @Value("${project.properties.firebase-api-url}")
-    private String API_URL;
+    String API_URL;
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     private String instance;
+    private FirebaseMessaging instance2;
 
     /**
      * 토큰 생성
      * @return
      * @throws IOException
      */
-//    @PostConstruct
-//    private void getAccessToken() throws IOException {
-//        String firebaseConfigPath = "firebase/firebase_service_key.json";
+    @PostConstruct
+    private void getAccessToken() throws IOException {
+        String firebaseConfigPath = "firebase/firebase_service_key.json";
+        log.info("토큰 생성");
+        GoogleCredentials googleCredentials = GoogleCredentials
+                .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
+                .createScoped(List.of(fireBaseCreateScoped));
+
+        googleCredentials.refreshIfExpired();
+        this.instance = googleCredentials.getAccessToken().getTokenValue();
+        log.info("토큰 생성 완 : {}", instance);
+//        FileInputStream serviceAccount =
+//                new FileInputStream("firebase/firebase_service_key.json");
 //
-//        GoogleCredentials googleCredentials = GoogleCredentials
-//                .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
-//                .createScoped(List.of(fireBaseCreateScoped));
+//        FirebaseOptions options = new FirebaseOptions.Builder()
+//                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+//                .build();
 //
-//        googleCredentials.refreshIfExpired();
-//        this.instance = googleCredentials.getAccessToken().getTokenValue();
-//    }
+//        FirebaseApp.initializeApp(options);
+    }
 
     /**
      * 메시지 전송
@@ -48,6 +67,7 @@ public class FirebaseCloudMessageService {
      * @throws IOException
      */
     public void sendMessageTo(String targetToken, String title, String body) throws IOException {
+        log.info("메시지 세팅 : {}/{}/{}", targetToken, title, body);
         String message = makeMessage(targetToken, title, body);
 
         OkHttpClient client = new OkHttpClient();
@@ -76,19 +96,24 @@ public class FirebaseCloudMessageService {
     private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
-                        .token(targetToken)
-                        .notification(FcmMessage.Notification.builder()
-                                .title(title)
-                                .body(body)
-                                .image(null)
+//                        .token(targetToken)
+                                .topic(targetToken)
+                                .notification(FcmMessage.Notification.builder()
+                                        .title(title)
+                                        .body(body)
+                                        .image(null)
+                                        .build()
+                                )
                                 .build()
-                        )
-                        .build()
                 )
                 .validate_only(false)
                 .build();
-
+        log.info("메시지 세팅 완 : {}", fcmMessage);
         return objectMapper.writeValueAsString(fcmMessage);
     }
+
+//    public BatchResponse sendMessage(MulticastMessage message) throws FirebaseMessagingException {
+//        return this.instance2.sendMulticast(message);
+//    }
 
 }

@@ -56,11 +56,17 @@
     </Appenders>
 
     <Loggers>
-        <Root level="INFO">
+        <Root level="info">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="API" />
+            <AppenderRef ref="ERROR" />
         </Root>
 
         <Logger name="INFO" level="info" additivity="false">
+            <AppenderRef ref="API" />
+            <AppenderRef ref="ERROR" />
+        </Logger>
+        <Logger name="error" level="info" additivity="false">
             <AppenderRef ref="API" />
             <AppenderRef ref="ERROR" />
         </Logger>

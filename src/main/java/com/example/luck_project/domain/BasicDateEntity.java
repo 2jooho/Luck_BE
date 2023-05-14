@@ -1,6 +1,7 @@
 package com.example.luck_project.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -39,9 +40,13 @@ public class BasicDateEntity implements Persistable<String> {
 
     /** 등록자 */
     @Column(name = "RGPS_ID")
-    private String rgpsId = "BATCH";
+    private String rgpsId;
 
-
+    @Builder
+    public BasicDateEntity(String basicDate, String versYearInfo) {
+        this.basicDate = basicDate;
+        this.versYearInfo = versYearInfo;
+    }
 
     @Override
     public String getId() {

@@ -1,6 +1,7 @@
 package com.example.luck_project.dto.request;
 
 import com.example.luck_project.domain.UserEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +15,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+
+import static com.example.luck_project.common.util.CommonUtil.makeShortUUID;
 
 @Getter
 @Setter
@@ -63,10 +66,10 @@ public class JoinReq {
     private String birthFlag;
 
     /**
-     * 태어난 시간
+     * 태어난 시간 구분
      */
-    @Pattern(regexp = "^[0-9]{1}$" , message = "태어난 시간은 1자리 숫자 형식입니다.")
-    private String birthTime;
+    @Pattern(regexp = "^[0-9]{1}$" , message = "태어난 시간 구분은 1자리 숫자 형식입니다.")
+    private String birthTimeType;
 
     /**
      * 성별
@@ -106,18 +109,22 @@ public class JoinReq {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String todayDate = today.format(formatter);
 
+        //추천인 코드 생성
+        String recomendCode = makeShortUUID();
+
         UserEntity user = UserEntity.builder()
                 .userId(userId)
                 .userPw(password)
                 .userName(userName)
                 .nickName(nickname)
                 .birth(birth)
-                .birthTime(birthTime)
+                .birthTimeType(birthTimeType)
                 .birthFlag(birthFlag)
                 .sex(sex)
                 .phoneNm(phoneNm)
                 .cateCodeList(cateCodeList)
                 .loginDvsn(loginDvsn)
+                .recommandCode(recomendCode)
                 .passModDt(todayDate)
                 .rgsttDtm(LocalDateTime.now())
                 .roles(Collections.singletonList("USER"))

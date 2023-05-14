@@ -54,5 +54,12 @@ public interface UserInfoRepository extends JpaRepository<UserEntity, String>, U
      */
     Optional<UserEntity> findByUserIdAndLoginDvsn(String userId, String loginDvsn);
 
-
+    /**
+     * 아이디 찾기
+     * @param name
+     * @param phoneNm
+     * @param birth
+     * @return
+     */
+    Optional<UserEntity> findByUserNameAndPhoneNmAndBirth(String name, String phoneNm, String birth);
 }

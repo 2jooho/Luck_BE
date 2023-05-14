@@ -37,7 +37,7 @@ public class JobScheduler {
     /**
      * [청크] 매일 00시에 사용자별로 사용가능(관람) 개수 초기화
      */
-//    @Scheduled(cron = "0 0/1 * * * ?") // 1분에 1번씩 실행
+//    @Scheduled(cron = "0 0/1 * * * ?") // 1분에 1번씩 실행 test용
     @Scheduled(cron = "0 0 0 * * ?") // 00시 00분에 한번 실행
     public void runJob() {
 
@@ -81,8 +81,8 @@ public class JobScheduler {
     /**
      * [tasklet] 2시간 마다 fcm 푸시 발송
      */
-    @Scheduled(cron = "0 0/1 * * * ?") // 1분에 1번씩 실행
-//    @Scheduled(cron = "0 0 0/2 * * ?") // 2시간에 한번씩 실행
+//    @Scheduled(cron = "0 0/1 * * * ?") // 1분에 1번씩 실행 test용
+    @Scheduled(cron = "0 0 0/2 * * ?") // 2시간에 한번씩 실행
     public void runJob3() {
 
         Map<String, JobParameter> confMap = new HashMap<>();

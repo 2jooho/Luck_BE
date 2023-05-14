@@ -11,12 +11,19 @@ public class FcmMessage {
     private boolean validate_only;
     private Message message;
 
+    //    @Builder
+//    @AllArgsConstructor
+//    @Getter
+//    public static class Message {
+//        private Notification notification;
+//        private String token;
+//    }
     @Builder
     @AllArgsConstructor
     @Getter
     public static class Message {
         private Notification notification;
-        private String token;
+        private String topic;
     }
 
     @Builder

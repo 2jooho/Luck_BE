@@ -27,10 +27,11 @@ import java.util.Enumeration;
 
 @Aspect
 @Component
+@Slf4j
 public class CommonLogAdvice extends ApiSupport {
 
     /** Controller Log */
-    @Around("execution(* co.kr.starbucks..*Controller.*(..))")
+    @Around("execution(* com.example.luck_project..*Controller.*(..))")
     public Object controllerAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Object obj = null;
         HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -66,7 +67,7 @@ public class CommonLogAdvice extends ApiSupport {
 
 
     /** Service Log */
-    @Around("execution(* co.kr.starbucks..*Service.*(..))")
+    @Around("execution(* com.example.luck_project..*Service.*(..))")
     public Object serviceAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Object obj = null;
 

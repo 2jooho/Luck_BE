@@ -32,9 +32,9 @@ public class NotificationsController {
 //     * @param topic
 //     * @param data
 //     */
-//    @PostMapping(value = "pushs/topics/{topic}")
-//    public void notificationTopics(@PathVariable("topic") String topic, @RequestBody RequestPushMessage data) {
-//        Notification notification = Notification.builder().setTitle(data.getTitle()).setBody(data.getBody()).setImage(data.getImage()).build();
+//    @PostMapping(value = "pushs/topics2/{topic}")
+//    public void notificationTopics2(@PathVariable("topic") String topic, @RequestBody RequestPushMessage data) {
+//        Notification notification = new Notification(data.getTitle(), data.getBody())
 //
 //        Message.Builder builder = Message.builder();
 //
@@ -42,7 +42,7 @@ public class NotificationsController {
 //
 //        Message msg = builder.setTopic(topic).setNotification(notification).build();
 //
-//        fcmService.sendMessage(msg);
+//        firebaseCloudMessageService.sendMessage(msg);
 //
 //    }
 //

@@ -49,6 +49,8 @@ public class JoinService {
 
     private final TimeLuckSymbolRepository timeLuckSymbolRepository;
 
+    private final UserRecommandStarRepository userRecommandStarRepository;
+
 
     /**
      * 회원가입
@@ -63,6 +65,7 @@ public class JoinService {
         String nickName = joinReq.getNickname();
         String loginDvsn = joinReq.getLoginDvsn();
         String timeType = StringUtils.defaultString(joinReq.getBirthTimeType(), "");
+        String recommandCode = StringUtils.defaultString(joinReq.getRecommandCode(), "");
 
         log.info("[{}][BASIC] 계정 존재 여부 체크", userName);
         //이름, 핸드폰번호 체크
@@ -85,6 +88,16 @@ public class JoinService {
         log.info("[{}] 회원 정보 등록", nickName);
         UserEntity user = joinReq.toEntity();
         userInfoRepository.save(user);
+
+        if(!recommandCode.isBlank()){
+            log.info("[{}] 추천인 코드 등록", recommandCode);
+            Optional<UserEntity> recommandUserEntity = userInfoRepository.findByRecommandCode(recommandCode);
+            recommandUserEntity.orElseThrow(()-> new CustomException(RECOMMAND_CODE_NOT_FOUND));
+
+            UserRecommandStarEntity userRecommandStarEntity = new UserRecommandStarEntity();
+            userRecommandStarEntity.of(userId, recommandUserEntity.get());
+            userRecommandStarRepository.save(userRecommandStarEntity);
+        }
 
         joinRes.setUserId(userId);
         joinRes.setNickName(nickName);

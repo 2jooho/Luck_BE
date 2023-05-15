@@ -39,6 +39,7 @@ public class CateService {
 
     @Autowired
     UserPaymentInfoRepository userPaymentInfoRepository;
+
     @Autowired
     private PropertyUtil propertyUtil;
 

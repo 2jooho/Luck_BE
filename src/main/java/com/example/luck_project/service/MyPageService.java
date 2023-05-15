@@ -1,17 +1,14 @@
 package com.example.luck_project.service;
 
 import com.example.luck_project.common.util.DataCode;
-import com.example.luck_project.domain.LuckWordImgEntity;
-import com.example.luck_project.domain.UserEntity;
-import com.example.luck_project.domain.UserLuckInfoEntity;
+import com.example.luck_project.domain.*;
 import com.example.luck_project.dto.MyLuckBtmDto;
 import com.example.luck_project.dto.MyLuckTopDto;
 import com.example.luck_project.dto.UserLuckInfoDto;
 import com.example.luck_project.dto.response.MyPageRes;
+import com.example.luck_project.dto.response.MyRecommandStarRes;
 import com.example.luck_project.exception.CustomException;
-import com.example.luck_project.repository.LuckWordImgRepository;
-import com.example.luck_project.repository.UserInfoRepository;
-import com.example.luck_project.repository.UserLuckInfoRepository;
+import com.example.luck_project.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.luck_project.common.util.CommonUtil.makeShortUUID;
-import static com.example.luck_project.constants.ResponseCode.USER_LUCK_NOT_FOUND;
-import static com.example.luck_project.constants.ResponseCode.USER_NOT_FOUND;
+import static com.example.luck_project.constants.ResponseCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +32,9 @@ public class MyPageService {
 
     private final UserInfoRepository userInfoRepository;
 
-    private final LuckWordImgRepository luckWordImgRepository;
+    private final UserPaymentInfoRepository userPaymentInfoRepository;
+
+    private final UserRecommandStarRepository userRecommandStarRepository;
 
     /**
      * 마이페이지 정보 조회
@@ -84,6 +82,33 @@ public class MyPageService {
                 .build();
 
         res.of(userId, userEntity.get().getBirth(), myLuckTopDto, myLuckBtmDto, userEntity.get().getRecommandCode());
+
+        return res;
+    }
+
+    /**
+     * 마이 추천별 조회
+     * @param userId
+     * @return
+     */
+    public MyRecommandStarRes getMyRecommandStar(String userId){
+        Optional<UserEntity> userEntity = userInfoRepository.findByUserId(userId);
+        userEntity.orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        //사용자 결제 상태 조회
+        Optional<UserPaymentEntity> userPaymentEntity = userPaymentInfoRepository.findByUserId(userId);
+        userPaymentEntity.orElseThrow(() -> new CustomException(PAYMENT_INFO_NOT_FOUND));
+
+        Optional<Integer> count = userRecommandStarRepository.countByUserEntity(userEntity.get());
+
+        String status = userPaymentEntity.get().getStatus();
+        MyRecommandStarRes res = MyRecommandStarRes.builder()
+                .myRecommandStarCnt(count.get())
+                .recommandStarStatus(status)
+                .availableStarCnt(status.equals("P") ? null : userPaymentEntity.get().getUseCnt())
+                .readingCompleteCnt(status.equals("P") ? null : userPaymentEntity.get().getUseCmplnCnt())
+                .availableYn(userPaymentEntity.get().getUseCnt() > 0 ? "Y" : "N")
+                .build();
 
         return res;
     }

@@ -4,6 +4,7 @@ import com.example.luck_project.controller.constants.BaseController;
 import com.example.luck_project.dto.request.MainReq;
 import com.example.luck_project.dto.response.MainRes;
 import com.example.luck_project.dto.response.MyPageRes;
+import com.example.luck_project.dto.response.MyRecommandStarRes;
 import com.example.luck_project.service.MainService;
 import com.example.luck_project.service.MyPageService;
 import io.swagger.annotations.Api;
@@ -33,6 +34,15 @@ public class MyPageController extends BaseController {
     public ResponseEntity<MyPageRes> myPageInfo(@RequestParam String userId){
 
         MyPageRes res = myPageService.getMyPageInfo(userId.toUpperCase());
+
+        return new ResponseEntity<>(res, getSuccessHeaders(), HttpStatus.OK);
+    }
+
+    @GetMapping(RECOMMAND_URL)
+    @ApiOperation(value = "마이 추천별 조회 API", notes = "마이 추천별 조회 구성에 필요한 정보 응답")
+    public ResponseEntity<MyRecommandStarRes> myRecommandStar(@RequestParam String userId){
+
+        MyRecommandStarRes res = myPageService.getMyRecommandStar(userId);
 
         return new ResponseEntity<>(res, getSuccessHeaders(), HttpStatus.OK);
     }

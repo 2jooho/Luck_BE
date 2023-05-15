@@ -107,8 +107,11 @@ public class UserEntity implements UserDetails, Persistable<Long> {
     private String passModDt;
 
     /** 추천인 코드 */
-    @Column(name = "recommand_code", length = 20)
+    @Column(name = "recommand_code", unique = true, nullable = false, length = 20)
     private String recommandCode;
+
+//    @OneToMany(mappedBy = "userEntity")
+//    private List<UserRecommandStarEntity> userRecommandStarEntity = new ArrayList<>();
 
     /** 회원 탈퇴 여부 */
     //delete 쿼리가 발생하였을때, sqldelete어노테이션의 쿼리가 실행된다.

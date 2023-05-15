@@ -4,6 +4,7 @@ import com.example.luck_project.domain.UserEntity;
 import com.example.luck_project.repository.querydsl.UserInfoRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,4 +63,6 @@ public interface UserInfoRepository extends JpaRepository<UserEntity, String>, U
      * @return
      */
     Optional<UserEntity> findByUserNameAndPhoneNmAndBirth(String name, String phoneNm, String birth);
+
+    Optional<UserEntity> findByRecommandCode(String recommandCode);
 }

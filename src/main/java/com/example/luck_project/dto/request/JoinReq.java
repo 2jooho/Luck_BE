@@ -93,6 +93,12 @@ public class JoinReq {
     private String loginDvsn;
 
     /**
+     * 추천인 코드
+     */
+    @Pattern(regexp = "^[a-zA-Z0-9]{0,20}$" , message = "추천인 코드는 영문,숫자 조합 20자리 이내 입니다.")
+    private String recommandCode;
+
+    /**
      * 관심 카테고리 목록
      */
     private String cateCodeList;

@@ -82,7 +82,7 @@ public class JobScheduler {
      * [tasklet] 2시간 마다 fcm 푸시 발송
      */
 //    @Scheduled(cron = "0 0/1 * * * ?") // 1분에 1번씩 실행 test용
-    @Scheduled(cron = "0 0 0/2 * * ?") // 2시간에 한번씩 실행
+    @Scheduled(cron = "0 0 1-23/2 * * ?") // 매달 매일 홀수시 실행
     public void runJob3() {
 
         Map<String, JobParameter> confMap = new HashMap<>();

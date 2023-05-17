@@ -71,7 +71,7 @@ public class JdbcPagingJobConfiguration {
     @Bean
     public JdbcPagingItemReader<UserPaymentEntity> jdbcPagingItemReader() throws Exception {
         HashMap<String, Object> parameters = new HashMap<>();
-        parameters.put("RESET_USE_CNT", 5);
+        parameters.put("RESET_USE_CNT", 0);
         parameters.put("STATUS", "C");
 
         return new JdbcPagingItemReaderBuilder<UserPaymentEntity>()
@@ -93,7 +93,7 @@ public class JdbcPagingJobConfiguration {
     public ItemProcessor<UserPaymentEntity, UserPaymentEntity> itemProcessor() {
         return item -> {
             log.info("item1:{}/{}/{}",item.getUserId(), item.getUseCmplnCnt());
-            item.updateUserPayment(5, LocalDateTime.now(), "BATCH");
+            item.updateUserPayment(0, LocalDateTime.now(), "BATCH");
             log.info("item2:{}/{}/{}",item.getUserId(), item.getUseCmplnCnt());
             return item;
         };
@@ -130,7 +130,7 @@ public class JdbcPagingJobConfiguration {
         queryProvider.setDataSource(dataSource); // Database에 맞는 PagingQueryProvider를 선택하기 위해
         queryProvider.setSelectClause("USER_ID, USE_CNT, USE_CMPLN_CNT");
         queryProvider.setFromClause("FROM lck_user_payament_status");
-        queryProvider.setWhereClause("WHERE USE_CMPLN_CNT < :RESET_USE_CNT AND STATUS = :STATUS");
+        queryProvider.setWhereClause("WHERE USE_CMPLN_CNT > :RESET_USE_CNT AND STATUS = :STATUS");
 
         Map<String, Order> sortKeys = new HashMap<>(1);
         sortKeys.put("USER_ID", Order.ASCENDING);

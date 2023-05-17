@@ -11,7 +11,7 @@ public class HealthController {
 
     @GetMapping("/health")
     public String healtCheck() {
-        return "OK!";
+        return "OK2!";
     }
 
     @PostMapping("/post/health")

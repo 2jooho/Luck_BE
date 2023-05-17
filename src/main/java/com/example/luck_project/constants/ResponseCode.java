@@ -58,6 +58,7 @@ public enum ResponseCode {
     USER_NOT_FOUND_PAYMENT("119", "결제 정보가 존재하지 않는 계정", HttpStatus.INTERNAL_SERVER_ERROR),
     PHONE_AUTH_NUMBER_FAIL("120", "인증번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     RESET_PASSWORD_MATCH_FAIL("121", "비밀번호와 비밀번호 확인이 다릅니다.", HttpStatus.BAD_REQUEST),
+    RECOMMAND_CODE_NOT_FOUND("122", "추천인 코드 대상을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
 
     ;
     

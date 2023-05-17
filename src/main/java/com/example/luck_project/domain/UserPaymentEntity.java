@@ -16,14 +16,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "lck_user_payament_status")
 @DynamicUpdate
+@Data
 public class UserPaymentEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /** 아이디 */
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", unique = true, nullable = false)
     private String userId;
 
     /** 사용 가능 개수 */

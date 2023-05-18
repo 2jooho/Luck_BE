@@ -1,8 +1,8 @@
 spring:
   config:
     activate:
-      on-profile: dev1
-  profile: dev1
+      on-profile: dev2
+  profile: dev2
 
   datasource:
     url: jdbc:mysql://luckdb-dev.c12e70dbueew.ap-northeast-2.rds.amazonaws.com:3306/lck?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
@@ -114,4 +114,4 @@ mcare:
     queue-capacity: 65536
 
 server:
-  port: 8081
+  port: 8082

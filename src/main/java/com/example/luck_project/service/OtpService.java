@@ -110,7 +110,8 @@ public class OtpService {
 //        SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(coolsms));
 //        System.out.println(response);
         //redis에  3분 동안 넣기
-        redisUtil.setExpireValue(PREFIX + phoneNumber, authNm, LIMIT_TIME);
+        Boolean isRedisSet = redisUtil.setExpireValue(PREFIX + phoneNumber, authNm, LIMIT_TIME);
+        log.info("isRedisSet:{}", isRedisSet);
     }
 
     /**
@@ -121,6 +122,7 @@ public class OtpService {
         String authNm = confirmsSMS.getAuthNm();
         String phoneNumber = confirmsSMS.getPhoneNm();
         if(!StringUtils.equals(String.valueOf(redisUtil.getValue(PREFIX + phoneNumber)), authNm)){
+            log.info("isRedisGet 실패");
             throw new CustomException(PHONE_AUTH_NUMBER_FAIL);
         }
     }

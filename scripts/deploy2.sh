@@ -40,16 +40,14 @@ sleep 10
 
 for retry_count in {1..10}
 do
-  response=$(curl -s http://3.34.36.9:$IDLE_PORT/api/health)
-  up_count=$(echo $response | grep 'UP' | wc -l)
+  response=$(curl -s -o /dev/null -w "%{http_code}"  http://3.34.36.9:${$IDLE_PORT}/api/health)
 
-  if [ $up_count -ge 1 ]
-  then
-    echo "> Health check 성공"
-    break
-  else
-    echo "> Health check의 응답을 알 수 없거나 혹은 status가 UP이 아닙니다."
-    echo "> Health check: ${response}"
+  if [ ${response} -eq 200 ]; then
+      echo "> Health check 성공"
+      break
+  elif [ ${response} -eq 10 ]; then
+      echo "> Health check의 응답을 알 수 없거나 혹은 status가 UP이 아닙니다."
+      echo "> Health check: ${response}"
   fi
 
   if [ $retry_count -eq 10 ]

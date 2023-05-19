@@ -56,11 +56,24 @@
     </Appenders>
 
     <Loggers>
-        <Root level="info">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="API" />
             <AppenderRef ref="ERROR" />
         </Root>
+
+        <Logger name="org.springframework" level="ERROR" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+
+        <Logger name="com.example.luck_project" level="INFO" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+
+        <logger name="log4jdbc.log4j2" level="ERROR" additivity="false">
+            <MarkerFilter marker="LOG4JDBC_OTHER" onMatch="DENY" onMismatch="NEUTRAL"/>
+            <appender-ref ref="Console"/>
+        </logger>
 
         <Logger name="INFO" level="info" additivity="false">
             <AppenderRef ref="API" />

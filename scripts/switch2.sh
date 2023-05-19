@@ -19,7 +19,7 @@ fi
 
 echo "> 전환할 Port: $IDLE_PORT"
 echo "> Port 전환"
-echo "dev \$service_url http://3.34.36.9:$IDLE_PORT;" |sudo tee /home/ec2-user/service_url.inc
+echo "set \$service_url http://3.34.36.9:$IDLE_PORT;" |sudo tee /home/ec2-user/service_url.inc
 cat /home/ec2-user/service_url.inc
 
 PROXY_PORT=$(curl -s http://3.34.36.9/api/health)

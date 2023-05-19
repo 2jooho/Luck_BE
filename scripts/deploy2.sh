@@ -1,8 +1,8 @@
 #!/bin/bash
-ABSPATH=$(readlink -f $0)
-ABSDIR=$(dirname $ABSPATH)
-sudo chmod +x ${ABSDIR}/deploy.sh
-sudo chmod +x ${ABSDIR}/switch.sh
+#ABSPATH=$(readlink -f $0)
+#ABSDIR=$(dirname $ABSPATH)
+#sudo chmod +x ${ABSDIR}/deploy.sh
+#sudo chmod +x ${ABSDIR}/switch.sh
 BASE_PATH=/home/ec2-user/luck-system-deploy/
 BUILD_PATH=$(ls $BASE_PATH/build/libs/*.jar)
 JAR_NAME=$(basename $BUILD_PATH)
@@ -67,5 +67,5 @@ done
 
 echo "> 스위칭을 시도합니다..."
 sleep 10
-#/home/ec2-user/app/deploy/scripts/switch.sh
-${ABSDIR}/switch2.sh
+/home/ec2-user/luck-system-deploy/scripts/switch.sh
+#${ABSDIR}/switch2.sh

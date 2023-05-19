@@ -107,10 +107,10 @@ public class OtpService {
         coolsms.setTo(phoneNumber);
         coolsms.setText("휴대폰인증 테스트 메시지 : ");
 
-        SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(coolsms));
-        System.out.println(response);
+//        SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(coolsms));
+//        System.out.println(response);
         //redis에  3분 동안 넣기
-//        redisUtil.setExpireValue(PREFIX + phoneNumber, authNm, LIMIT_TIME);
+        redisUtil.setExpireValue(PREFIX + phoneNumber, authNm, LIMIT_TIME);
     }
 
     /**

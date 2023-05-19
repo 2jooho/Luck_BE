@@ -22,7 +22,7 @@ echo "> Port 전환"
 echo "dev \$service_url http://3.34.36.9:$IDLE_PORT;" |sudo tee /home/ec2-user/service_url.inc
 cat /home/ec2-user/service_url.inc
 
-PROXY_PORT=$(curl -s -L http://3.34.36.9/api/health)
+PROXY_PORT=$(curl -s http://3.34.36.9/api/health)
 echo "> Nginx Current Proxy Port: $PROXY_PORT"
 
 echo "> Nginx Reload"

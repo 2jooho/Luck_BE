@@ -6,7 +6,7 @@ echo "> build 파일명: $JAR_NAME"
 
 
 echo "> 현재 구동중인 profile 확인"
-CURRENT_PROFILE=$(curl -s -L http://3.34.36.9/api/health)
+CURRENT_PROFILE=$(curl -s http://3.34.36.9/api/health)
 CURRENT_PROFILE=$(echo $CURRENT_PROFILE | tr -d '\r')
 
 if [ $CURRENT_PROFILE == dev1 ]

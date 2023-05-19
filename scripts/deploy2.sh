@@ -1,8 +1,8 @@
 #!/bin/bash
 #ABSPATH=$(readlink -f $0)
 #ABSDIR=$(dirname $ABSPATH)
-#sudo chmod +x ${ABSDIR}/deploy.sh
-#sudo chmod +x ${ABSDIR}/switch.sh
+sudo chmod +x /home/ec2-user/luck-system-deploy/scripts/deploy2.sh
+sudo chmod +x /home/ec2-user/luck-system-deploy/scripts/switch2.sh
 BASE_PATH=/home/ec2-user/luck-system-deploy/
 BUILD_PATH=$(ls $BASE_PATH/build/libs/*.jar)
 JAR_NAME=$(basename $BUILD_PATH)

@@ -28,15 +28,15 @@ spring:
   redis:
     principal-session:
       host: 127.0.0.1
-      port: 26388
+      port: 6379
       connect-timeout: 3000
     redis-cache:
       host: 127.0.0.1
-      port: 26388
+      port: 6379
       connect-timeout: 3000
     principal-migration-status:
       host: 127.0.0.1
-      port: 26388
+      port: 6379
 
   mvc:
     pathmatch:

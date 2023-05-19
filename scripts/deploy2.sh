@@ -40,7 +40,7 @@ sleep 10
 
 for retry_count in {1..10}
 do
-  response=$(curl -s -o /dev/null -w "%{http_code}"  http://3.34.36.9:${$IDLE_PORT}/api/health)
+  response=$(curl -s -o /dev/null -w "%{http_code}"  http://3.34.36.9:${IDLE_PORT}/api/health)
 
   if [ ${response} -eq 200 ]; then
       echo "> Health check 성공"

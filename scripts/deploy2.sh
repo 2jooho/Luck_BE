@@ -67,5 +67,5 @@ done
 
 echo "> 스위칭을 시도합니다..."
 sleep 10
-/home/ec2-user/luck-system-deploy/scripts/switch.sh
+/home/ec2-user/luck-system-deploy/scripts/switch2.sh
 #${ABSDIR}/switch2.sh

@@ -1,7 +1,9 @@
 spring:
   config:
     activate:
-      on-profile: dev
+      on-profile: dev1
+  profile: dev1
+
   datasource:
     url: jdbc:mysql://luckdb-dev.c12e70dbueew.ap-northeast-2.rds.amazonaws.com:3306/lck?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -10,6 +12,8 @@ spring:
     ##  username: ENC(cN0s/mR5UggvjHYgMFI3rQ==)
     ##  password: ENC(+TXnxk0d55R4/NuLYoz0AnM3/A2hh4Nn)
   jpa:
+    database: mysql   # 추가 해준 부분
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect # 추가 해준 부분
     open-in-view: true
     show-sql: true
     properties:
@@ -108,3 +112,6 @@ mcare:
     core-pool-size: 10
     max-pool-size: 50
     queue-capacity: 65536
+
+server:
+  port: 8081

@@ -5,12 +5,12 @@ CURRENT_PROFILE=$(curl -s -L http://3.34.36.9/api/health | grep -Eo 'dev[12]')
 # Idle Profile 찾기: s1이 사용중이면 s2가 Idle
 if [ $CURRENT_PROFILE == dev1 ]
 then
-  IDLE_PORT=8082
-  CURRENT_PORT=8081
-elif [ $CURRENT_PROFILE == dev2 ]
-then
   IDLE_PORT=8081
   CURRENT_PORT=8082
+elif [ $CURRENT_PROFILE == dev2 ]
+then
+  IDLE_PORT=8082
+  CURRENT_PORT=8081
 else
   echo "> 일치하는 Profile이 없습니다. Profile: $CURRENT_PROFILE"
   echo "> 8081을 할당합니다."

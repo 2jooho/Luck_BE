@@ -27,15 +27,15 @@ spring:
   # Redis
   redis:
     principal-session:
-      host: 3.34.36.9
+      host: 127.0.0.1
       port: 6379
       connect-timeout: 3000
     redis-cache:
-      host: 3.34.36.9
+      host: 127.0.0.1
       port: 6379
       connect-timeout: 3000
     principal-migration-status:
-      host: 13.34.36.9
+      host: 127.0.0.1
       port: 6379
 
   mvc:

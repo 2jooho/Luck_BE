@@ -14,7 +14,7 @@ export class Axios {
     constructor(isAuthReq = false) {
         this.#instance = axios.create({
             // baseURL: `${process.env.REACT_APP_API_BASE_ROUTE}`,
-            baseURL: 'http://dev-pureluck.com:8081',
+            baseURL: 'https://www.dev-pureLuck.com',
         });
         // this.#auth = isAuthReq;
         // this.#cookie = new Cookies();

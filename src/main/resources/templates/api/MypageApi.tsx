@@ -5,8 +5,7 @@ import { API_ROUTE } from '../constants/api';
 const authAPI = new Axios(true);
 const unAuthAPI = new Axios();
 
-export const logIn = async (data) => {
-    const response = await unAuthAPI.post(API_ROUTE.AUTH.LOG_IN, data
-    );
+export const myPageApi = async (userId) => {
+    const response = await authAPI.get(API_ROUTE.AUTH.MYPAGE(userId));
     return response;
 }

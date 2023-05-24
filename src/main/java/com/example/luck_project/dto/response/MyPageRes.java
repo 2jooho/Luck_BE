@@ -17,6 +17,9 @@ public class MyPageRes {
     /** 생년월일 */
     private String birth;
 
+    /** 나의 운세 날짜 */
+    private String myLuckData;
+
     /** 나의 운세 천간 */
     private MyLuckTopDto myLuckTopDto;
 
@@ -27,12 +30,20 @@ public class MyPageRes {
     private String recomendCode;
 
     @Builder
-    public void of(String userId, String birth, MyLuckTopDto myLuckTopDto, MyLuckBtmDto myLuckBtmDto, String recomendCode){
+    public void of(String userId, String birth, MyLuckTopDto myLuckTopDto, MyLuckBtmDto myLuckBtmDto, String recomendCode, Boolean isTime){
         this.userId = userId;
         this.birth = birth;
         this.myLuckTopDto = myLuckTopDto;
         this.myLuckBtmDto = myLuckBtmDto;
         this.recomendCode = recomendCode;
+        this.myLuckData = myLuckTopDto.getYearLuckKorean() + myLuckBtmDto.getYearLuckKorean() + "년"
+                + myLuckTopDto.getMonthLuckKorean() + myLuckBtmDto.getYearLuckKorean() + "월"
+                + myLuckTopDto.getDayLuckKorean() + myLuckBtmDto.getDayLuckKorean() + "일";
+
+        //생시 존재하는경우
+        if(isTime){
+            this.myLuckData = this.myLuckData + myLuckTopDto.getTimeLuckKorean() + myLuckBtmDto.getTimeLuckKorean() + "생";
+        }
     }
 
 }

@@ -81,7 +81,12 @@ public class MyPageService {
                 .yearLuckChinese(userLuckInfoDto.get().getChYearBtm())
                 .build();
 
-        res.of(userId, userEntity.get().getBirth(), myLuckTopDto, myLuckBtmDto, userEntity.get().getRecommandCode());
+        Boolean isTime = false;
+        if(!myLuckTopDto.getTimeLuckKorean().isBlank() && !myLuckBtmDto.getTimeLuckKorean().isBlank()){
+            isTime = true;
+        }
+
+        res.of(userId, userEntity.get().getBirth(), myLuckTopDto, myLuckBtmDto, userEntity.get().getRecommandCode(), isTime);
 
         return res;
     }

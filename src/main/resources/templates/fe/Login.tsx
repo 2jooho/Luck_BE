@@ -61,8 +61,8 @@ const Login = ({navigation}) => {
             const accessToken = JSON.stringify(res.headers['authorization']);
             const refreshToken = JSON.stringify(res.headers['refreshtoken']);
 
-            console.log("accessToken:"+accessToken);
-            console.log("refreshToken:"+refreshToken);
+            console.log("accessToken:" + accessToken);
+            console.log("refreshToken:" + refreshToken);
             AsyncStorage.setItem('accessToken', accessToken);
             AsyncStorage.setItem('refreshToken', refreshToken);
             AsyncStorage.setItem('userId', userId);
@@ -71,6 +71,7 @@ const Login = ({navigation}) => {
             }
             //             queryClient.invalidateQueries(QUERY.KEY.USER_DATA);
             navigation.navigate('MainPage', {userId: userId});
+            if (res) dispatch(setUserData(res?.res.userId));
         },
         // onError: (error: unknown) => errorHandler(error),
         onError: (error: unknown) => {

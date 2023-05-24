@@ -9,8 +9,9 @@ import Loading from '../components/Loading'
 import {myPage, myPageApi} from "../api/MypageApi";
 import MyPageHeader from "./MyPageHeader";
 import MyPageLuck from "./MyPageLuck";
+import {MyStarApi} from "../api/MyStarApi";
 
-const Mypage = ({navigation}) => {
+const MyStar = ({navigation}) => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.userDataSlicer.userData)
     const userId = userData.userId;
@@ -19,11 +20,9 @@ const Mypage = ({navigation}) => {
     // 외부연동
     // axios
     //리액트쿼리 useMutation(post, delete, put 방식에 많이 사용된다.)
-    const {data: userInfo} = useQuery('MyPage', myPageApi(userId), {
+    const {data: userInfo} = useQuery('MyStar', MyStarApi(userId), {
             retry: false,
             onSuccess: (data) => {
-                const birth = data.birth;
-                setUserBirth(birth.substr(0,4) + "년" + birth.substr(5,2) + "월" + birth.substr(7,2) + "일")
                 setLoading(false);
             },
             onError: (error:unknown) => {
@@ -72,7 +71,7 @@ const Mypage = ({navigation}) => {
                 </View>
             </View>
 
-            {/*하단(mypage | mystar)*/}
+            {/*하단*/}
             <View>
                 <ImageBackground source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/mypageView/mainbox01.png'}} style={styles.MyPageBoxView}>
                     <View>
@@ -171,4 +170,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Mypage;
+export default MyStar;

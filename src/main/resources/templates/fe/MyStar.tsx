@@ -11,18 +11,17 @@ import MyPageHeader from "./MyPageHeader";
 import MyPageLuck from "./MyPageLuck";
 import {MyStarApi} from "../api/MyStarApi";
 
-const MyStar = ({navigation}) => {
-    const [loading, setLoading] = useState(false);
-    const userData = useSelector((state) => state.userDataSlicer.userData)
-    const userId = userData.userId;
-    const [userBirth, setUserBirth] = useState('');
-    const [userLuck, setUserLuck] = useState('');
+const MyStar = ({userId, setLoading, loading, setPageMode}) => {
+    const arr = [];
     // 외부연동
     // axios
     //리액트쿼리 useMutation(post, delete, put 방식에 많이 사용된다.)
-    const {data: userInfo} = useQuery('MyStar', MyStarApi(userId), {
+    const {data: userStarInfo} = useQuery('MyStar', MyStarApi(userId), {
             retry: false,
             onSuccess: (data) => {
+                for (let i = 0; i < data.myRecommandStarCnt; i++) {
+                    arr.push(i);
+                }
                 setLoading(false);
             },
             onError: (error:unknown) => {
@@ -37,66 +36,61 @@ const MyStar = ({navigation}) => {
         }
     );
 
-    const copyToClipboard = ({copyData}:any) => {
-        Clipboard.setString(copyData);
-    };
 
     return (
         loading ? <Loading /> :
         <SafeAreaView style={styles.container}>
-            {/* 상단 메뉴바 */}
-            <StatusBar barStyle="light-content" />
-            <MyPageHeader navigation={navigation} />
-
-            {/*본체*/}
-            <View style={styles.TopView}>
-                <View style={styles.ProfileView}>
-                    <Image style={styles.ProfileImg}
-                           source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/myprofile.png'}}>
-                    </Image>
-                </View>
-                <View style={styles.UserInfoView}>
-                    {/*정보수정 버튼*/}
-                    <View>
-                        <Pressable onPress={() => navigation.navigate('CateList2')}>
-                            <View style={styles.EditBtnView}><Text style={styles.EditBtnText}>정보 수정</Text></View>
-                        </Pressable>
-                    </View>
-                    {/*정보*/}
-                    <View style={styles.UserInfoSmallView}>
-                        <Text style={styles.UserIdText}>{userId}</Text>
-                        <Text style={styles.UserBirth}>{userBirth}</Text>
-                        <Text style={styles.UserLuckData}>{userInfo.userLuckData}</Text>
-                    </View>
-                </View>
-            </View>
-
-            {/*하단*/}
-            <View>
-                <ImageBackground source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/mypageView/mainbox01.png'}} style={styles.MyPageBoxView}>
-                    <View>
-                        <Text>'나'라는 사람은?</Text>
-                    </View>
-                    <View style={styles.Line}></View>
-                    {/*천간*/}
-                    <View style={styles.TopView}>
-                        <MyPageLuck data = {userInfo.myLuckTopDto}></MyPageLuck>
-                    </View>
-                    {/*지지*/}
-                    <View>
-                        <MyPageLuck data = {userInfo.myLuckBtmDto}></MyPageLuck>
-                    </View>
-                </ImageBackground>
-                {/*추천코드*/}
-                <View><Text>{userInfo.recomendCode}</Text></View>
-                {/*선택버튼*/}
+            <ImageBackground source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/mypageView/mainbox01.png'}} style={styles.MyPageBoxView}>
                 <View>
-                    <Pressable onPress={() => copyToClipboard(userInfo.recomendCode)}>
-                        <View><Text>추천코드복사</Text></View></Pressable>
-                    {/*<Pressable onPress={() => copyToClipboard("")}><View><Text>친구초대하기</Text></View></Pressable>*/}
+                    <Text style={styles.TitleText}>나의 행운의 별</Text>
+                </View>
+                <View style={styles.Line}></View>
+                {/*상단 현황판*/}
+                <View style={styles.BoardView}>
+                    <ImageBackground source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/myStar/mainbox-in01.png'}} style={styles.MyStarBoxView}>
+                        <FlatList
+                            data={arr}
+                            keyExtractor={(_, index) => index.toString()}
+                            renderItem = {({ item }) => {
+                                return (
+                                    <View key = {item} style = {styles.StarView}>
+                                        item === 1 ?
+                                        <Image style={styles.Star}
+                                               source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/myStar/mainbox-in01.png'}}  //이미지경로
+                                               resizeMode="contain">
+                                        </Image>
+                                        :(item === 5 ?
+                                        <Image style={styles.Star}
+                                               source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/myStar/starfive.png'}}  //이미지경로
+                                               resizeMode="contain">
+                                        </Image>
+                                        :(item === 10 ?
+                                        <Image style={styles.Star}
+                                               source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/myStar/starten.png'}}  //이미지경로
+                                               resizeMode="contain">
+                                        </Image>
+                                        :
+                                        <Image style={styles.Star}
+                                               source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/myStar/starone.png'}}  //이미지경로
+                                               resizeMode="contain">
+                                        </Image>
+                                        )
+                                        )
+                                    </View>
+                                )
+                            }}
+                        />
+                    </ImageBackground>
                 </View>
                 {/*리워드 이동 버튼*/}
-                <Pressable onPress={() => navigation.navigate('MyStar')}><View></View></Pressable>
+                <Pressable onPress={() => {setPageMode('M')}}><View></View></Pressable>
+            </ImageBackground>
+
+            {/*하단 알림*/}
+            <View style={styles.NoticeView}>
+                <Image style={styles.NoticeImg}
+                       source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/myStar/mainbox07.png'}}>
+                </Image>
             </View>
         </SafeAreaView>
     );
@@ -107,64 +101,45 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor:'#8064a0',
     },
-    ProfileView: {
-      width: wp(10),
-      height: hp(10),
-      alignItems: 'center',
-    },
-    ProfileImg: {
-        resizeMode: 'contain',
-    },
-    UserInfoView: {
-      width: wp(10),
-      height: hp(10),
-      flexDirection: 'row'
-    },
-    EditBtnView: {
-      width: '100%',
-      height: hp(3),
-      alignItems: 'center',
-      borderColor: '#ffffff',
-      backgroundColor: '#8064a0',
-    },
-    EditBtnText: {
-        textAlign: 'center',
-        color: '#ffffff',
-        fontSize: wp(2),
-        fontWeight: 300,
-    },
-    UserInfoSmallView: {
-        width: '100%',
-        height: '100%',
-        alignItems: 'flex-start',
-    },
-    UserIdText: {
-        fontSize: wp(5),
-        fontWeight: 700,
-        color: '#000000'
-    },
-    UserBirth: {
-        fontSize: wp(4),
-        fontWeight: 500,
-        color: '#000000'
-    },
-    UserLuckData: {
-        fontSize: wp(3),
-        fontWeight: 300,
-        color: '#000000'
-    },
     MyPageBoxView: {
         width: wp(10),
         height: hp(10),
         resizeMode: 'contain',
+        alignItems: 'center',
     },
     Line:{
         width: wp(10),
         height: hp(1),
         backgroundColor: '#8064a0',
-        alignSelf: 'center'
     },
-    TopView: {
+    TitleText:{
+        fontSize: wp(2),
+        fontWeight: 200,
+        color: '#000000',
+        textAlign: 'center'
+    },
+    MyStarBoxView: {
+      width: wp(5),
+      height: hp(5),
+    },
+    BoardView: {
+        width: wp(10),
+        height: hp(10),
+    },
+    NoticeView: {
+        width: wp(10),
+        height: hp(10),
+        borderRadius: 10,
+        borderColor: '#8064a0',
+        borderWidth: 5,
+    },
+    NoticeImg:{
+        resizeMode: 'contain',
+    },
+    StarView: {
+
+    },
+    Star:{
 
     }
 

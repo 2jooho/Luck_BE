@@ -9,13 +9,15 @@ import Loading from '../components/Loading'
 import {myPage, myPageApi} from "../api/MypageApi";
 import MyPageHeader from "./MyPageHeader";
 import MyPageLuck from "./MyPageLuck";
+import MyStar from "./MyStar";
 
 const Mypage = ({navigation}) => {
     const [loading, setLoading] = useState(false);
     const userData = useSelector((state) => state.userDataSlicer.userData)
     const userId = userData.userId;
     const [userBirth, setUserBirth] = useState('');
-    const [userLuck, setUserLuck] = useState('');
+    const [pageMode, setPageMode] = useState('M'); //M : 마이페이지, S: 나의 별
+
     // 외부연동
     // axios
     //리액트쿼리 useMutation(post, delete, put 방식에 많이 사용된다.)
@@ -37,10 +39,6 @@ const Mypage = ({navigation}) => {
             },
         }
     );
-
-    const copyToClipboard = ({copyData}:any) => {
-        Clipboard.setString(copyData);
-    };
 
     return (
         loading ? <Loading /> :
@@ -74,30 +72,11 @@ const Mypage = ({navigation}) => {
 
             {/*하단(mypage | mystar)*/}
             <View>
-                <ImageBackground source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/mypage/mypageView/mainbox01.png'}} style={styles.MyPageBoxView}>
-                    <View>
-                        <Text>'나'라는 사람은?</Text>
-                    </View>
-                    <View style={styles.Line}></View>
-                    {/*천간*/}
-                    <View style={styles.TopView}>
-                        <MyPageLuck data = {userInfo.myLuckTopDto}></MyPageLuck>
-                    </View>
-                    {/*지지*/}
-                    <View>
-                        <MyPageLuck data = {userInfo.myLuckBtmDto}></MyPageLuck>
-                    </View>
-                </ImageBackground>
-                {/*추천코드*/}
-                <View><Text>{userInfo.recomendCode}</Text></View>
-                {/*선택버튼*/}
-                <View>
-                    <Pressable onPress={() => copyToClipboard(userInfo.recomendCode)}>
-                        <View><Text>추천코드복사</Text></View></Pressable>
-                    {/*<Pressable onPress={() => copyToClipboard("")}><View><Text>친구초대하기</Text></View></Pressable>*/}
-                </View>
-                {/*리워드 이동 버튼*/}
-                <Pressable onPress={() => navigation.navigate('MyStar')}><View></View></Pressable>
+                {
+                    pageMode === 'M' ?
+                        <MyPageComponent userInfo={userInfo} setLoading={setLoading} setPageMode={setPageMode}></MyPageComponent>
+                    :   <MyStar userId={userId} setLoading={setLoading} loading={loading} setPageMode={setPageMode}></MyStar>
+                }
             </View>
         </SafeAreaView>
     );

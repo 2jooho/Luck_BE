@@ -37,7 +37,7 @@ public class MyPageRes {
         this.myLuckBtmDto = myLuckBtmDto;
         this.recomendCode = recomendCode;
         this.myLuckData = myLuckTopDto.getYearLuckKorean() + myLuckBtmDto.getYearLuckKorean() + "년"
-                + myLuckTopDto.getMonthLuckKorean() + myLuckBtmDto.getYearLuckKorean() + "월"
+                + myLuckTopDto.getMonthLuckKorean() + myLuckBtmDto.getMonthLuckKorean() + "월"
                 + myLuckTopDto.getDayLuckKorean() + myLuckBtmDto.getDayLuckKorean() + "일";
 
         //생시 존재하는경우

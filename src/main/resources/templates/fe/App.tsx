@@ -100,6 +100,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 //파일시스템 처리 라이브러리
 //npm install --save react-native-fs
+//react-native link react-native-fs
 
 
 const App: React.FunctionComponent = () => {

@@ -243,6 +243,11 @@ const Join = ({navigation}) => {
         {label: '해시 |  21:30 ~ 23:29', value: '12'},
     ]
 
+    const emailPathValue = [
+        {label: 'google.com', value: '1'},
+        {label: 'naver.com', value: '2'},
+        {label: 'daum.net', value: '3'},
+    ]
     const handleSubmitButton = () => {
         if (!userId) {
             alert('아이디를 입력해주세요');
@@ -330,6 +335,7 @@ const Join = ({navigation}) => {
     }
 
     const readFile = () => {
+        var RNFS = require('react-native-fs');
         if (modalMode === 'A') {
             RNFS.readFile('https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/agreement/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EC%B2%98%EB%A6%AC.txt', 'ascii').then(res => {
                 agreementText = res;
@@ -372,6 +378,7 @@ const Join = ({navigation}) => {
     const [isSendSms, setIsSendSms] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalMode, setModalMode] = useState(''); // A:개인정보 동의, M:마케팅 동의
+    const [emailPath, setEmailPath] = useState(0);
 
     const idInputRef = useRef<TextInput | null>(null);
     const passwordInputRef = useRef<TextInput | null>(null);
@@ -610,6 +617,37 @@ const Join = ({navigation}) => {
                                             recommandInputRef.current && recommandInputRef.current.focus()
                                         }
                                         blurOnSubmit={false}
+                                    />
+                                    <Text>@</Text>
+                                    <RNPickerSelect
+                                        onValueChange={value => setEmailPath(value)}
+                                        items={emailPathValue}
+                                        useNativeAndroidPickerStyle={false}
+                                        fixAndroidTouchableBug={true}
+                                        placeholder={{
+                                            label: "직접입력",
+                                            value: 0
+                                        }}
+                                        style={birthTimePickerSelectStyles}
+                                    />
+                                </View>
+                                <View style={{flexDirection: 'row', marginTop: 10, alignItems:'flex-end'}}>
+                                    <View style={styles.IdTextView}>
+                                        <Text style={styles.CommonText}>직접입력</Text>
+                                    </View>
+                                    <TextInput
+                                        style={styles.IdTextInput}
+                                        onChangeText={(text) => {
+                                            setEmail(text)
+                                        }}
+                                        ref={emailInputRef}
+                                        returnKeyType="next"
+                                        onSubmitEditing={() =>
+                                            recommandInputRef.current && recommandInputRef.current.focus()
+                                        }
+                                        blurOnSubmit={false}
+                                        editable={emailPath===0 ? true : false}
+                                        selectTextOnFocus={emailPath===0 ? true : false}
                                     />
                                 </View>
                                 <View style={{flexDirection: 'row', marginTop: 10}}>

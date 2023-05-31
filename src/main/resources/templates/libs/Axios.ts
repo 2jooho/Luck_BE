@@ -3,6 +3,7 @@ import {EndPoint, DataForm} from 'types';
 import { KEY, EXPIRE, METHOD } from 'constants/';
 import AsyncStorage from '@react-native-community/async-storage';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { API_URL } from "@env"
 
 export class Axios {
     #instance;
@@ -14,7 +15,7 @@ export class Axios {
     constructor(isAuthReq = false) {
         this.#instance = axios.create({
             // baseURL: `${process.env.REACT_APP_API_BASE_ROUTE}`,
-            baseURL: 'https://www.dev-pureLuck.com',
+            baseURL: API_URL //'https://www.dev-pureLuck.com',
         });
         // this.#auth = isAuthReq;
         // this.#cookie = new Cookies();

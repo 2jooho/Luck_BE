@@ -1,31 +1,37 @@
 // import Modal from 'react-native-simple-modal';
 import React, { useState, useEffect, useRef } from 'react';
-import {BackHandler ,Modal,View, Text, SafeAreaView, FlatList, ActivityIndicator, StyleSheet, StatusBar, Image, ImageBackground, TextInput, Alert, BackHandler} from 'react-native';
+import {BackHandler ,Modal,View, Text, SafeAreaView, FlatList, ActivityIndicator, StyleSheet, StatusBar, Image, ImageBackground, TextInput, Alert, TouchableOpacity} from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
-const Modall = ({openYn}) => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    useEffect(()=>{
-        setIsModalVisible(openYn);
-    }, openYn)
+
+const Modall = () => {
+    const dispatch = useDispatch(); //리덕스 툴킷
+    const isModallOpen = useSelector((state) => state.modallState.isOpen)
 
     return(
-        <View style={styles.container}> //가장 큰 컨테이너
+        <View style={styles.container2}>
             <Modal //모달창
                 animationType={"none"} //slide, fade, none
                 transparent={true}
-                visible={isModalVisible}
+                visible={isModallOpen}
                 onRequestClose={() => { // 뒤로가기 버튼(Android) 또는 메뉴버튼(Apple TV)을 선택할 때 실행할 함수
-                    setIsModalVisible(false)
-                    console.log("modal appearance")
+                    dispatch(isOpen(false));
                 }}
             >
-                <View> //모달창에서 보여줄 화면 꾸미기
-                    <Text style={{fontSize: 20}}>모달창이요!</Text>
-                    <Text style={{fontSize: 20}}>너무 어려워요!</Text>
-                    <TouchableOpacity style={{margin: 3}} onPress={() => BackHandler.exitApp()}> //누르면 모달창을 닫아주는 버튼
-                        <Text style={styles.text}>닫으시요</Text>
-                    </TouchableOpacity>
-                </View>
+                <Pressable
+                    style={styles.modalOverlay}
+                    onPress={() => dispatch(isOpen(false))}>
+
+                    <View style={styles.bottomSheetContainer}>
+                        <Text style={modalInnerStyle.recipeTitle}>알림</Text>
+                        <Text style={[modalInnerStyle.coin]}>오픈 준비중 입니다.</Text>
+                        <Pressable onPress={()=> dispatch(isOpen(false))}>
+                            <View style={modalInnerStyle.btnView}>
+                                <Text style={modalInnerStyle.btnText}>확인</Text>
+                            </View>
+                        </Pressable>
+                    </View>
+                </Pressable>
             </Modal>
         </View>
     )
@@ -53,7 +59,7 @@ export default Modall;
 
 
 const styles = StyleSheet.create({
-    container: {
+    container2: {
         zIndex:3,
         position:'absolute',
         height:'100%',
@@ -63,18 +69,33 @@ const styles = StyleSheet.create({
         alignItems:"center",
         paddingTop: 50
     },
-    buttontext:{
+})
 
-        position:'relative',
-        left:170,
-        bottom:350,
-        fontSize:20,
+
+const modalInnerStyle = StyleSheet.create({
+    recipeTitle: {
+        fontSize: wp(7),
+        fontWeight: '700'
     },
-    text:{
-        position:'relative',
-        fontSize:15,
-        fontWeight:'700',
-        left:'40%',
-    }
-
+    coin: {
+        fontSize: wp(5),
+        fontWeight: '700',
+        paddingTop: hp(3),
+        textAlign: 'center'
+    },
+    btnView: {
+        width: wp(15),
+        height: hp(5),
+        backgroundColor: '#e6c4fc',
+        borderRadius: 5,
+        alignSelf:'center',
+        justifyContent:'center',
+        marginTop: hp(4)
+    },
+    btnText: {
+        fontSize: wp(4),
+        fontWeight: '700',
+        textAlign: 'center',
+        color: '#fff',
+    },
 })

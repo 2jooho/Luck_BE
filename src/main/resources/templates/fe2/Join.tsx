@@ -31,6 +31,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import Loading from '../components/Loading'
 import messaging from '@react-native-firebase/messaging';
 import * as RNFS from 'react-native-fs';
+import AuthTimer from "./AuthTimer";
 
 const Join = ({navigation}) => {
 
@@ -517,6 +518,7 @@ const Join = ({navigation}) => {
                                         onPress={() => {isSendSms?confirmsSMS():sendSms()}}>
                                         <Text>{isSendSms ? '인증번호 확인' : '인증번호 전송'}</Text>
                                     </TouchableOpacity>
+                                    <AuthTimer isSendSms = {isSendSms}></AuthTimer>
                                 </View>
                                 <View style={{flexDirection: 'row', marginTop: 10}}>
                                     <View style={styles.PhoneTextView}>

@@ -77,6 +77,7 @@ const Login = ({navigation}) => {
         onError: (error: unknown) => {
             console.log(error);
             setLoading(false);
+            dispatch(setModallState(true));
             setModallOpenYn(true);
         }
     });
@@ -212,6 +213,58 @@ const Login = ({navigation}) => {
         // }
     }
 
+    const socialLogin = useMutation(socialLogIn(idToken), {
+        retry:false,
+        onSuccess: (res) => {
+            console.log(res);
+            const {data: userData} = res;
+            setUsers(userData.userId); // 데이터는 response.data 안에 들어있습니다.
+            dispatch(setUserData(userData));
+            const accessToken = JSON.stringify(res.headers['authorization']);
+            const refreshToken = JSON.stringify(res.headers['refreshtoken']);
+
+            console.log("accessToken:" + accessToken);
+            console.log("refreshToken:" + refreshToken);
+            AsyncStorage.setItem('accessToken', accessToken);
+            AsyncStorage.setItem('refreshToken', refreshToken);
+            AsyncStorage.setItem('userId', userId);
+            if(loading){
+                AsyncStorage.setItem('loging', 'Y');
+            }
+            //             queryClient.invalidateQueries(QUERY.KEY.USER_DATA);
+            navigation.navigate('MainPage', {userId: userId});
+            if (res) dispatch(setUserData(res?.res.userId));
+        },
+        // onError: (error: unknown) => errorHandler(error),
+        onError: (error: unknown) => {
+            console.log(error);
+            setLoading(false);
+            setModallOpenYn(true);
+        }
+    });
+
+    //구글소셜로그인
+    const onGoogleButtonPress = async () => {
+        // 첫번째 줄은 구글에 로그인하면서 유저의 idToken을 가져온다.
+        //     두번째 줄은 가져온 유저의 idToken을 이용하여 Google credential을 생성한다.
+        //     마지막 줄은 생성된 credential을 이용해 사용자를 앱으로 로그인 시킨다.
+        // const { idToken } = await GoogleSignin.signIn();
+        // console.log("idToken"+idToken);
+        // const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+        const userInfo = await GoogleSignin.signIn();
+        console.log("idToken:"+userInfo.idToken);
+        console.log("serverAuthCode:"+userInfo.serverAuthCode);
+        console.log("email:"+userInfo.user.email+"/name:"+userInfo.user.name);
+        const idToken = userInfo.idToken;
+        if(idToken){
+            dispatch(setSocialToken(idToken));
+            const socialData = async (idToken) => socialLogin(idToken);
+            navigation.navigate('SocialJoin', {type: 'GOOGLE'});
+        }
+        // const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+        // return auth().signInWithCredential(googleCredential);
+    }
+
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -229,7 +282,10 @@ const Login = ({navigation}) => {
         loading ? <Loading /> :
         <SafeAreaView style={styles.container}>
             <View>
-            <Modall openYn ={modallOpenYn}></Modall>
+                {
+                    modallOpenYn ? <Modall></Modall> : null
+                }
+
             <ImageBackground style={styles.BackgrounImgView}
             source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/login/login_bg-02.jpg'}}  //이미지경로
             resizeMode="cover">

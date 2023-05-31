@@ -9,7 +9,6 @@
 // import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 // import AsyncStorage from '@react-native-community/async-storage';
 // import axios from 'axios';
-import EncryptedStorage from 'react-native-encrypted-storage';
 //
 // const Login = ({navigation}) => {
 //
@@ -45,7 +44,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 //                     console.log("accessToken:"+accessToken);
 //                     console.log("refreshToken:"+accessToken);
 //                     AsyncStorage.setItem('accessToken', accessToken);
-                       await EncryptedStorage.setItem('refreshToken', refreshToken);
 //                     AsyncStorage.setItem('refreshToken', refreshToken);
 //                     AsyncStorage.setItem('userId', userId);
 //                     AsyncStorage.setItem('loging', loging);

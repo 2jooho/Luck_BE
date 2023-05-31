@@ -32,7 +32,9 @@ import Loading from '../components/Loading'
 import messaging from '@react-native-firebase/messaging';
 import * as RNFS from 'react-native-fs';
 
-const Join = ({navigation}) => {
+const Join = ({navigation, type}) => {
+
+    const userData = useSelector((state) => state.userDataSlicer.userData)
 
     const getFcmToken = async () => {
         const fcmToken = await messaging().getToken();
@@ -47,7 +49,9 @@ const Join = ({navigation}) => {
             });
     };
 
+
     useEffect(() => {
+        setEmail(userData);
         getFcmToken();
         const unsubscribe = messaging().onMessage(async remoteMessage => {
             console.log('[Remote Message] ', JSON.stringify(remoteMessage));
@@ -57,16 +61,16 @@ const Join = ({navigation}) => {
 
     // 외부연동
     // axios
-    let REQUEST_JOIN_URL = 'https://www.dev-pureluck.com/luck/auth/join';
+    let REQUEST_JOIN_URL = 'https://www.dev-pureluck.com/auth/${type}/join';
     const setJoin = async () => {
         setLoading(true);
         try{
             await axios.post(REQUEST_JOIN_URL,
                 {
-                    userId: userId,
+                    userId: email,
                     password: password,
-                    userName: '관리자님aa',
-                    nickname: userId,
+                    userName: name,
+                    nickname: name,
                     birth: birthDate,
                     birthFlag: birthType,
                     birthTime: birthTime,
@@ -249,20 +253,8 @@ const Join = ({navigation}) => {
         {label: 'daum.net', value: '3'},
     ]
     const handleSubmitButton = () => {
-        if (!userId) {
-            alert('아이디를 입력해주세요');
-            return;
-        }
-        if (!password) {
-            alert('비밀번호를 입력해주세요');
-            return;
-        }
-        if (!userPasswordchk) {
-            alert('비밀번호 확인을 입력해주세요');
-            return;
-        }
-        if (password != userPasswordchk) {
-            alert('비밀번호와 비밀번호 확인이 다릅니다.');
+        if (!email) {
+            alert('이메일 인증오류 입니다.');
             return;
         }
         if (!phone) {
@@ -273,10 +265,6 @@ const Join = ({navigation}) => {
             alert('통신사를 선택해주세요');
             return;
         }
-        if (!email) {
-            alert('이메일을 입력해주세요');
-            return;
-        }
         if (!birthType) {
             alert('생년 구분을 선택해주세요');
             return;
@@ -285,12 +273,12 @@ const Join = ({navigation}) => {
             alert('생년월일을 입력해주세요');
             return;
         }
-        if (!terms) {
-            alert('약관 동의는 필수입니다.');
-            return;
-        }
         if (isAuth) {
             alert('핸드폰 인증해주세요');
+            return;
+        }
+        if (!terms) {
+            alert('약관 동의는 필수입니다.');
             return;
         }
         setJoin();
@@ -354,7 +342,7 @@ const Join = ({navigation}) => {
     }
     let agreementText = "";
 
-    const [userId, setUserId] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [userPasswordchk, setUserPasswordchk] = useState('');
     const [phone, setPhone] = useState('');
@@ -381,6 +369,7 @@ const Join = ({navigation}) => {
     const [emailPath, setEmailPath] = useState(0);
 
     const idInputRef = useRef<TextInput | null>(null);
+    const nameInputRef = useRef<TextInput | null>(null);
     const passwordInputRef = useRef<TextInput | null>(null);
     const passwordchkInputRef = useRef<TextInput | null>(null);
     const phoneInputRef = useRef<TextInput | null>(null);
@@ -399,7 +388,7 @@ const Join = ({navigation}) => {
                                      resizeMode="cover">
                         <View style={styles.TotalView}>
                             <View style={{flex: 0.24}}>
-                                <Text style={styles.JoinText}>회원가입</Text>
+                                <Text style={styles.JoinText}>간편 이메일 회원가입</Text>
                                 <Text style={styles.JoinSmallText}>membership application</Text>
                                 <View style={styles.JoinLine}></View>
                             </View>
@@ -407,67 +396,32 @@ const Join = ({navigation}) => {
                             <View style={{flex: 0.75}}>
                                 <View style={{flexDirection: 'row'}}>
                                     <View style={styles.IdTextView}>
-                                        <Text style={styles.CommonText}>아이디</Text>
+                                        <Text style={styles.CommonText}>이름</Text>
                                     </View>
                                     <TextInput
                                         style={styles.IdTextInput}
                                         onChangeText={(text) => {
-                                            setUserId(text)
+                                            setName(text)
                                         }}
-                                        ref={idInputRef}
+                                        ref={nameInputRef}
                                         returnKeyType="next"
                                         onSubmitEditing={() =>
-                                            passwordInputRef.current && passwordInputRef.current.focus()
+                                            emailInputRef.current && emailInputRef.current.focus()
                                         }
                                         blurOnSubmit={false}
                                     />
-                                </View>
-                                <View style={{flexDirection: 'row', marginTop: 10, position: 'relative'}}>
-                                    <View style={styles.IdTextView}>
-                                        <Text style={styles.CommonText}>비밀번호</Text>
-                                    </View>
-                                    <TextInput
-                                        style={styles.IdTextInput}
-                                        onChangeText={(password) => setPassword(password)}
-                                        secureTextEntry={hidePassword}
-                                        ref={passwordInputRef}
-                                        returnKeyType="next"
-                                        onSubmitEditing={() =>
-                                            passwordchkInputRef.current && passwordchkInputRef.current.focus()
-                                        }
-                                        blurOnSubmit={false}
-                                    />
-                                    <Pressable onPress={() => setHidePassword(!hidePassword)}>
-                                        <Image style={styles.PwSee}
-                                            source={{uri : 'https://pureluckupload.s3.ap-northeast-2.amazonaws.com/img/join/pw-see.png'}}>
-                                        </Image>
-                                    </Pressable>
                                 </View>
                                 <View style={{flexDirection: 'row', marginTop: 10}}>
                                     <View style={styles.IdTextView}>
-                                        <Text style={styles.CommonText}>비밀번호 확인</Text>
+                                        <Text style={styles.CommonText}>이메일</Text>
                                     </View>
                                     <TextInput
                                         style={styles.IdTextInput}
-                                        onChangeText={(userPasswordchk) => {
-                                            setUserPasswordchk(userPasswordchk)
-                                        }}
-                                        secureTextEntry={true}
-                                        ref={passwordchkInputRef}
-                                        returnKeyType="next"
-                                        onSubmitEditing={() =>
-                                            phoneInputRef.current && phoneInputRef.current.focus()
-                                        }
                                         blurOnSubmit={false}
+                                        editable={false}
+                                        selectTextOnFocus={false}
+                                        value={email}
                                     />
-                                </View>
-                                {/*<View style={{flex: 0.5, justifyContent: 'center'}}>*/}
-                                {/*    {password !== userPasswordchk ? (*/}
-                                {/*      <Text>*/}
-                                {/*        비밀번호가 일치하지 않습니다.*/}
-                                {/*      </Text>*/}
-                                {/*    ) : null}*/}
-                                {/*</View>*/}
                                 <View style={{flexDirection: 'row', marginTop: 10}}>
                                     <View style={styles.PhoneTextView}>
                                         <Text style={styles.CommonText}>전화번호</Text>
@@ -602,54 +556,7 @@ const Join = ({navigation}) => {
                                         style={birthTimePickerSelectStyles}
                                     />
                                 </View>
-                                <View style={{flexDirection: 'row', marginTop: 10}}>
-                                    <View style={styles.IdTextView}>
-                                        <Text style={styles.CommonText}>이메일</Text>
-                                    </View>
-                                    <TextInput
-                                        style={styles.IdTextInput}
-                                        onChangeText={(text) => {
-                                            setEmail(text)
-                                        }}
-                                        ref={emailInputRef}
-                                        returnKeyType="next"
-                                        onSubmitEditing={() =>
-                                            recommandInputRef.current && recommandInputRef.current.focus()
-                                        }
-                                        blurOnSubmit={false}
-                                    />
-                                    <Text>@</Text>
-                                    <RNPickerSelect
-                                        onValueChange={value => setEmailPath(value)}
-                                        items={emailPathValue}
-                                        useNativeAndroidPickerStyle={false}
-                                        fixAndroidTouchableBug={true}
-                                        placeholder={{
-                                            label: "직접입력",
-                                            value: 0
-                                        }}
-                                        style={birthTimePickerSelectStyles}
-                                    />
-                                </View>
-                                <View style={{flexDirection: 'row', marginTop: 10, alignItems:'flex-end'}}>
-                                    <View style={styles.IdTextView}>
-                                        <Text style={styles.CommonText}>직접입력</Text>
-                                    </View>
-                                    <TextInput
-                                        style={styles.IdTextInput}
-                                        onChangeText={(text) => {
-                                            setEmail(text)
-                                        }}
-                                        ref={emailInputRef}
-                                        returnKeyType="next"
-                                        onSubmitEditing={() =>
-                                            recommandInputRef.current && recommandInputRef.current.focus()
-                                        }
-                                        blurOnSubmit={false}
-                                        editable={emailPath===0 ? true : false}
-                                        selectTextOnFocus={emailPath===0 ? true : false}
-                                    />
-                                </View>
+
                                 <View style={{flexDirection: 'row', marginTop: 10}}>
                                     <View style={styles.IdTextView}>
                                         <Text style={styles.CommonText}>추천인증 코드</Text>

@@ -77,6 +77,7 @@ public class OtpService {
      * @param sendSMS
      * @return
      */
+    @Transactional
     public void certifiedPhoneNumber(SendSMS sendSMS){
         String phoneNumber = sendSMS.getPhoneNm();
         String authNm = "";
@@ -110,12 +111,16 @@ public class OtpService {
      * 인증번호 확인
      * @param confirmsSMS
      */
+    @Transactional
     public void verifySms(ConfirmsSMS confirmsSMS) {
         String authNm = confirmsSMS.getAuthNm();
         String phoneNumber = confirmsSMS.getPhoneNm();
-        if(!StringUtils.equals(String.valueOf(redisUtil.getValue(PREFIX + phoneNumber)), authNm)){
+        String key = PREFIX + phoneNumber;
+        if(!StringUtils.equals(String.valueOf(redisUtil.getValue(key)), authNm)){
             throw new CustomException(PHONE_AUTH_NUMBER_FAIL);
         }
+        //인증완료 시 삭제
+        redisUtil.deleteData(key);
     }
 
 }

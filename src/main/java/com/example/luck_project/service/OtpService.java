@@ -1,34 +1,25 @@
 package com.example.luck_project.service;
 
-import com.example.luck_project.common.util.PropertyUtil;
 import com.example.luck_project.common.util.RedisUtil;
 import com.example.luck_project.dto.request.ConfirmsSMS;
 import com.example.luck_project.dto.request.SendSMS;
 import com.example.luck_project.dto.response.OtpRes;
 import com.example.luck_project.exception.CustomException;
-import com.google.gson.JsonObject;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisHash;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import static com.example.luck_project.constants.ResponseCode.PHONE_AUTH_NUMBER_FAIL;
-import static com.example.luck_project.constants.ResponseCode.RE_TOKEN_RESPONSE;
 
 
 @Service
@@ -40,6 +31,7 @@ public class OtpService {
     @Value("${coolsms.api.secret}")
     private String api_secret;
 
+    @Autowired
     private RedisUtil redisUtil;
 
     private final long LIMIT_TIME = 3*60L;
@@ -107,10 +99,11 @@ public class OtpService {
         coolsms.setTo(phoneNumber);
         coolsms.setText("휴대폰인증 테스트 메시지 : ");
 
-        SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(coolsms));
-        System.out.println(response);
+//        SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(coolsms));
+//        System.out.println(response);
         //redis에  3분 동안 넣기
-//        redisUtil.setExpireValue(PREFIX + phoneNumber, authNm, LIMIT_TIME);
+        Boolean isRedisSet = redisUtil.setExpireValue(PREFIX + phoneNumber, authNm, LIMIT_TIME);
+        log.info("isRedisSet:{}", isRedisSet);
     }
 
     /**
@@ -124,6 +117,5 @@ public class OtpService {
             throw new CustomException(PHONE_AUTH_NUMBER_FAIL);
         }
     }
-
 
 }

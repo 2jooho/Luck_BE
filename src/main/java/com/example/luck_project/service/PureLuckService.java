@@ -128,10 +128,11 @@ public class PureLuckService {
 
             log.info("확인스 : {}/{}", pureTime, pureTimeNum);
             BestDayAndTimeDto bestDayAndTimeDto = new BestDayAndTimeDto();
-            bestDayAndTimeDto.setBestDate(pureDate);
-            bestDayAndTimeDto.setBestTime(pureTime);
-            bestDayAndTimeDto.setVersYear(DataCode.VERS_YEAR_NAME_ARR[userCodeNum.get() - 1]);
-            bestDayAndTimeDto.setVersYearImgUrl(imgUrl + "/" + bestDayAndTimeDto.getVersYear() + ".png");
+            bestDayAndTimeDto.of(DataCode.VERS_YEAR_NAME_ARR[userCodeNum.get() - 1], pureDate, pureTime, imgUrl + "/" + bestDayAndTimeDto.getVersYear() + ".png");
+//            bestDayAndTimeDto.setBestDate(pureDate);
+//            bestDayAndTimeDto.setBestTime(pureTime);
+//            bestDayAndTimeDto.setVersYear(DataCode.VERS_YEAR_NAME_ARR[userCodeNum.get() - 1]);
+//            bestDayAndTimeDto.setVersYearImgUrl(imgUrl + "/" + bestDayAndTimeDto.getVersYear() + ".png");
 
             bestDayAndTimeDtoList.add(bestDayAndTimeDto);
 
@@ -152,11 +153,13 @@ public class PureLuckService {
         TodayBestTimeDto todayBestTimeDto = new TodayBestTimeDto();
         if (best1Time > 12) {
             best1Time = best1Time - 12;
-            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time - 2]);
-            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2]);
+            todayBestTimeDto.of(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2], DataCode.VERS_YEAR_TIME_ARR[best1Time - 2], null);
+//            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time - 2]);
+//            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2]);
         } else {
-            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time - 2]);
-            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2]);
+            todayBestTimeDto.of(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2], DataCode.VERS_YEAR_TIME_ARR[best1Time - 2], null);
+//            todayBestTimeDto.setBestTime(DataCode.VERS_YEAR_TIME_ARR[best1Time - 2]);
+//            todayBestTimeDto.setTimeVersYear(DataCode.VERS_YEAR_NAME_ARR[best1Time - 2]);
         }
 
         todayBestTimeDto.setTimeVersYearImg(imgUrl + "/" + todayBestTimeDto.getTimeVersYear() + ".png");

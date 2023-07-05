@@ -68,6 +68,7 @@ public class FirebaseCloudMessageService {
      */
     public void sendMessageTo(String targetToken, String title, String body) throws IOException {
         log.info("메시지 세팅 : {}/{}/{}", targetToken, title, body);
+        this.getAccessToken();
         String message = makeMessage(targetToken, title, body);
 
         OkHttpClient client = new OkHttpClient();

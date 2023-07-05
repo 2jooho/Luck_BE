@@ -63,7 +63,7 @@ public class SocialJoinReq {
     /**
      * 태어난 시간 구분
      */
-    @Pattern(regexp = "^[0-9]{4}$" , message = "태어난 시간은 4자리 숫자 형식입니다.")
+    @Pattern(regexp = "^[0-9]{1}$" , message = "태어난 시간 구분은 1자리 숫자 형식입니다.")
     private String birthTimeType;
 
     /**
@@ -86,6 +86,12 @@ public class SocialJoinReq {
     @Nullable
     @Pattern(regexp = "^[BKGbkg]{1}$" , message = "로그인 구분은 1자리 B,K,G 형식입니다.")
     private String loginDvsn;
+
+    /**
+     * 추천인 코드
+     */
+    @Pattern(regexp = "^[a-zA-Z0-9]{0,20}$" , message = "추천인 코드는 영문,숫자 조합 20자리 이내 입니다.")
+    private String recommandCode;
 
     /**
      * 관심 카테고리 목록
